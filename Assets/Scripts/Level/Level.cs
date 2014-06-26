@@ -4,18 +4,22 @@ using System.Collections.Generic;
 
 public class Level : MonoBehaviour {
 
-	public LinkedList<Vector3> edges;
-	public bool wrapAround;
+    public List<Vector3> edges;
+    public bool wrapAround;
+    
+    private List<Enemy> _potentialEnemies;
 
-	//public LinkedList<Enemy> potentialEnemies;
+    public List<Enemy> PotentialEnemies {
+        get {
+            return _potentialEnemies;
+        }
+    }
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    void Start () {
+        
+    }
+
+    void Update () {
+
+    }
 }

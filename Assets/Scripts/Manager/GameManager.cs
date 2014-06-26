@@ -3,22 +3,55 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
+    private static GameManager _instance;
 
-	public LinkedList<Level> levels;
-	public int currentLevel;
+	public List<Level> levels;
 
-	public int score;
-	public int multiplier;
-	public int lives;
+	private int _score = 0;
+	private int _multiplier = 0;
+    private int _lives = 0;
+    private int _currentLevel = 0;
 
-
-	// Use this for initialization
 	void Start () {
-	
+        if(_instance != null) {
+            Debug.LogError("Can't initialize more than one instance of Game Manager!");
+        }
+        _instance = this;
+        DontDestroyOnLoad(this);
+        levels = new List<Level>();
 	}
+
+    public static GameManager Instance {
+        get {
+            return _instance;
+        }
+    }
+
+    public Level CurrentLevel {
+        get {
+            return levels[_currentLevel];
+        }
+    }
+
+    public int CurrentScore {
+        get {
+            return _score;
+        }
+    }
+
+    public int Multiplier {
+        get {
+            return _multiplier;
+        }
+    }
+
+    public int Lives {
+        get {
+            return _lives;
+        }
+    }
 	
-	// Update is called once per frame
 	void Update () {
-	
+	    
 	}
 }
