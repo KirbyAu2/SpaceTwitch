@@ -5,21 +5,21 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour {
     private static GameManager _instance;
 
-	public List<Level> levels;
+    public List<Level> levels;
 
-	private int _score = 0;
-	private int _multiplier = 0;
+    private int _score = 0;
+    private int _multiplier = 0;
     private int _lives = 0;
     private int _currentLevel = 0;
 
-	void Start () {
+    void Start () {
         if(_instance != null) {
             Debug.LogError("Can't initialize more than one instance of Game Manager!");
         }
         _instance = this;
         DontDestroyOnLoad(this);
         levels = new List<Level>();
-	}
+    }
 
     public static GameManager Instance {
         get {
@@ -50,8 +50,8 @@ public class GameManager : MonoBehaviour {
             return _lives;
         }
     }
-	
-	void Update () {
-	    
-	}
+
+    void Update () {
+        
+    }
 }
