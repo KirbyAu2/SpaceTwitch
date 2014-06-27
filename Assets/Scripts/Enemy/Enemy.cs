@@ -2,7 +2,7 @@
 using System.Collections;
 
 public abstract class Enemy : MonoBehaviour {
-    private bool _alive;
+    private bool _alive = true;
 
     public bool Alive {
         get {

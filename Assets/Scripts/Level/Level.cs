@@ -16,7 +16,7 @@ public class Level : MonoBehaviour {
     }
 
     void Start () {
-        
+        _potentialEnemies = new List<Enemy>();
     }
 
     void Update () {
