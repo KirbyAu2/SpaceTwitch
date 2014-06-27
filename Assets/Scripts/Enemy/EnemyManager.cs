@@ -12,6 +12,7 @@ public class EnemyManager : MonoBehaviour {
         if(_instance != null) {
             Debug.LogError("There can't be two Enemy Managers!");
         }
+        _deadEnemies = new List<Enemy>();
         _instance = this;
         DontDestroyOnLoad(this);
     }
