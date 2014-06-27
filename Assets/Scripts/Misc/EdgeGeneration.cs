@@ -53,12 +53,10 @@ public class EdgeGeneration : MonoBehaviour {
         foreach (KeyValuePair<Vector3, float> entry in _angleDict) {
             if (entry.Value < 358) {
                 Vector3 v = transform.TransformPoint(entry.Key);
-                //Debug.Log(entry.Value);
                 bool keep = true;
                 foreach (Vector3 prevCandidate in _candidates) {
                     float dist = Vector3.Distance(prevCandidate, v);
                     if (dist < 0.5f) {
-                        //Debug.Log(dist);
                         keep = false;
                         break;
                     }
