@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Level : MonoBehaviour {
 
-    public List<Vector3> edges;
+    public List<Edge> edges;
     public bool wrapAround;
     
     private List<Enemy> _potentialEnemies;
