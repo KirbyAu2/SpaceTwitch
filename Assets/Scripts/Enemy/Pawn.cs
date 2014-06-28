@@ -17,7 +17,6 @@ public class Pawn : Enemy {
         }
         if (Time.time > _shootTime) {
             _shootTime = Time.time + SHOOTING_DELAY;
-            Debug.Log("Spawning Projectile!");
             spawnProjectile();
         }
     }

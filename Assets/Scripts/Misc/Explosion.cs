@@ -21,7 +21,6 @@ public class Explosion : MonoBehaviour {
 
     void Update () {
         if(Time.time > _startTime + _duration) {
-            Debug.Log(_duration);
             Destroy (gameObject);
         }
     }
