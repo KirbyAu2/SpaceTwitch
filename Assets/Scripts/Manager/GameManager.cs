@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour {
     private int _multiplier = 0;
     private int _lives = 0;
     private int _currentLevel = 0;
+    private bool _playingGame = false;
 
     void Start () {
         if(_instance != null) {
@@ -18,19 +19,42 @@ public class GameManager : MonoBehaviour {
         }
         _instance = this;
         DontDestroyOnLoad(this);
-        levels = new List<Level>();
     }
 
-    public void debugLevel(Level l) {
-        levels.Clear();
-        levels.Add(l);
-        _currentLevel = 0;
-        EnemyManager.Instance.debugPawn();
+    public void StartGame() {
+        _playingGame = true;
+        _currentLevel--;
+        loadNextLevel();
+    }
+
+    /**
+     * Loads the next level
+     */
+    public void loadNextLevel() {
+        _currentLevel++;
+        levels[_currentLevel].load();
+        EnemyManager.Instance.loadLevel();
+    }
+
+    public void stopGame() {
+        _playingGame = false;
+    }
+
+    public bool PlayingGame {
+        get {
+            return _playingGame;
+        }
     }
 
     public static GameManager Instance {
         get {
             return _instance;
+        }
+    }
+
+    public int CurrentDifficulty {
+        get {
+            return _currentLevel + 1;
         }
     }
 
@@ -59,6 +83,10 @@ public class GameManager : MonoBehaviour {
     }
 
     void Update () {
-        
+        if (!_playingGame) {
+            if (EnemyManager.Instance != null) {
+                StartGame();
+            }
+        }
     }
 }

@@ -39,6 +39,7 @@ public abstract class Enemy : MonoBehaviour {
         if(collision.gameObject.tag == "PlayerProjectile") {
             PlayerProjectile p = collision.gameObject.GetComponent<PlayerProjectile>();
             _alive = false;
+            EnemyManager.Instance.removeEnemy(this);
             p.explode();
             Destroy(gameObject);
         }
