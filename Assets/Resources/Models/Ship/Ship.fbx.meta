@@ -1,21 +1,13 @@
 fileFormatVersion: 2
-guid: f27a4ebc95e52409da0d8e2809610777
+guid: 09c0dcdb76c38496a9f01907f49da372
 ModelImporter:
   serializedVersion: 16
   fileIDToRecycleName:
     100000: //RootNode
-    100002: Camera
-    100004: Lamp
-    100006: Plane
     400000: //RootNode
-    400002: Camera
-    400004: Lamp
-    400006: Plane
     2300000: //RootNode
-    2300002: Plane
     3300000: //RootNode
-    3300002: Plane
-    4300000: Plane
+    4300000: Cube
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -25,7 +17,6 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
-    motionNodeName: 
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
