@@ -8,6 +8,11 @@ public class Level : MonoBehaviour {
     public List<Lane> lanes;
     public bool wrapAround;
     public bool debugDraw = false;
+
+    int pawnCount = 0;
+    int crosshatchCount = 0;
+    int swirlieCount = 0;
+    int confettiCount = 0;
     
     private List<Enemy> _potentialEnemies;
 
@@ -19,10 +24,15 @@ public class Level : MonoBehaviour {
 
     void Start () {
         _potentialEnemies = new List<Enemy>();
+        GameManager.Instance.debugLevel(this);
     }
 
     void Update () {
 
+    }
+
+    public Lane getRandomLane() {
+        return lanes[(int)(Random.value * lanes.Count)];
     }
 
     void OnDrawGizmos() {

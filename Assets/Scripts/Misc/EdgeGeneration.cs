@@ -47,7 +47,6 @@ public class EdgeGeneration : MonoBehaviour {
     private void initGeneration() {
         int[] triangles = _filter.mesh.triangles;
         Vector3[] verts = _filter.mesh.vertices;
-        Debug.Log("Verts:" + verts.Length);
 
         for(int i = 0; i < triangles.Length;) {
             getAngleForVert(verts[triangles[i]], verts[triangles[i + 1]], verts[triangles[i + 2]]);
@@ -108,8 +107,6 @@ public class EdgeGeneration : MonoBehaviour {
                 norm = Vector3.Cross(entry.Key - entry.Value[0], xDir);
             }
             _normalDict[entry.Key] = norm;
-
-            Debug.Log(norm);
         }
 
         separateEdges();
@@ -135,7 +132,6 @@ public class EdgeGeneration : MonoBehaviour {
         Debug.Log("EDGE COUNT: " + _newEdges.Count);
         foreach (Edge e in _newEdges) {
             Edge prevE = e;
-            Debug.Log(e.Front.z);
             if(e.Front.z < mostLeft) {
                 mostLeft = e.Front.z;
                 mostBottom = e.Front.y;
@@ -174,7 +170,7 @@ public class EdgeGeneration : MonoBehaviour {
 
         Edge farthestLeft = getFarLeftEdge();
         if (farthestLeft == null) {
-            Debug.Log("Error: farthest left is null!");
+            Debug.LogError("Farthest left is null!");
             return;
         }
 
@@ -201,13 +197,10 @@ public class EdgeGeneration : MonoBehaviour {
                 currentEdge.addNeighbor(_edgeDict[_neighbors[currentEdge.Front][0]],false);
             }
 
-            Debug.Log(Vector3.Angle(currentEdge.Normal, currentEdge.Right.Normal));
-
             currentEdge.Right.Normal = Vector3.Cross(currentEdge.Right.Front - currentEdge.Front, new Vector3(1,0,0));
 
             _normalDict[currentEdge.Right.Front] = currentEdge.Right.Normal;
             _normalDict[currentEdge.Right.Back] = currentEdge.Right.Normal;
-            Debug.Log(Vector3.Angle(currentEdge.Normal, currentEdge.Right.Normal));
 
             _laneList.Add(new Lane(currentEdge, currentEdge.Right));
 
@@ -215,18 +208,6 @@ public class EdgeGeneration : MonoBehaviour {
             previousEdge = currentEdge;
             currentEdge = previousEdge.Right;
         }
-
-
-
-        /*foreach (KeyValuePair<Vector3, List<Vector3>> entry in _neighbors) {
-            if (!_edgeDict.ContainsKey(entry.Key)) {
-                continue;
-            }
-            Edge e = _edgeDict[entry.Key];
-            foreach (Vector3 n in entry.Value) {
-                e.addNeighbor(_edgeDict[n]);
-            }
-        }*/
 
         Level l = GetComponent<Level>();
         l.lanes = _laneList;

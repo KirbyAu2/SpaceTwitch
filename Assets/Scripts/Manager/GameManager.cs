@@ -21,6 +21,13 @@ public class GameManager : MonoBehaviour {
         levels = new List<Level>();
     }
 
+    public void debugLevel(Level l) {
+        levels.Clear();
+        levels.Add(l);
+        _currentLevel = 0;
+        EnemyManager.Instance.debugPawn();
+    }
+
     public static GameManager Instance {
         get {
             return _instance;

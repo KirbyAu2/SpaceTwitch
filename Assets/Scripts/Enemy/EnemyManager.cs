@@ -5,6 +5,12 @@ using System.Collections.Generic;
 public class EnemyManager : MonoBehaviour {
     private static EnemyManager _instance;
 
+    public GameObject pawnPrefab;
+    public GameObject crosshatchPrefab;
+    public GameObject swirliePrefab;
+    public GameObject confettiPrefab;
+    public GameObject enemyProjectilePrefab;
+
     private List<Enemy> _currentEnemies;
     private List<Enemy> _deadEnemies;
 
@@ -15,6 +21,12 @@ public class EnemyManager : MonoBehaviour {
         _deadEnemies = new List<Enemy>();
         _instance = this;
         DontDestroyOnLoad(this);
+    }
+
+    public void debugPawn() {
+        GameObject g = (GameObject)Instantiate(pawnPrefab);
+        Debug.Log(g);
+        g.GetComponent<Pawn>().spawn(GameManager.Instance.CurrentLevel.getRandomLane());
     }
 
     /**
