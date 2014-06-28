@@ -42,12 +42,33 @@ public class Edge {
         }
     }
 
+    public Vector3 Normal {
+        get {
+            return _normal;
+        }
+        set {
+            _normal = value;
+        }
+    }
+
     public void addNeighbor(Edge e) {
         if (_neighbors.Count >= 2) {
             Debug.LogError("Edges can't have more than one neighbor!");
         }
         _neighbors.Add(e);
         if (e.Front.z > _front.z) {
+            _right = e;
+        } else {
+            _left = e;
+        }
+    }
+
+    public void addNeighbor(Edge e, bool left) {
+        if (_neighbors.Count >= 2) {
+            Debug.LogError("Edges can't have more than one neighbor!");
+        }
+        _neighbors.Add(e);
+        if (!left) {
             _right = e;
         } else {
             _left = e;
