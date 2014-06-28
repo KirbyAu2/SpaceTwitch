@@ -4,10 +4,26 @@ using System.Collections.Generic;
 
 public class GUIManager : MonoBehaviour {
     private List<GUIItem> _items;
-
+    private static GUIManager _instance;
     // Use this for initialization
-    void Start () {
-	    _items = new List<GUIItem>();
+
+
+    void Start()
+    {
+        if (_instance != null)
+        {
+            Debug.LogError("Can't initialize more than one instance of GUI Manager!");
+        }
+        _instance = this;
+        DontDestroyOnLoad(this);
+        _items = new List<GUIItem>();
+    }
+
+    public static GUIManager Instance{
+        get
+        {
+            return _instance;
+        }
     }
 	
     // Update is called once per frame
