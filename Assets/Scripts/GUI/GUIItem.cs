@@ -9,11 +9,10 @@ public class GUIItem {
     public string message;
     public GUIStyle customGuiStyle;
 
-    public GUIItem(float xposition, float yposition, float start, int duration, string curmessage, GUIStyle cusGuiStyle)
+    public GUIItem(float xposition, float yposition, int duration, string curmessage, GUIStyle cusGuiStyle)
     {
         xpos = xposition;
         ypos = yposition;
-        starttime = start;
         dur = duration;
         message = curmessage;
         customGuiStyle = cusGuiStyle;
