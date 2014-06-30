@@ -279,6 +279,5 @@ public class EdgeGeneration : MonoBehaviour {
         }
 
         Gizmos.color = Color.gray;
-        Gizmos.DrawSphere(_spawnLane.Front, 0.1f);
     }
 }

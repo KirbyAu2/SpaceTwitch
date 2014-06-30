@@ -2,26 +2,43 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
+    public const float DELAY_NEXT_SHOT = .2f;
+
     public GameObject TestLevel;
     public Level currentLevel;
 
     public float mouseSensitivity;
+    private float _nextShotCooldown;
 
     private int _currentPlane = 0;
     private float _positionOnPlane = 0.5f; // between 0 (beginning) and 1 (end)
+
+    private bool _alive = false;
 
     public GameObject playerProjectile;
 
     // Use this for initialization
     void Start () {
-        currentLevel = TestLevel.GetComponent<Level>();
+        if (TestLevel != null) {
+            currentLevel = TestLevel.GetComponent<Level>();
+            init(currentLevel);
+        }
         if (mouseSensitivity < .1f) {
             mouseSensitivity = .1f;
         }
+        _nextShotCooldown = Time.time;
+    }
+
+    public void init(Level level) {
+        currentLevel = level;
+        _alive = true;
     }
 
     // Update is called once per frame
     void Update() {
+        if (!_alive) {
+            return;
+        }
         float mouseMove = Input.GetAxis("Mouse X");
         float shipMove = mouseMove * mouseSensitivity;
         _positionOnPlane += shipMove;
@@ -62,19 +79,24 @@ public class Player : MonoBehaviour {
         transform.up = -currentLevel.lanes[_currentPlane].Normal;
 
         // shoot
-        if (Input.GetMouseButton(0)) {
+        if (Input.GetMouseButton(0) && _nextShotCooldown < Time.time) {
             Shoot();
         }
     }
 
     void Shoot() {
+        _nextShotCooldown = Time.time + DELAY_NEXT_SHOT;
         GameObject shot = (GameObject)Instantiate(playerProjectile);
         Lane currentLane = currentLevel.lanes[_currentPlane];
         Vector3 start = currentLane.Front + ((gameObject.renderer.bounds.size.y / 2) * currentLane.Normal);
         Vector3 end = currentLane.Back + ((gameObject.renderer.bounds.size.y / 2) * currentLane.Normal);
-        shot.GetComponent<PlayerProjectile>().startingLocation = start;
-        shot.GetComponent<PlayerProjectile>().endingLocation = end;
-        shot.rigidbody.velocity = Vector3.Normalize(end - start) * shot.GetComponent<PlayerProjectile>().speed;
+        shot.GetComponent<PlayerProjectile>().init(currentLevel.lanes[_currentPlane]);
         shot.transform.position = start;
+    }
+
+    void OnTriggerEnter(Collider other) {
+        if (other.gameObject.tag == "Enemy") {
+            Destroy(gameObject);
+        }
     }
 }

@@ -8,7 +8,7 @@ public class Pawn : Enemy {
     private float _shootTime;
 
     void Start () {
-
+        _score = 100;
     }
 	
     void Update () {

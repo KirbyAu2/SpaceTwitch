@@ -6,12 +6,15 @@ public class GameManager : MonoBehaviour {
     private static GameManager _instance;
 
     public List<Level> levels;
+    public GameObject playerPrefab;
 
     private int _score = 0;
     private int _multiplier = 0;
-    private int _lives = 0;
+    private int _lives = 3;
     private int _currentLevel = 0;
     private bool _playingGame = false;
+    private GameObject _currentPlayerShip;
+    private Player _currentPlayerScript;
 
     void Start () {
         if(_instance != null) {
@@ -24,7 +27,23 @@ public class GameManager : MonoBehaviour {
     public void StartGame() {
         _playingGame = true;
         _currentLevel--;
+        //spawnPlayer(true);
         loadNextLevel();
+    }
+
+    public void spawnPlayer(bool firstTime = false) {
+        if (!firstTime && _lives > 0) {
+            _lives--;
+        } else if (_lives < 1) {
+            gameOver();
+            return;
+        }
+        _currentPlayerShip = (GameObject)Instantiate(playerPrefab);
+        _currentPlayerScript = _currentPlayerShip.GetComponent<Player>();
+    }
+
+    public void gameOver() {
+
     }
 
     /**
