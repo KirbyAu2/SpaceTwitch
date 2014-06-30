@@ -10,6 +10,10 @@ public class Player : MonoBehaviour {
     private int _currentPlane = 0;
     private float _positionOnPlane = 0.5f; // between 0 (beginning) and 1 (end)
 
+    public int maxShots = 5;
+    public float reloadTime = .2f;
+    private float _reload = 0;
+
     public GameObject playerProjectile;
 
     // Use this for initialization
@@ -59,12 +63,22 @@ public class Player : MonoBehaviour {
 
         // update position
         transform.position = currentLevel.lanes[_currentPlane].Front;
-        transform.up = -currentLevel.lanes[_currentPlane].Normal;
+        float angleUp = Vector3.Angle(Vector3.up, currentLevel.lanes[_currentPlane].Normal) - 90;
+        float angleRight = Vector3.Angle(Vector3.forward, currentLevel.lanes[_currentPlane].Normal);
+        float angleLeft = Vector3.Angle(Vector3.back, currentLevel.lanes[_currentPlane].Normal);
+        if (angleRight < angleLeft) {
+            angleUp = -angleUp;
+        }
+        transform.eulerAngles = new Vector3(angleUp, 180, 0);
 
         // shoot
         if (Input.GetMouseButton(0)) {
-            Shoot();
+            if (_reload < 0) {
+                Shoot();
+                _reload = reloadTime;
+            }
         }
+
     }
 
     void Shoot() {
