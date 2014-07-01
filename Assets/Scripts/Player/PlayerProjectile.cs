@@ -8,6 +8,8 @@ public class PlayerProjectile : MonoBehaviour {
     public Vector3 startingLocation;
     public Vector3 endingLocation;
 
+    public Player player; // the player object this shot came from
+
     void Start () {
 
     }
@@ -33,6 +35,7 @@ public class PlayerProjectile : MonoBehaviour {
      * Makes the projectile explode
      */
     public void explode() {
+        player.RemoveShot();
         speed = 0;
         Destroy(gameObject);
     }

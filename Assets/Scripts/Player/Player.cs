@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
+
     public GameObject TestLevel;
     public Level currentLevel;
 
@@ -11,13 +12,15 @@ public class Player : MonoBehaviour {
     private float _positionOnPlane = 0.5f; // between 0 (beginning) and 1 (end)
 
     public int maxShots = 5;
-    public float reloadTime = .2f;
+    public float reloadTime = .1f;
+    private int _numShots = 0;
     private float _reload = 0;
 
     public GameObject playerProjectile;
 
     // Use this for initialization
     void Start () {
+
         currentLevel = TestLevel.GetComponent<Level>();
         if (mouseSensitivity < .1f) {
             mouseSensitivity = .1f;
@@ -73,22 +76,31 @@ public class Player : MonoBehaviour {
 
         // shoot
         if (Input.GetMouseButton(0)) {
-            if (_reload < 0) {
+            if (_reload < 0 && _numShots < maxShots) {
                 Shoot();
                 _reload = reloadTime;
             }
         }
-
+        
+        // reload
+        _reload -= Time.deltaTime;
     }
 
     void Shoot() {
+        _numShots++;
         GameObject shot = (GameObject)Instantiate(playerProjectile);
+        PlayerProjectile shotScript = shot.GetComponent<PlayerProjectile>();
+        shotScript.player = this;
         Lane currentLane = currentLevel.lanes[_currentPlane];
         Vector3 start = currentLane.Front + ((gameObject.renderer.bounds.size.y / 2) * currentLane.Normal);
         Vector3 end = currentLane.Back + ((gameObject.renderer.bounds.size.y / 2) * currentLane.Normal);
-        shot.GetComponent<PlayerProjectile>().startingLocation = start;
-        shot.GetComponent<PlayerProjectile>().endingLocation = end;
-        shot.rigidbody.velocity = Vector3.Normalize(end - start) * shot.GetComponent<PlayerProjectile>().speed;
+        shotScript.startingLocation = start;
+        shotScript.endingLocation = end;
+        shot.rigidbody.velocity = Vector3.Normalize(end - start) * shotScript.speed;
         shot.transform.position = start;
+    }
+
+    public void RemoveShot() {
+        _numShots--;
     }
 }
