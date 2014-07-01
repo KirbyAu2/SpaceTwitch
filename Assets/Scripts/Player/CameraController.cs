@@ -18,7 +18,9 @@ public class CameraController : MonoBehaviour {
         gameObject.transform.position = pos;
         Vector3 midPoint = Vector3.zero;
         foreach(Player s in GameManager.Instance.CurrentPlayerShips) {
-            midPoint += s.CurrentLane.Front;
+            if(s.CurrentLane != null) {
+                midPoint += s.CurrentLane.Front;
+            }
         }
         midPoint = midPoint / GameManager.Instance.CurrentPlayerShips.Count;
         midPoint += new Vector3(1, 0, 0);

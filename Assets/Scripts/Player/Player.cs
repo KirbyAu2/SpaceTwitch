@@ -65,6 +65,7 @@ public class Player : MonoBehaviour {
         float shipMove = mouseMove * mouseSensitivity;
         _positionOnPlane += shipMove;
 
+        currentLevel.lanes[_currentPlane].setHighlight(false);
         // calculate new position after movement
         if (_positionOnPlane < 0) {
             _currentPlane--;
@@ -93,7 +94,7 @@ public class Player : MonoBehaviour {
                 _positionOnPlane = 1;
             }
         }
-
+        currentLevel.lanes[_currentPlane].setHighlight(true);
         //print("Plane: " + _currentPlane + ", Position: " + _positionOnPlane);
 
         // update position
@@ -138,13 +139,18 @@ public class Player : MonoBehaviour {
 
     public Lane CurrentLane {
         get {
-            return currentLevel.lanes[_currentPlane];
+            if(currentLevel != null && currentLevel.lanes != null) {
+                return currentLevel.lanes[_currentPlane];
+            } else {
+                return null;
+            }
         }
     }
 
     void Shoot() {
         Lane currentLane = currentLevel.lanes[_currentPlane];
         GameObject shot = (GameObject)Instantiate(playerProjectile);
+        shot.renderer.enabled = false;
         shot.GetComponent<PlayerProjectile>().player = this;
         shot.GetComponent<PlayerProjectile>().init(currentLane);
         _numShots++;
@@ -172,6 +178,7 @@ public class Player : MonoBehaviour {
     
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Enemy") {
+            currentLevel.lanes[_currentPlane].setHighlight(false);
             GameManager.Instance.removeShip(this);
             Destroy(gameObject);
         }
