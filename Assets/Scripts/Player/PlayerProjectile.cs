@@ -25,9 +25,12 @@ public class PlayerProjectile : MonoBehaviour {
     }
 
     void Update () {
-
+        float velocity = BASE_VELOCITY;
+        if (player.isRapidActivated) {
+            velocity /= 2;
+        }
         gameObject.transform.position = Vector3.Lerp(_currentLane.Front + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal,
-            _currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec, (Time.time - _startingTime) / BASE_VELOCITY);
+            _currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec, (Time.time - _startingTime) / velocity);
         if (gameObject.transform.position == _currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec) {
             explode();
         }

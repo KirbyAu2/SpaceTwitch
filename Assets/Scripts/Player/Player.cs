@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
     public const float DELAY_NEXT_SHOT = .2f;
+    public const float RAPID_SHOT_TIME = 15.0f;
+    public const float MULTI_SHOT_TIME = 15.0f;
 
     public GameObject TestLevel;
     public Level currentLevel;
@@ -16,6 +18,13 @@ public class Player : MonoBehaviour {
     public int maxShots = 5;
     private int _numShots = 0;
     private float _reload = 0;
+
+    public bool isRapidActivated = false;
+    public bool isMultiActivated = false;
+    public bool isCloneActivated = false;
+
+    private float _rapidTime = 0;
+    private float _multiTime = 0;
 
     public GameObject playerProjectile;
 
@@ -95,18 +104,39 @@ public class Player : MonoBehaviour {
         
         // reload
         _reload -= Time.deltaTime;
+
+        // powerup timers
+        _rapidTime -= Time.deltaTime;
+        if (_rapidTime < 0) {
+            //isRapidActivated = false;
+        }
+
+        _multiTime -= Time.deltaTime;
+        if (_multiTime < 0) {
+            //isMultiActivated = false;
+        }
     }
 
     void Shoot() {
         _numShots++;
-        GameObject shot = (GameObject)Instantiate(playerProjectile);
-        PlayerProjectile shotScript = shot.GetComponent<PlayerProjectile>();
-        shotScript.player = this;
         Lane currentLane = currentLevel.lanes[_currentPlane];
-        Vector3 start = currentLane.Front + ((gameObject.renderer.bounds.size.y / 2) * currentLane.Normal);
-        shotScript.init(currentLevel.lanes[_currentPlane]);
-        shotScript.startingLocation = start;
-        shot.transform.position = start;
+        GameObject shot = (GameObject)Instantiate(playerProjectile);
+        shot.GetComponent<PlayerProjectile>().player = this;
+        shot.GetComponent<PlayerProjectile>().init(currentLane);
+        if (isMultiActivated) {
+            currentLane = currentLevel.lanes[_currentPlane].LeftLane;
+            if (currentLane != null) {
+                shot = (GameObject)Instantiate(playerProjectile);
+                shot.GetComponent<PlayerProjectile>().player = this;
+                shot.GetComponent<PlayerProjectile>().init(currentLane);
+            }
+            currentLane = currentLevel.lanes[_currentPlane].RightLane;
+            if (currentLane != null) {
+                shot = (GameObject)Instantiate(playerProjectile);
+                shot.GetComponent<PlayerProjectile>().player = this;
+                shot.GetComponent<PlayerProjectile>().init(currentLane);
+            }
+        }
     }
     
     public void RemoveShot() {
@@ -118,5 +148,19 @@ public class Player : MonoBehaviour {
             GameManager.Instance.removeShip(this);
             Destroy(gameObject);
         }
+    }
+
+    public void ActivateRapid() {
+        _rapidTime = RAPID_SHOT_TIME;
+        isRapidActivated = true;
+    }
+
+    public void ActivateMulti() {
+        _multiTime = MULTI_SHOT_TIME;
+        isMultiActivated = true;
+    }
+
+    public void ActivateClone() {
+
     }
 }
