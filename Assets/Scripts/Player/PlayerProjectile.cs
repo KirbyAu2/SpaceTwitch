@@ -29,7 +29,7 @@ public class PlayerProjectile : MonoBehaviour {
         gameObject.transform.position = Vector3.Lerp(_currentLane.Front + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal,
             _currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec, (Time.time - _startingTime) / BASE_VELOCITY);
         if (gameObject.transform.position == _currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec) {
-            Destroy(gameObject);
+            explode();
         }
 
         /*if (Vector3.Distance(startingLocation, transform.position) > Vector3.Distance(startingLocation, endingLocation)) {
@@ -42,7 +42,7 @@ public class PlayerProjectile : MonoBehaviour {
 
     void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.tag == "Enemy") {
-            Destroy(gameObject);
+            explode();
         }
     }
 

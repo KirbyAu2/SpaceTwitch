@@ -8,14 +8,12 @@ public class Player : MonoBehaviour {
     public Level currentLevel;
 
     public float mouseSensitivity;
-    private float _nextShotCooldown;
 
     private int _currentPlane = 0;
     private float _positionOnPlane = 0.5f; // between 0 (beginning) and 1 (end)
     
     private bool _alive = false;
     public int maxShots = 5;
-    public float reloadTime = .1f;
     private int _numShots = 0;
     private float _reload = 0;
 
@@ -30,7 +28,6 @@ public class Player : MonoBehaviour {
         if (mouseSensitivity < .1f) {
             mouseSensitivity = .1f;
         }
-        _nextShotCooldown = Time.time;
         gameObject.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }
 
@@ -90,11 +87,10 @@ public class Player : MonoBehaviour {
         transform.eulerAngles = new Vector3(angleUp, 180, 0);
 
         // shoot
-        if (Input.GetMouseButton(0) && _nextShotCooldown < Time.time) {
-            if (_reload < 0 && _numShots < maxShots) {
-                Shoot();
-                _reload = reloadTime;
-            }
+        if (Input.GetMouseButton(0) && _reload < 0 && _numShots < maxShots) {
+            Shoot();
+            _reload = DELAY_NEXT_SHOT;
+        
         }
         
         // reload
