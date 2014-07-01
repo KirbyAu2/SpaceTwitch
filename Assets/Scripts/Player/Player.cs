@@ -85,6 +85,12 @@ public class Player : MonoBehaviour {
         }
     }
 
+    public Lane CurrentLane {
+        get {
+            return currentLevel.lanes[_currentPlane];
+        }
+    }
+
     void Shoot() {
         _nextShotCooldown = Time.time + DELAY_NEXT_SHOT;
         GameObject shot = (GameObject)Instantiate(playerProjectile);
