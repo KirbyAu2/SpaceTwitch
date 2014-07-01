@@ -3,22 +3,38 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
     public const float DELAY_NEXT_SHOT = .2f;
+    public const float RAPID_SHOT_TIME = 15.0f;
+    public const float MULTI_SHOT_TIME = 15.0f;
 
     public GameObject TestLevel;
     public Level currentLevel;
 
     public float mouseSensitivity;
-    private float _nextShotCooldown;
 
     private int _currentPlane = 0;
     private float _positionOnPlane = 0.5f; // between 0 (beginning) and 1 (end)
-
+    
     private bool _alive = false;
+    public int maxShots = 5;
+    private int _numShots = 0;
+    private float _reload = 0;
 
     public GameObject playerProjectile;
 
+    private float _rapidTime = 0;
+    private float _multiTime = 0;
+
+    public bool isRapidActivated { get; private set; }
+    public bool isMultiActivated { get; private set; }
+    public bool isCloneActivated { get; private set; }
+    private bool _isClone = false; // is this ship a clone?
+
+    public Player clone; // the player's clone
+    public GameObject cloneObject; // the clone object
+
     // Use this for initialization
     void Start () {
+        isRapidActivated = isMultiActivated = isCloneActivated = false;
         if (TestLevel != null) {
             currentLevel = TestLevel.GetComponent<Level>();
             init(currentLevel);
@@ -26,11 +42,16 @@ public class Player : MonoBehaviour {
         if (mouseSensitivity < .1f) {
             mouseSensitivity = .1f;
         }
-        _nextShotCooldown = Time.time;
         gameObject.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }
 
     public void init(Level level) {
+        currentLevel = level;
+        _alive = true;
+    }
+
+    public void initAsClone(Level level) {
+        _isClone = true;
         currentLevel = level;
         _alive = true;
     }
@@ -77,27 +98,104 @@ public class Player : MonoBehaviour {
 
         // update position
         transform.position = currentLevel.lanes[_currentPlane].Front;
-        transform.up = -currentLevel.lanes[_currentPlane].Normal;
+        float angleUp = Vector3.Angle(Vector3.up, currentLevel.lanes[_currentPlane].Normal) - 90;
+        float angleRight = Vector3.Angle(Vector3.forward, currentLevel.lanes[_currentPlane].Normal);
+        float angleLeft = Vector3.Angle(Vector3.back, currentLevel.lanes[_currentPlane].Normal);
+        if (angleRight < angleLeft) {
+            angleUp = -angleUp;
+        }
+        transform.eulerAngles = new Vector3(angleUp, 180, 0);
 
         // shoot
-        if (Input.GetMouseButton(0) && _nextShotCooldown < Time.time) {
+        int maxMultiShots = maxShots;
+        if (isMultiActivated) {
+            maxMultiShots *= 3;
+        }
+        if (Input.GetMouseButton(0) && _reload < 0 && _numShots < maxMultiShots) {
             Shoot();
+            _reload = DELAY_NEXT_SHOT;
+        
+        }
+        
+        // reload
+        _reload -= Time.deltaTime;
+
+        // powerup timers
+        if (_rapidTime < 0) {
+            isRapidActivated = false;
+        }
+        else {
+            _rapidTime -= Time.deltaTime;
+        }
+
+        if (_multiTime < 0) {
+            isMultiActivated = false;
+        }
+        else {
+            _multiTime -= Time.deltaTime;
         }
     }
 
     void Shoot() {
-        _nextShotCooldown = Time.time + DELAY_NEXT_SHOT;
-        GameObject shot = (GameObject)Instantiate(playerProjectile);
         Lane currentLane = currentLevel.lanes[_currentPlane];
-        Vector3 start = currentLane.Front + ((gameObject.renderer.bounds.size.y / 2) * currentLane.Normal);
-        shot.GetComponent<PlayerProjectile>().init(currentLevel.lanes[_currentPlane]);
-        shot.transform.position = start;
+        GameObject shot = (GameObject)Instantiate(playerProjectile);
+        shot.GetComponent<PlayerProjectile>().player = this;
+        shot.GetComponent<PlayerProjectile>().init(currentLane);
+        _numShots++;
+        if (isMultiActivated) {
+            currentLane = currentLevel.lanes[_currentPlane].LeftLane;
+            if (currentLane != null) {
+                shot = (GameObject)Instantiate(playerProjectile);
+                shot.GetComponent<PlayerProjectile>().player = this;
+                shot.GetComponent<PlayerProjectile>().init(currentLane);
+                _numShots++;
+            }
+            currentLane = currentLevel.lanes[_currentPlane].RightLane;
+            if (currentLane != null) {
+                shot = (GameObject)Instantiate(playerProjectile);
+                shot.GetComponent<PlayerProjectile>().player = this;
+                shot.GetComponent<PlayerProjectile>().init(currentLane);
+                _numShots++;
+            }
+        }
     }
-
+    
+    public void RemoveShot() {
+        _numShots--;
+    }
+    
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Enemy") {
             GameManager.Instance.removeShip(this);
             Destroy(gameObject);
         }
+    }
+
+    public void ActivateRapid() {
+        _rapidTime = RAPID_SHOT_TIME;
+        isRapidActivated = true;
+        if (!_isClone && isCloneActivated) {
+            clone.ActivateRapid();
+        }
+    }
+
+    public void ActivateMulti() {
+        _multiTime = MULTI_SHOT_TIME;
+        isMultiActivated = true;
+        if (!_isClone && isCloneActivated) {
+            clone.ActivateMulti();
+        }
+    }
+
+    public void ActivateClone() {
+        if (!_isClone && !isCloneActivated) {
+            SpawnClone();
+        }
+    }
+
+    void SpawnClone() {
+        isCloneActivated = true;
+        GameObject playerClone = (GameObject)Instantiate(cloneObject);
+        clone = playerClone.GetComponent<Player>();
     }
 }
