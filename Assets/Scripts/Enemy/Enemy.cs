@@ -37,7 +37,6 @@ public abstract class Enemy : MonoBehaviour {
     abstract public void spawn(Lane spawnLane);
 
     void OnCollisionEnter(Collision collision) {
-        Debug.Log("Collision with player?!!");
         if(collision.gameObject.tag == "PlayerProjectile") {
             PlayerProjectile p = collision.gameObject.GetComponent<PlayerProjectile>();
             _alive = false;

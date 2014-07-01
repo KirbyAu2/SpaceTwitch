@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class PlayerProjectile : MonoBehaviour {
-    public const float BASE_VELOCITY = 5.0f;
+    public const float BASE_VELOCITY = .75f;
 
     public float speed = 1.0f;
     public Vector3 startingLocation;

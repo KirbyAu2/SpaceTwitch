@@ -13,7 +13,7 @@ public class SampleGUIItem : MonoBehaviour {
         if (GUIManager.Instance && !_displayed)
         {
             _displayed = true;
-            GUIManager.Instance.addGUIItem(new GUIItem(100, 100, 4, "Testing", style));
+            GUIManager.Instance.addGUIItem(new GUIItem(100, 100, "Testing", style));
         }
     }
 }
