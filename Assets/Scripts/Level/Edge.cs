@@ -11,10 +11,10 @@ public class Edge {
     private Edge _right;
     private Edge _left;
 
-    public Edge(Vector3 front, Vector3 back, Vector3 normal) {
+    public Edge(Vector3 front, Vector3 back) {
         _front = front;
         _back = back;
-        _normal = normal;
+        _normal = Vector3.zero;
         _neighbors = new List<Edge>();
     }
 
@@ -47,7 +47,7 @@ public class Edge {
             return _normal;
         }
         set {
-            _normal = value;
+            _normal = Vector3.Normalize(value);
         }
     }
 

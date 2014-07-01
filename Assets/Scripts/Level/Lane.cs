@@ -17,7 +17,7 @@ public class Lane {
 
         _front = (_leftEdge.Front + _rightEdge.Front) / 2;
         _back = (_leftEdge.Back + _rightEdge.Back) / 2;
-        _normal = (_leftEdge.Normal + _rightEdge.Normal) / 2;
+        _normal = _rightEdge.Normal;
     }
 
     public Vector3 Normal {
