@@ -40,6 +40,12 @@ public class EdgeGeneration : MonoBehaviour {
         initGeneration();
     }
 
+    public Lane SpawnLane {
+        get {
+            return _spawnLane;
+        }
+    }
+
     /**
      * Go through all of the triangles and verticies for
      * a mesh level and generate the correct edges
@@ -95,9 +101,6 @@ public class EdgeGeneration : MonoBehaviour {
                     _neighbors[v1].Add(v2);
                 }
             }
-            if(partner == Vector3.zero) {
-                Debug.Log("uhh shit is broken");
-            }
             if(partner != Vector3.zero) {
                 _edgeList.Add(v1);
                 _edgeList.Add(partner);
@@ -135,7 +138,6 @@ public class EdgeGeneration : MonoBehaviour {
         Edge farthestLeft = null;
         float mostLeft = float.MaxValue;
         float mostBottom = float.MaxValue;
-        Debug.Log("EDGE COUNT: " + _newEdges.Count);
         foreach (Edge e in _newEdges) {
             if(e.Front.z < mostLeft) {
                 mostLeft = e.Front.z;
@@ -160,7 +162,6 @@ public class EdgeGeneration : MonoBehaviour {
      */
     private void separateEdges() {
         Vector3 frontPos = front.transform.position;
-        Debug.Log("EdgeList count: " + _edgeList.Count);
         for (int i = 0; i < _edgeList.Count;) {
             Edge e;
             if (Vector3.Distance(_edgeList[i], frontPos) < Vector3.Distance(_edgeList[i + 1], frontPos)) {
@@ -197,7 +198,6 @@ public class EdgeGeneration : MonoBehaviour {
 
         while (!_traversed.ContainsKey(currentEdge)) {
             currentEdge.addNeighbor(previousEdge,true);
-            Debug.Log("COunt: " + _neighbors[previousEdge.Front].Count);
             if(_neighbors[currentEdge.Front].Count > 1 && currentEdge != farthestLeft) {
                 if (currentEdge.Left == _edgeDict[_neighbors[currentEdge.Front][0]]) {
                     currentEdge.addNeighbor(_edgeDict[_neighbors[currentEdge.Front][1]],false);
@@ -211,10 +211,6 @@ public class EdgeGeneration : MonoBehaviour {
             _normalDict[currentEdge.Front] = currentEdge.Normal;
             _normalDict[currentEdge.Back] = currentEdge.Normal;
 
-            Vector3 lhs = (currentEdge.Front - currentEdge.Left.Front);
-            Debug.Log("test");
-            Debug.Log(currentEdge.Normal + " " + lhs);
-
             _laneList.Add(new Lane(currentEdge.Left, currentEdge));
 
             _traversed[currentEdge] = true;
@@ -224,8 +220,6 @@ public class EdgeGeneration : MonoBehaviour {
                 break;
             }
         }
-        Debug.Log("Lanes: " + _laneList.Count);
-
         Level l = GetComponent<Level>();
         l.lanes = _laneList;
         l.edges = _newEdges;

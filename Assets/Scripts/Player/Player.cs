@@ -27,6 +27,7 @@ public class Player : MonoBehaviour {
             mouseSensitivity = .1f;
         }
         _nextShotCooldown = Time.time;
+        gameObject.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }
 
     public void init(Level level) {
@@ -95,6 +96,7 @@ public class Player : MonoBehaviour {
 
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Enemy") {
+            GameManager.Instance.removeShip(this);
             Destroy(gameObject);
         }
     }

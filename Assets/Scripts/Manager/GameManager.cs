@@ -5,53 +5,86 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour {
     private static GameManager _instance;
 
-    public List<Level> levels;
+    public List<GameObject> levels;
     public GameObject playerPrefab;
 
     private int _score = 0;
     private int _multiplier = 0;
     private int _lives = 3;
-    private int _currentLevel = 0;
+    private int _currentLevelIndex = 0;
     private bool _playingGame = false;
-    private GameObject _currentPlayerShip;
-    private Player _currentPlayerScript;
+    private List<Player> _currentPlayerShips;
+    private GameObject _currentLevelObject;
+    private Level _currentLevel;
 
     void Start () {
         if(_instance != null) {
             Debug.LogError("Can't initialize more than one instance of Game Manager!");
+            return;
         }
+        _currentPlayerShips = new List<Player>();
         _instance = this;
         DontDestroyOnLoad(this);
     }
 
     public void StartGame() {
         _playingGame = true;
-        _currentLevel--;
-        //spawnPlayer(true);
+        _currentLevelIndex--;
         loadNextLevel();
+        spawnPlayer(true);
     }
 
     public void spawnPlayer(bool firstTime = false) {
+        if (firstTime) {
+            GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+            tempStyle.alignment = TextAnchor.MiddleCenter;
+            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Level Begin", tempStyle, 2));
+        } else {
+            GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+            tempStyle.alignment = TextAnchor.MiddleCenter;
+            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Ship Destroyed", tempStyle, 2));
+        }
+        _currentPlayerShips.Clear();
         if (!firstTime && _lives > 0) {
             _lives--;
         } else if (_lives < 1) {
             gameOver();
             return;
         }
-        _currentPlayerShip = (GameObject)Instantiate(playerPrefab);
-        _currentPlayerScript = _currentPlayerShip.GetComponent<Player>();
+        GameObject currentPlayerShip = (GameObject)Instantiate(playerPrefab);
+        _currentPlayerShips.Add(currentPlayerShip.GetComponent<Player>());
+        _currentPlayerShips[0].init(_currentLevel);
+    }
+
+    public void removeShip(Player s) {
+        _currentPlayerShips.Remove(s);
+        if(_currentPlayerShips.Count < 1) {
+            spawnPlayer();
+        }
     }
 
     public void gameOver() {
+        GUIManager.Instance.clearGUIItem();
+        GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+        tempStyle.alignment = TextAnchor.MiddleCenter;
+        tempStyle.normal.textColor = Color.red;
+        GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Game Over!", tempStyle));
+    }
 
+    public List<Player> CurrentPlayerShips {
+        get {
+            return _currentPlayerShips;
+        }
     }
 
     /**
      * Loads the next level
      */
     public void loadNextLevel() {
-        _currentLevel++;
-        levels[_currentLevel].load();
+        _currentLevelIndex++;
+        _currentLevelObject = (GameObject)Instantiate(levels[_currentLevelIndex]);
+        _currentLevel = _currentLevelObject.GetComponent<Level>();
+        _currentLevel.load();
         EnemyManager.Instance.loadLevel();
     }
 
@@ -73,13 +106,13 @@ public class GameManager : MonoBehaviour {
 
     public int CurrentDifficulty {
         get {
-            return _currentLevel + 1;
+            return _currentLevelIndex + 1;
         }
     }
 
     public Level CurrentLevel {
         get {
-            return levels[_currentLevel];
+            return _currentLevel;
         }
     }
 
