@@ -109,9 +109,9 @@ public class Player : MonoBehaviour {
         // shoot
         int maxMultiShots = maxShots;
         if (isMultiActivated) {
-            maxShots *= 3;
+            maxMultiShots *= 3;
         }
-        if (Input.GetMouseButton(0) && _reload < 0 && _numShots < maxShots) {
+        if (Input.GetMouseButton(0) && _reload < 0 && _numShots < maxMultiShots) {
             Shoot();
             _reload = DELAY_NEXT_SHOT;
         
