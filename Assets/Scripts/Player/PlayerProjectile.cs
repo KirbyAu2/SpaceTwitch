@@ -40,9 +40,6 @@ public class PlayerProjectile : MonoBehaviour {
 
     void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.tag == "Enemy") {
-            Debug.Log("Collision!");
-            PlayerProjectile p = collision.gameObject.GetComponent<PlayerProjectile>();
-            //p.explode();
             Destroy(gameObject);
         }
     }

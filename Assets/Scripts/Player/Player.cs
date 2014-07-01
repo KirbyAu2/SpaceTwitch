@@ -89,7 +89,6 @@ public class Player : MonoBehaviour {
         GameObject shot = (GameObject)Instantiate(playerProjectile);
         Lane currentLane = currentLevel.lanes[_currentPlane];
         Vector3 start = currentLane.Front + ((gameObject.renderer.bounds.size.y / 2) * currentLane.Normal);
-        Vector3 end = currentLane.Back + ((gameObject.renderer.bounds.size.y / 2) * currentLane.Normal);
         shot.GetComponent<PlayerProjectile>().init(currentLevel.lanes[_currentPlane]);
         shot.transform.position = start;
     }

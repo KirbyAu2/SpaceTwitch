@@ -19,9 +19,6 @@ public class EdgeGeneration : MonoBehaviour {
     private List<Lane> _laneList;
     private Dictionary<Edge, bool> _traversed;
 
-
-    private Vector3 testPoint;
-
     /**
      * Initialization
      */
@@ -140,7 +137,6 @@ public class EdgeGeneration : MonoBehaviour {
         float mostBottom = float.MaxValue;
         Debug.Log("EDGE COUNT: " + _newEdges.Count);
         foreach (Edge e in _newEdges) {
-            Edge prevE = e;
             if(e.Front.z < mostLeft) {
                 mostLeft = e.Front.z;
                 mostBottom = e.Front.y;
@@ -154,7 +150,6 @@ public class EdgeGeneration : MonoBehaviour {
                 farthestLeft = e;
             }
         }
-        testPoint = farthestLeft.Front;
         return farthestLeft;
     }
 
@@ -185,22 +180,25 @@ public class EdgeGeneration : MonoBehaviour {
             return;
         }
 
-        if (_neighbors[farthestLeft.Front][0].z > farthestLeft.Front.z) {
-            farthestLeft.addNeighbor(_edgeDict[_neighbors[farthestLeft.Front][0]],false);
+        if (_neighbors[farthestLeft.Front].Count > 1) {
+            if (_neighbors[farthestLeft.Front][0].y < farthestLeft.Front.y) {
+                farthestLeft.addNeighbor(_edgeDict[_neighbors[farthestLeft.Front][0]], false);
+            } else {
+                farthestLeft.addNeighbor(_edgeDict[_neighbors[farthestLeft.Front][1]], false);
+            }
         } else {
-            farthestLeft.addNeighbor(_edgeDict[_neighbors[farthestLeft.Front][1]],false);
+            farthestLeft.addNeighbor(_edgeDict[_neighbors[farthestLeft.Front][0]], false);
         }
 
         farthestLeft.Normal = Vector3.Cross(farthestLeft.Right.Front - farthestLeft.Front, new Vector3(1,0,0));
-
-        _traversed[farthestLeft] = true;
+        _normalDict[farthestLeft.Front] = farthestLeft.Normal;
         Edge previousEdge = farthestLeft;
         Edge currentEdge = farthestLeft.Right;
 
         while (!_traversed.ContainsKey(currentEdge)) {
             currentEdge.addNeighbor(previousEdge,true);
             Debug.Log("COunt: " + _neighbors[previousEdge.Front].Count);
-            if(_neighbors[currentEdge.Front].Count > 1) {
+            if(_neighbors[currentEdge.Front].Count > 1 && currentEdge != farthestLeft) {
                 if (currentEdge.Left == _edgeDict[_neighbors[currentEdge.Front][0]]) {
                     currentEdge.addNeighbor(_edgeDict[_neighbors[currentEdge.Front][1]],false);
                 } else {
@@ -223,11 +221,10 @@ public class EdgeGeneration : MonoBehaviour {
             previousEdge = currentEdge;
             currentEdge = previousEdge.Right;
             if(currentEdge == null) {
-                Debug.Log ("uhH?");
                 break;
             }
         }
-        Debug.Log(_laneList.Count);
+        Debug.Log("Lanes: " + _laneList.Count);
 
         Level l = GetComponent<Level>();
         l.lanes = _laneList;
@@ -268,13 +265,14 @@ public class EdgeGeneration : MonoBehaviour {
         if (!debugDraw) {
             return;
         }
-        Gizmos.DrawCube(testPoint,new Vector3(.3f,.3f,.3f));
         if (_candidates == null) { return; }
         foreach (Vector3 v in _candidates) {
             Gizmos.DrawSphere(v, 0.05f);
             Gizmos.color = Color.red;
-            foreach (Vector3 n in _neighbors[v]) {
-                Gizmos.DrawLine(n, v);
+            if (_neighbors.ContainsKey(v)) {
+                foreach (Vector3 n in _neighbors[v]) {
+                    Gizmos.DrawLine(n, v);
+                }
             }
         }
 
@@ -298,7 +296,5 @@ public class EdgeGeneration : MonoBehaviour {
             i += 2;
 
         }
-
-        Gizmos.color = Color.gray;
     }
 }

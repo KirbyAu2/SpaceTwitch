@@ -66,6 +66,7 @@ public class Edge {
     public void addNeighbor(Edge e, bool left) {
         if (_neighbors.Count >= 2) {
             Debug.LogError("Edges can't have more than one neighbor!");
+            return;
         }
         _neighbors.Add(e);
         if (!left) {
