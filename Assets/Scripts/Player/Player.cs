@@ -108,12 +108,12 @@ public class Player : MonoBehaviour {
         // powerup timers
         _rapidTime -= Time.deltaTime;
         if (_rapidTime < 0) {
-            //isRapidActivated = false;
+            isRapidActivated = false;
         }
 
         _multiTime -= Time.deltaTime;
         if (_multiTime < 0) {
-            //isMultiActivated = false;
+            isMultiActivated = false;
         }
     }
 
