@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class EnemyManager : MonoBehaviour {
-    private const float STANDARD_SPAWN_TIME = 5.0f;
+    private const float STANDARD_SPAWN_TIME = 1.0f;
     private const float PAWN_SPAWN_TIME = 1.0f;
     private const float CROSSHATCH_SPAWN_TIME = 5.0f;
     private const float SWIRLIE_SPAWN_TIME = 5.0f;
@@ -59,6 +59,9 @@ public class EnemyManager : MonoBehaviour {
     }
 
     private void spawnEnemy() {
+        if (_potentialEnemies == null) {
+            return;
+        }
         if (_potentialEnemies.Count == 0) {
             Debug.Log("All out of enemies!");
             return;

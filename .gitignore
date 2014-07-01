@@ -19,3 +19,6 @@ Sample Assets/
 Assets/Editor*
 Assets/Resources/Meshes/Render/Player/Materials*
 .DS_Store
+Assets/Resources/Models/Ship/Materials.meta
+Assets/Resources/Models/Ship/Materials/No Name.mat
+Assets/Resources/Models/Ship/Materials/No Name.mat.meta

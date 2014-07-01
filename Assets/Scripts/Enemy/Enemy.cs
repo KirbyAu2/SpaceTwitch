@@ -4,6 +4,7 @@ using System.Collections;
 public abstract class Enemy : MonoBehaviour {
     protected bool _alive = false;
     protected Lane _currentLane;
+    protected int _score = 0;
 
     public bool Alive {
         get {
@@ -42,6 +43,7 @@ public abstract class Enemy : MonoBehaviour {
             EnemyManager.Instance.removeEnemy(this);
             p.explode();
             Destroy(gameObject);
+            Score.CurrentScore += _score;
         }
     }
 }
