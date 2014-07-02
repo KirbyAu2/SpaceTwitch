@@ -4,85 +4,122 @@ using System.Collections.Generic;
 
 public class Spike : Enemy
 {
-    public float duration = 0.5f;
-    public float starttime;
-    public float currenttime;
-    public int numOfSpikes = 0;
-    public Spike parent;
-    private List<Spike> _spike;
-    public Spike headSpike;
-    public Spike newSpike;
-    public Spike tailSpike;
+    public const float DEFAULT_DIST_FROM_BACK = .2f;
+    public const int MAX_SPIKE_COUNT = 5;
+    private const float SPAWN_NEXT_SPIKE_DURATION = 3.0f;
 
-    public Spike getHead()
-    {
+    public GameObject spikePrefab;
+
+    private float _startTime;
+    private Spike _parent;
+    private Spike _child;
+    private Spike _head;
+    private int _numOfSpikes = 0;
+    private Swirlie _swirlie;
+
+    public Spike getHead() {
         Spike current = this;
-        while (current.parent != null)
+        while (current.Parent != null)
         {
-            current = current.parent;
+            current = current.Parent;
         }
-        headSpike = current;
         return current;
+    }
+
+    public void setVulnerability(bool value)
+    {
+        base.setVulnerability(value);
+        if (_child)
+        {
+            _child.setVulnerability(value);
+        }
+    }
+
+    public int NumOfSpikes
+    {
+        get
+        {
+            return _numOfSpikes;
+        }
+        set
+        {
+            _numOfSpikes = value;
+        }
+    }
+
+    public Spike Parent {
+        get {
+            return _parent;
+        }
     }
 
     private void AddSpike()
     {
-        if (headSpike == null){
-            headSpike = new Spike();
-        }
-        else{
-            headSpike.AddSpike();
-        }
-        numOfSpikes++;
+        GameObject c = (GameObject)Instantiate(spikePrefab);
+        _child = c.GetComponent<Spike>();
+        _child.init(_currentLane,_swirlie,this);
+        _head.NumOfSpikes++;
     }
 
-    private void RemoveSpike()
+    private void RemoveSpike(Spike s)
     {
-        /*if () {  //to do: if tailSpike==headSpike
-            //remove headSpike
-            //_alive = false     Spike is dead
+        if (s == _child)
+        {
+            _child = null;
         }
-        else {
-            //remove tailSpike
-            //tailSpike = tailSpike.parent
-            // count--; 
-        }*/
+        _swirlie.TailSpike = this;
+        _head.NumOfSpikes--;
+        _startTime = Time.time;
     }
 
     void Start()
     {
-        //list = new MyList();
-        //Spike _spike = new List<Spike>();
 
     }
 
     void Update()
     {
-        /*
-        if (numOfSpikes <= 5)
-        {
-            if (Time.time >= starttime + duration)
-            {
-                AddSpike();
-            }
+        if (_head.NumOfSpikes > MAX_SPIKE_COUNT - 2 || _child != null) {
+            return;
         }
-        if () { //To do: if swirlie is dead
-            if (){ //To do: if spike is hit
-                RemoveSpike();
-            }
-        }*/
+        if (Time.time > _startTime + SPAWN_NEXT_SPIKE_DURATION)
+        {
+            AddSpike();
+        }
+    }
+
+    void OnDestroy() {
+        if (this != _head)
+        {
+            _parent.setVulnerability(!_invulnerable);
+            _parent.RemoveSpike(this);
+        }
+
     }
 
     public override void spawn(Lane spawnLane)
     {
-        //_shootTime = Time.time;
+        throw new System.NotImplementedException();
+    }
+
+    public void init(Lane spawnLane, Swirlie swirlie, Spike parent = null) {
+        _swirlie = swirlie;
+        _parent = parent;
+        _head = getHead();
+        _invulnerable = (parent != null)?_parent.Invulernable:true;
+        if (_parent == null)
+        {
+            gameObject.transform.position = (spawnLane.Front - spawnLane.Back) * DEFAULT_DIST_FROM_BACK + spawnLane.Back;
+        }
+        else
+        {
+            Debug.Log((spawnLane.Front - _parent.gameObject.transform.position));
+            gameObject.transform.position = (spawnLane.Front - _parent.gameObject.transform.position).normalized * spikePrefab.renderer.bounds.size.x + _parent.gameObject.transform.position;
+        }
+        swirlie.TailSpike = this;
+        _startTime = Time.time;
         _currentLane = spawnLane;
         _alive = true;
-        gameObject.transform.position = _currentLane.Back + (renderer.bounds.size.y / 2) * _currentLane.Normal;
         transform.rotation = Quaternion.LookRotation(_currentLane.Normal);
     }
 }
- /* Questions:
-        How do I say "if swirlie is dead" ?
-        How did you check collision for player projectile and spike?
-        */
