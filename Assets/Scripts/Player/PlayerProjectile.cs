@@ -34,10 +34,10 @@ public class PlayerProjectile : MonoBehaviour {
         if (gameObject.transform.position == _currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec) {
             explode();
         }
+        if(!renderer.enabled) {
+            renderer.enabled = true;
+        }
 
-        /*if (Vector3.Distance(startingLocation, transform.position) > Vector3.Distance(startingLocation, endingLocation)) {
-            explode();
-        }*/
         if(speed == 0) {
             return;
         }
