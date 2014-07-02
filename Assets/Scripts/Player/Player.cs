@@ -6,10 +6,10 @@ public class Player : MonoBehaviour {
     public const float RAPID_SHOT_TIME = 15.0f;
     public const float MULTI_SHOT_TIME = 15.0f;
 
+    private float _mouseSensitivity;
+
     public GameObject TestLevel;
     public Level currentLevel;
-
-    public float mouseSensitivity;
 
     private int _currentPlane = 0;
     private float _positionOnPlane = 0.5f; // between 0 (beginning) and 1 (end)
@@ -27,9 +27,10 @@ public class Player : MonoBehaviour {
     public bool isRapidActivated { get; private set; }
     public bool isMultiActivated { get; private set; }
     public bool isCloneActivated { get; private set; }
-    private bool _isClone = false; // is this ship a clone?
+    public bool isClone { get; private set; }// is this ship a clone?
+    private bool _isMovementMirrored = false; // does the ship move in reverse?
 
-    public Player clone; // the player's clone
+    private Player _clone; // the player's clone
     public GameObject cloneObject; // the clone object
 
     // Use this for initialization
@@ -39,9 +40,12 @@ public class Player : MonoBehaviour {
             currentLevel = TestLevel.GetComponent<Level>();
             init(currentLevel);
         }
-        if (mouseSensitivity < .1f) {
-            mouseSensitivity = .1f;
+
+        _mouseSensitivity = GameManager.Instance.mouseSensitivity;
+        if (_mouseSensitivity < .1f) {
+            _mouseSensitivity = .1f;
         }
+        GameManager.Instance.addShip(this);
         gameObject.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }
 
@@ -50,20 +54,44 @@ public class Player : MonoBehaviour {
         _alive = true;
     }
 
-    public void initAsClone(Level level) {
-        _isClone = true;
+    public void initAsClone(Level level, int plane, float position) {
+        isClone = true;
         currentLevel = level;
         _alive = true;
+        // initialize clone location
+        if (!currentLevel.wrapAround) { // level doesn't wrap
+            _isMovementMirrored = true;
+            _currentPlane = level.lanes.Count - (plane + 1);
+            _positionOnPlane = 1 - position;
+        }
+        else {
+            _currentPlane = plane - (level.lanes.Count / 2);
+            if (_currentPlane < 0) {
+                _currentPlane += level.lanes.Count;
+            }
+            _positionOnPlane = position;
+        }
     }
 
     // Update is called once per frame
     void Update() {
+        if (Input.GetKeyDown(KeyCode.Space)) { // testing purposes
+            ActivateClone();
+            ActivateMulti();
+            ActivateRapid();
+        }
+
         if (!_alive) {
             return;
         }
         float mouseMove = Input.GetAxis("Mouse X");
-        float shipMove = mouseMove * mouseSensitivity;
-        _positionOnPlane += shipMove;
+        float shipMove = mouseMove * _mouseSensitivity;
+        if (_isMovementMirrored) {
+            _positionOnPlane -= shipMove;
+        }
+        else {
+            _positionOnPlane += shipMove;
+        }
 
         // calculate new position after movement
         if (_positionOnPlane < 0) {
@@ -134,6 +162,10 @@ public class Player : MonoBehaviour {
         else {
             _multiTime -= Time.deltaTime;
         }
+
+        if (_clone == null) {
+            isCloneActivated = false;
+        }
     }
 
     void Shoot() {
@@ -166,6 +198,9 @@ public class Player : MonoBehaviour {
     
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Enemy") {
+            if (!isClone && isCloneActivated) {
+                _clone.CloneBecomeMain();
+            }
             GameManager.Instance.removeShip(this);
             Destroy(gameObject);
         }
@@ -174,21 +209,21 @@ public class Player : MonoBehaviour {
     public void ActivateRapid() {
         _rapidTime = RAPID_SHOT_TIME;
         isRapidActivated = true;
-        if (!_isClone && isCloneActivated) {
-            clone.ActivateRapid();
+        if (!isClone && isCloneActivated) {
+            _clone.ActivateRapid();
         }
     }
 
     public void ActivateMulti() {
         _multiTime = MULTI_SHOT_TIME;
         isMultiActivated = true;
-        if (!_isClone && isCloneActivated) {
-            clone.ActivateMulti();
+        if (!isClone && isCloneActivated) {
+            _clone.ActivateMulti();
         }
     }
 
     public void ActivateClone() {
-        if (!_isClone && !isCloneActivated) {
+        if (!isClone && !isCloneActivated) {
             SpawnClone();
         }
     }
@@ -196,6 +231,13 @@ public class Player : MonoBehaviour {
     void SpawnClone() {
         isCloneActivated = true;
         GameObject playerClone = (GameObject)Instantiate(cloneObject);
-        clone = playerClone.GetComponent<Player>();
+        _clone = playerClone.GetComponent<Player>();
+        _clone.initAsClone(currentLevel, _currentPlane, _positionOnPlane);
     }
+
+    public void CloneBecomeMain() {
+        _isMovementMirrored = false;
+        isClone = false;
+    }
+
 }
