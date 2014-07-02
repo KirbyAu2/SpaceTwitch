@@ -6,7 +6,7 @@ public class Spike : Enemy
 {
     public const float DEFAULT_DIST_FROM_BACK = .2f;
     public const int MAX_SPIKE_COUNT = 5;
-    private const float SPAWN_NEXT_SPIKE_DURATION = 3.0f;
+    private const float SPAWN_NEXT_SPIKE_DURATION = 1.0f;
 
     public GameObject spikePrefab;
 
@@ -74,7 +74,7 @@ public class Spike : Enemy
 
     void Start()
     {
-
+        _score = 50;
     }
 
     void Update()
