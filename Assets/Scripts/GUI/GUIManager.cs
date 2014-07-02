@@ -5,40 +5,32 @@ using System.Collections.Generic;
 public class GUIManager : MonoBehaviour {
     private List<GUIItem> _items;
     private static GUIManager _instance;
-    // Use this for initialization
 
+    public GUIStyle defaultStyle;
 
-    void Start()
-    {
-        if (_instance != null)
-        {
+    void Start() {
+        if (_instance != null) {
             Debug.LogError("Can't initialize more than one instance of GUI Manager!");
         }
+        defaultStyle.fontSize = (int)ScreenUtil.getPixels(defaultStyle.fontSize);
         _instance = this;
         DontDestroyOnLoad(this);
         _items = new List<GUIItem>();
     }
 
-    public static GUIManager Instance{
+    public static GUIManager Instance {
         get
         {
             return _instance;
         }
     }
 	
-    // Update is called once per frame
-    void Update()
-    {
-        foreach (GUIItem i in _items)
-        {
-            if (Time.time >= i.starttime + i.dur)
-            {
-                removeGUIItem(i);
-            }
-
+    void Update() {
+        for (int i = _items.Count - 1; i >= 0; i--) {
+            _items[i].update();
         }
     }
-    
+
     public void addGUIItem(GUIItem g) {
         _items.Add(g);
         g.starttime = Time.time;
@@ -52,11 +44,15 @@ public class GUIManager : MonoBehaviour {
         _items.Clear();
     }
 
-    void OnGUI(){
+    void OnGUI() {
         foreach (GUIItem i in _items){
-            GUI.Label(new Rect(i.xpos, i.ypos, Screen.width, Screen.height), i.message, i.customGuiStyle);
+            Color originalColor = i.customGuiStyle.normal.textColor;
+            Color temp = i.customGuiStyle.normal.textColor;
+            temp.a = i.currentAlpha;
+            i.customGuiStyle.normal.textColor = temp;
+            GUI.Label(new Rect(i.xpos, i.ypos, 0, 0), i.message, i.customGuiStyle);
+            i.customGuiStyle.normal.textColor = originalColor;
         }
-
     }
 
 }

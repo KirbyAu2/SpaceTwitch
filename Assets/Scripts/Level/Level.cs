@@ -28,7 +28,6 @@ public class Level : MonoBehaviour {
     }
 
     void Start () {
-        _potentialEnemies = new List<string>();
         if (pawnCount < 0 || crosshatchCount < 0 || swirlieCount < 0 || confettiCount < 0) {
             Debug.LogError("Can't have a enemy spawn count lower than zero!");
         }
@@ -46,6 +45,7 @@ public class Level : MonoBehaviour {
     }
 
     private void populatePotentialEnemies() {
+        _potentialEnemies = new List<string>();
         for (int i = 0; i < pawnCount; i++) {
             _potentialEnemies.Add(ID_PAWN);
         }
