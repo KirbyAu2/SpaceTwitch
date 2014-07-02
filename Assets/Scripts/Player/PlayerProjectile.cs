@@ -45,6 +45,17 @@ public class PlayerProjectile : MonoBehaviour {
 
     void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.tag == "Enemy") {
+            if (collision.gameObject == null)
+            {
+                return;
+            }
+            if (collision.gameObject.GetComponent<Spike>() != null)
+            {
+                if (collision.gameObject.GetComponent<Spike>().Invulernable)
+                {
+                    return;
+                }
+            }
             explode();
         }
     }

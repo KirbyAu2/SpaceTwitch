@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour {
     public List<GameObject> levels;
     public GameObject playerPrefab;
 
+    public float mouseSensitivity;
+
     private int _score = 0;
     private int _multiplier = 0;
     private int _lives = 3;
@@ -52,8 +54,11 @@ public class GameManager : MonoBehaviour {
             return;
         }
         GameObject currentPlayerShip = (GameObject)Instantiate(playerPrefab);
-        _currentPlayerShips.Add(currentPlayerShip.GetComponent<Player>());
-        _currentPlayerShips[0].init(_currentLevel);
+    }
+
+    public void addShip(Player s) {
+        _currentPlayerShips.Add(s);
+        s.init(_currentLevel);
     }
 
     public void removeShip(Player s) {
