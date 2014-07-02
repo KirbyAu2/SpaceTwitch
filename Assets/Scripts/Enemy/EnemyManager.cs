@@ -62,8 +62,10 @@ public class EnemyManager : MonoBehaviour {
         if (_potentialEnemies == null) {
             return;
         }
-        if (_potentialEnemies.Count == 0) {
+        if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
             Debug.Log("All out of enemies!");
+            return;
+        } else if (_potentialEnemies.Count == 0) {
             return;
         }
         string nextEnemyID = _potentialEnemies[0];

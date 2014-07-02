@@ -19,6 +19,8 @@ public class EdgeGeneration : MonoBehaviour {
     private List<Lane> _laneList;
     private Dictionary<Edge, bool> _traversed;
 
+    private Edge farthestLeftEdge;
+
     /**
      * Initialization
      */
@@ -143,15 +145,16 @@ public class EdgeGeneration : MonoBehaviour {
                 mostLeft = e.Front.z;
                 mostBottom = e.Front.y;
                 farthestLeft = e;
-            } else if (e.Front.z == mostLeft && e.Front.y < mostBottom) {
+            } /*else if (e.Front.z == mostLeft && e.Front.y < mostBottom) {
                 mostBottom = e.Front.y;
                 farthestLeft = e;
             }
             if (e.Front.x < mostLeft) {
                 mostLeft = e.Front.x;
                 farthestLeft = e;
-            }
+            }*/
         }
+        farthestLeftEdge = farthestLeft;
         return farthestLeft;
     }
 
@@ -290,5 +293,7 @@ public class EdgeGeneration : MonoBehaviour {
             i += 2;
 
         }
+
+        Gizmos.DrawCube(farthestLeftEdge.Front,new Vector3(.2f,.2f,.2f));
     }
 }

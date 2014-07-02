@@ -6,6 +6,8 @@ public class Player : MonoBehaviour {
     public const float RAPID_SHOT_TIME = 15.0f;
     public const float MULTI_SHOT_TIME = 15.0f;
 
+    private const float CAMERA_PERCENT_BACK = .5f;
+
     public GameObject TestLevel;
     public Level currentLevel;
 
@@ -135,8 +137,20 @@ public class Player : MonoBehaviour {
         else {
             _multiTime -= Time.deltaTime;
         }
+
+        setCamera();
     }
 
+    private void setCamera() {
+        //Vector3 cameraPos = CameraController.currentCamera.gameObject.transform.position;
+        CameraController.currentCamera.gameObject.transform.position =
+            new Vector3(gameObject.transform.position.x + currentLevel.gameObject.renderer.bounds.size.z * CAMERA_PERCENT_BACK,
+                        currentLevel.gameObject.renderer.bounds.size.y/1.6f,
+                        0
+                        );
+
+    }
+    
     public Lane CurrentLane {
         get {
             if(currentLevel != null && currentLevel.lanes != null) {

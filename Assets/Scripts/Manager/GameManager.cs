@@ -82,7 +82,10 @@ public class GameManager : MonoBehaviour {
      */
     public void loadNextLevel() {
         _currentLevelIndex++;
-        _currentLevelObject = (GameObject)Instantiate(levels[_currentLevelIndex]);
+        Vector3 newLevelPosition = 
+            new Vector3((_currentLevelIndex+1) * levels[_currentLevelIndex].gameObject.renderer.bounds.size.x * -3.0f,0,0);
+        _currentLevelObject = (GameObject)Instantiate(levels[_currentLevelIndex],newLevelPosition,
+                                                      Quaternion.Euler(-90,0,0));
         _currentLevel = _currentLevelObject.GetComponent<Level>();
         _currentLevel.load();
         EnemyManager.Instance.loadLevel();
