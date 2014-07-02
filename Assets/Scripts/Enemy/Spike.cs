@@ -26,7 +26,7 @@ public class Spike : Enemy
         return current;
     }
 
-    public void setVulnerability(bool value)
+    public new void setVulnerability(bool value)
     {
         base.setVulnerability(value);
         if (_child)
@@ -113,7 +113,6 @@ public class Spike : Enemy
         }
         else
         {
-            Debug.Log((spawnLane.Front - _parent.gameObject.transform.position));
             gameObject.transform.position = (spawnLane.Front - _parent.gameObject.transform.position).normalized * spikePrefab.renderer.bounds.size.x + _parent.gameObject.transform.position;
         }
         swirlie.TailSpike = this;
