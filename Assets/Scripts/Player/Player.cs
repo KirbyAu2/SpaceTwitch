@@ -41,6 +41,8 @@ public class Player : MonoBehaviour {
     private float _startTransTime;
     private Vector3 _startPos;
     private Vector3 _cameraStartPos;
+    private AudioClip _deathSound;
+    private AudioClip _shootSound;
 
     private bool _invulnerable = false;
 
@@ -58,6 +60,8 @@ public class Player : MonoBehaviour {
         }
         GameManager.Instance.addShip(this);
         gameObject.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        _deathSound = (AudioClip)Resources.Load("Sound/ShipExplode");
+        _shootSound = (AudioClip)Resources.Load("Sound/PlayerShoot");
     }
 
     public void loadNextLevel(Level level) {
@@ -251,6 +255,7 @@ public class Player : MonoBehaviour {
     }
 
     void Shoot() {
+        AudioSource.PlayClipAtPoint(_shootSound, transform.position);
         Lane currentLane = currentLevel.lanes[_currentPlane];
         GameObject shot = (GameObject)Instantiate(playerProjectile);
         shot.renderer.enabled = false;
@@ -287,6 +292,7 @@ public class Player : MonoBehaviour {
             if (!isClone && isCloneActivated) {
                 _clone.CloneBecomeMain();
             }
+            AudioSource.PlayClipAtPoint(_deathSound, transform.position);
             currentLevel.lanes[_currentPlane].setHighlight(false);
             GameManager.Instance.removeShip(this);
             Destroy(gameObject);

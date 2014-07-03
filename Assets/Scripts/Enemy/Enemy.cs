@@ -6,6 +6,8 @@ public abstract class Enemy : MonoBehaviour {
     protected Lane _currentLane;
     protected int _score = 0;
     protected bool _invulnerable = false;
+    protected AudioClip _deathSound;
+    protected AudioClip _shootSound;
 
     public bool Alive {
         get {
@@ -28,7 +30,7 @@ public abstract class Enemy : MonoBehaviour {
     }
 
     void Start () {
-        
+
     }
 
     void Update () {
@@ -40,6 +42,10 @@ public abstract class Enemy : MonoBehaviour {
     }
 
     protected void spawnProjectile() {
+        if (!_shootSound) {
+            _shootSound = (AudioClip)Resources.Load("Sound/EnemyShoot");
+        }
+        AudioSource.PlayClipAtPoint(_shootSound, transform.position);
         GameObject p = (GameObject)Instantiate(EnemyManager.Instance.enemyProjectilePrefab);
         p.GetComponent<EnemyProjectile>().spawn(_currentLane);
         p.GetComponent<EnemyProjectile>().startLocation = gameObject.transform.position;
@@ -56,6 +62,8 @@ public abstract class Enemy : MonoBehaviour {
             return;
         }
         if(collision.gameObject.tag == "PlayerProjectile") {
+            _deathSound = (AudioClip)Resources.Load("Sound/EnemyExplode");
+            AudioSource.PlayClipAtPoint(_deathSound, transform.position);
             PlayerProjectile p = collision.gameObject.GetComponent<PlayerProjectile>();
             _alive = false;
             EnemyManager.Instance.removeEnemy(this);
