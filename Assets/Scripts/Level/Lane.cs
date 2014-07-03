@@ -77,11 +77,17 @@ public class Lane {
         get {
             return _leftLane;
         }
+        set {
+            _leftLane = value;
+        }
     }
 
     public Lane RightLane {
         get {
             return _rightLane;
+        }
+        set {
+            _rightLane = value;
         }
     }
 

@@ -216,7 +216,7 @@ public class EdgeGeneration : MonoBehaviour {
         _normalDict[farthestLeft.Front] = farthestLeft.Normal;
         Edge previousEdge = farthestLeft;
         Edge currentEdge = farthestLeft.Right;
-
+        Lane prevLane = null;
         while (!_traversed.ContainsKey(currentEdge)) {
             currentEdge.addNeighbor(previousEdge,true);
             if(_neighbors[currentEdge.Front].Count > 1 && currentEdge != farthestLeft) {
@@ -233,7 +233,11 @@ public class EdgeGeneration : MonoBehaviour {
             _normalDict[currentEdge.Back] = currentEdge.Normal;
 
             _laneList.Add(new Lane(currentEdge.Left, currentEdge));
-
+            if (prevLane != null) {
+                _laneList[_laneList.Count - 1].LeftLane = prevLane;
+                prevLane.RightLane = _laneList[_laneList.Count - 1];
+            }
+            prevLane = _laneList[_laneList.Count - 1];
             _traversed[currentEdge] = true;
             previousEdge = currentEdge;
             currentEdge = previousEdge.Right;
@@ -242,6 +246,10 @@ public class EdgeGeneration : MonoBehaviour {
             }
         }
         Level l = GetComponent<Level>();
+        if (l.wrapAround) {
+            _laneList[0].LeftLane = prevLane;
+            prevLane.RightLane = _laneList[0].LeftLane;
+        }
         l.lanes = _laneList;
         l.edges = _newEdges;
     }
