@@ -27,6 +27,7 @@ public class Swirlie : Enemy {
     void Start()
     {
         _score = 200;
+        randomEnemyDrop();
     }
 
     void Update() {
