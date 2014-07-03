@@ -30,6 +30,7 @@ public class Swirlie : Enemy {
     {
         _score = 100;
         newPosition = transform.position;
+        randomEnemyDrop();
     }
 
     void Update() {

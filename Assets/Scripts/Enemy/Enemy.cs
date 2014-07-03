@@ -1,12 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum PowerUps
+{
+    Clone,
+    Rapid,
+    Multi,
+    None
+}
+
 public abstract class Enemy : MonoBehaviour {
+    private const float PERCENTAGE_DROP = 20f; //Ten percent of enemies drop items
     protected bool _alive = false;
     protected Lane _currentLane;
     protected int _score = 0;
     protected bool _invulnerable = false;
-
+    protected PowerUps _powerUp = PowerUps.None;
+    
     public bool Alive {
         get {
             return _alive;
@@ -28,7 +38,7 @@ public abstract class Enemy : MonoBehaviour {
     }
 
     void Start () {
-        
+
     }
 
     void Update () {
@@ -56,6 +66,7 @@ public abstract class Enemy : MonoBehaviour {
             return;
         }
         if(collision.gameObject.tag == "PlayerProjectile") {
+            dropPowerup();
             PlayerProjectile p = collision.gameObject.GetComponent<PlayerProjectile>();
             _alive = false;
             EnemyManager.Instance.removeEnemy(this);
@@ -63,5 +74,60 @@ public abstract class Enemy : MonoBehaviour {
             Destroy(gameObject);
             Score.CurrentScore += _score;
         }
+    }
+
+    protected void dropPowerup()
+    {
+        GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+        switch (_powerUp)
+        {
+            case PowerUps.Clone:
+                if (GameManager.Instance.CurrentPlayerShips[0].isCloneActivated == false)
+                {
+                    tempStyle.alignment = TextAnchor.MiddleCenter;
+                    GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Clone!", tempStyle, 2));
+                }
+                GameManager.Instance.CurrentPlayerShips[0].ActivateClone();
+                break;
+
+            case PowerUps.Multi:
+                GameManager.Instance.CurrentPlayerShips[0].ActivateMulti();
+                tempStyle.alignment = TextAnchor.MiddleCenter;
+                GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Multi-Shot!", tempStyle, 2));
+                break;
+
+            case PowerUps.Rapid:
+                GameManager.Instance.CurrentPlayerShips[0].ActivateRapid();
+                tempStyle.alignment = TextAnchor.MiddleCenter;
+                GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Rapid Shot!", tempStyle, 2));
+                break;
+        }
+    }
+    void randomPower()
+    {
+        float powerNumber = Random.Range(0f, 3f);
+        if (powerNumber > 2f)
+        {
+            _powerUp = PowerUps.Clone;
+        }
+        else if (powerNumber > 1f)
+        {
+            _powerUp = PowerUps.Multi;
+        }
+        else
+        {
+            _powerUp = PowerUps.Rapid;
+        }
+    }
+
+    protected void randomEnemyDrop()
+    {
+        
+        float temp = Random.Range(0f, 100f);
+        if (temp < PERCENTAGE_DROP)
+        {
+            randomPower();
+        }
+
     }
 }

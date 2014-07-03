@@ -9,6 +9,7 @@ public class Pawn : Enemy {
 
     void Start () {
         _score = 100;
+        randomEnemyDrop();
     }
 	
     void Update () {
