@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour {
         _currentLevelIndex--;
         loadNextLevel();
         spawnPlayer(true);
+        Screen.lockCursor = true;
     }
 
     public void spawnPlayer(bool firstTime = false) {
@@ -42,6 +43,8 @@ public class GameManager : MonoBehaviour {
             tempStyle.alignment = TextAnchor.MiddleCenter;
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Level Begin", tempStyle, 2));
         } else {
+            Score.CurrentMultiplier = 0;
+            Score.BuildUp = 0;
             GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
             tempStyle.alignment = TextAnchor.MiddleCenter;
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Ship Destroyed", tempStyle, 2));
@@ -53,7 +56,7 @@ public class GameManager : MonoBehaviour {
             gameOver();
             return;
         }
-        GameObject currentPlayerShip = (GameObject)Instantiate(playerPrefab);
+        Instantiate(playerPrefab);
     }
 
     public void addShip(Player s) {
@@ -69,6 +72,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void gameOver() {
+        Screen.lockCursor = false;
         GUIManager.Instance.clearGUIItem();
         GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
         tempStyle.alignment = TextAnchor.MiddleCenter;
@@ -87,10 +91,22 @@ public class GameManager : MonoBehaviour {
      */
     public void loadNextLevel() {
         _currentLevelIndex++;
-        _currentLevelObject = (GameObject)Instantiate(levels[_currentLevelIndex]);
+        Time.timeScale = 1.0f + 0.1f * _currentLevelIndex;
+
+        Vector3 newLevelPosition = 
+            new Vector3((_currentLevelIndex+1) * levels[_currentLevelIndex % levels.Count].gameObject.renderer.bounds.size.x * -6.0f,0,0);
+        _currentLevelObject = (GameObject)Instantiate(levels[_currentLevelIndex % levels.Count], newLevelPosition,
+                                                      Quaternion.Euler(-90,0,0));
         _currentLevel = _currentLevelObject.GetComponent<Level>();
         _currentLevel.load();
         EnemyManager.Instance.loadLevel();
+        foreach (Player s in _currentPlayerShips) {
+            s.loadNextLevel(_currentLevel);
+        }
+    }
+
+    public void winGame() {
+        _playingGame = false;
     }
 
     public void stopGame() {

@@ -61,7 +61,8 @@ public abstract class Enemy : MonoBehaviour {
             EnemyManager.Instance.removeEnemy(this);
             p.explode();
             Destroy(gameObject);
-            Score.CurrentScore += _score;
+            Score.CurrentScore += _score * (Score.CurrentMultiplier + 1);
+            Score.BuildUp++;
         }
     }
 }

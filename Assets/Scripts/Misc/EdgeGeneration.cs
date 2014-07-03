@@ -6,6 +6,9 @@ public class EdgeGeneration : MonoBehaviour {
     public GameObject front;
     public bool debugDraw = false;
 
+    public float midY { get; private set; }
+    public float midZ { get; private set; }
+
     private MeshFilter _filter;
     private MeshRenderer _renderer;
     private Dictionary<Vector3, float> _angleDict;
@@ -18,6 +21,7 @@ public class EdgeGeneration : MonoBehaviour {
     private List<Vector3> _edgeList;
     private List<Lane> _laneList;
     private Dictionary<Edge, bool> _traversed;
+    private Edge farthestLeftEdge;
 
     /**
      * Initialization
@@ -119,15 +123,31 @@ public class EdgeGeneration : MonoBehaviour {
         }
 
         separateEdges();
-        separateLanes();
         getSpawnNode();
+        getMidYAndZ();
     }
-    
-    /**
-     * Generates all of the lanes in order
-     */
-    private void separateLanes() {
 
+    private void getMidYAndZ() {
+        float highest = float.MinValue;
+        float lowest = float.MaxValue;
+        float right = float.MinValue;
+        float left = float.MaxValue;
+        foreach (Lane l in _laneList) {
+            if (l.Front.y < lowest) {
+                lowest = l.Front.y;
+            }
+            if (l.Front.y > highest) {
+                highest = l.Front.y;
+            }
+            if (l.Front.z < left) {
+                left = l.Front.z;
+            }
+            if (l.Front.z > right) {
+                right = l.Front.z;
+            }
+        }
+        midY = (highest + lowest) * 0.75f;
+        midZ = (left + right) * 0.5f;
     }
 
     /**
@@ -137,21 +157,22 @@ public class EdgeGeneration : MonoBehaviour {
     private Edge getFarLeftEdge() {
         Edge farthestLeft = null;
         float mostLeft = float.MaxValue;
-        float mostBottom = float.MaxValue;
+        //float mostBottom = float.MaxValue;
         foreach (Edge e in _newEdges) {
             if(e.Front.z < mostLeft) {
                 mostLeft = e.Front.z;
-                mostBottom = e.Front.y;
+                //mostBottom = e.Front.y;
                 farthestLeft = e;
-            } else if (e.Front.z == mostLeft && e.Front.y < mostBottom) {
+            } /*else if (e.Front.z == mostLeft && e.Front.y < mostBottom) {
                 mostBottom = e.Front.y;
                 farthestLeft = e;
             }
             if (e.Front.x < mostLeft) {
                 mostLeft = e.Front.x;
                 farthestLeft = e;
-            }
+            }*/
         }
+        farthestLeftEdge = farthestLeft;
         return farthestLeft;
     }
 
@@ -249,10 +270,7 @@ public class EdgeGeneration : MonoBehaviour {
                 lowest = l.Front.y;
             }
         }
-    }
-	
-    void Update () {
-	
+        gameObject.GetComponent<Level>().SpawnLane = _spawnLane;
     }
 
     void OnDrawGizmos() {
@@ -290,5 +308,7 @@ public class EdgeGeneration : MonoBehaviour {
             i += 2;
 
         }
+
+        Gizmos.DrawCube(farthestLeftEdge.Front,new Vector3(.2f,.2f,.2f));
     }
 }

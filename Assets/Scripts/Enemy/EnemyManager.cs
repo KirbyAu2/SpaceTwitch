@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class EnemyManager : MonoBehaviour {
     private const float STANDARD_SPAWN_TIME = 1.0f;
-    private const float PAWN_SPAWN_TIME = 1.0f;
+    private const float PAWN_SPAWN_TIME = 0.0f;
     private const float CROSSHATCH_SPAWN_TIME = 5.0f;
-    private const float SWIRLIE_SPAWN_TIME = 5.0f;
+    private const float SWIRLIE_SPAWN_TIME = 1.0f;
     private const float CONFETTI_SPAWN_TIME = 5.0f;
 
     private static EnemyManager _instance;
@@ -62,8 +62,16 @@ public class EnemyManager : MonoBehaviour {
         if (_potentialEnemies == null) {
             return;
         }
-        if (_potentialEnemies.Count == 0) {
+        if (GameManager.Instance.CurrentPlayerShips.Count > 0) {
+            if (GameManager.Instance.CurrentPlayerShips[0].isTransitioning) {
+                return;
+            }
+        }
+        if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
+            GameManager.Instance.loadNextLevel();
             Debug.Log("All out of enemies!");
+            return;
+        } else if (_potentialEnemies.Count == 0) {
             return;
         }
         string nextEnemyID = _potentialEnemies[0];
@@ -99,11 +107,13 @@ public class EnemyManager : MonoBehaviour {
     }
 
     void Update () {
-        if (!GameManager.Instance.PlayingGame) {
-            return;
-        }
-        if (Time.time > _nextSpawnTime) {
-            spawnEnemy();
+        if (GameManager.Instance != null) {
+            if (!GameManager.Instance.PlayingGame) {
+                return;
+            }
+            if (Time.time > _nextSpawnTime) {
+                spawnEnemy();
+            }
         }
     }
 }

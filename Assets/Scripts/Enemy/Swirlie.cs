@@ -2,14 +2,12 @@
 using System.Collections;
 
 public class Swirlie : Enemy {
-    private const float PATROL_TIME = 2.0f;
+    private const float PATROL_SPEED = 3.0f;
     private const float SHOOTING_DELAY = 3.0f;
 
     public GameObject spikePrefab;
 
-    private float _startMovementTime;
     private float _shootTime;
-    private Vector3 newPosition;
     private float _heightOffset;
     private Spike _headSpike;
     private Spike _tailSpike;
@@ -28,8 +26,7 @@ public class Swirlie : Enemy {
 
     void Start()
     {
-        _score = 100;
-        newPosition = transform.position;
+        _score = 200;
     }
 
     void Update() {
@@ -46,18 +43,10 @@ public class Swirlie : Enemy {
     }
 
     void PositionChanging() {
-        
-        Vector3 positionA = _headSpike.gameObject.transform.position; //to do: make spikeHead
-        Vector3 positionB = _tailSpike.gameObject.transform.position; //to do: make spikeTail
-        if (transform.position == positionB)
-        {
-            newPosition = positionA;
-        }
-        else if (transform.position == positionA)
-        {
-            newPosition = positionB;
-        }
-        transform.position = Vector3.Lerp(positionA + _currentLane.Normal * _heightOffset, positionB + _currentLane.Normal * _heightOffset, .5f + .5f * Mathf.Sin(Time.time));
+        Vector3 positionA = _headSpike.gameObject.transform.position;
+        Vector3 positionB = _tailSpike.gameObject.transform.position;
+        transform.position = Vector3.Lerp(positionA + _currentLane.Normal * _heightOffset, positionB + _currentLane.Normal * _heightOffset, 
+            .5f + .5f * Mathf.Sin(_currentLane.Front.z + Time.time * PATROL_SPEED));
     }
 
     void OnDestroy()
@@ -67,7 +56,6 @@ public class Swirlie : Enemy {
 
     public override void spawn(Lane spawnLane) {
         _heightOffset = renderer.bounds.size.y / 2.0f;
-        _startMovementTime = Time.time;
         _shootTime = Time.time;
         _currentLane = spawnLane;
         _alive = true;

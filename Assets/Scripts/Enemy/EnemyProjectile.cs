@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemyProjectile : Enemy {
     //Time it takes to get to the end of a lane
-    private const float DURATION = .75f;
+    private const float DURATION = .4f;
     private float _startingTime;
     public Vector3 startLocation;
     private Vector3 _extraVec;

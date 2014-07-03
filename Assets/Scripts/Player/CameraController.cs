@@ -2,10 +2,16 @@
 using System.Collections;
 
 public class CameraController : MonoBehaviour {
-    private const float EASING_TIME = 5.0f;
+    public static CameraController currentCamera;
+    private const float EASING_TIME = 20.0f;
     private Camera _mainCamera;
 
     void Start () {
+        if(currentCamera != null) {
+            Debug.LogError("Can't have more than one camera!");
+            return;
+        }
+        currentCamera = this;
         _mainCamera = gameObject.camera;
     }
 	
@@ -14,7 +20,6 @@ public class CameraController : MonoBehaviour {
             _mainCamera.transform.LookAt(new Vector3(1, 0, 0));
         }
         Vector3 pos = gameObject.transform.position;
-        pos.z = (GameManager.Instance.CurrentLevel.gameObject.transform.position.z) / 2.0f;
         gameObject.transform.position = pos;
         Vector3 midPoint = Vector3.zero;
         foreach(Player s in GameManager.Instance.CurrentPlayerShips) {
@@ -23,8 +28,7 @@ public class CameraController : MonoBehaviour {
             }
         }
         midPoint = midPoint / GameManager.Instance.CurrentPlayerShips.Count;
-        midPoint += new Vector3(1, 0, 0);
-        midPoint /= 2;
-        _mainCamera.transform.LookAt(Vector3.Lerp(_mainCamera.transform.forward, midPoint, EASING_TIME * Time.fixedDeltaTime));
+        midPoint += GameManager.Instance.CurrentLevel.gameObject.transform.position;
+        _mainCamera.transform.LookAt(Vector3.Lerp(pos, midPoint, EASING_TIME * Time.deltaTime));
     }
 }

@@ -14,16 +14,27 @@ public class Level : MonoBehaviour {
 
     public bool wrapAround;
     public bool debugDraw = false;
+    public GameObject cameraPosition;
     public int pawnCount = 0;
     public int crosshatchCount = 0;
     public int swirlieCount = 0;
     public int confettiCount = 0;
-    
+
+    private Lane _spawnLane;
     private List<string> _potentialEnemies;
 
     public List<string> PotentialEnemies {
         get {
             return _potentialEnemies;
+        }
+    }
+
+    public Lane SpawnLane {
+        get {
+            return _spawnLane;
+        }
+        set {
+            _spawnLane = value;
         }
     }
 

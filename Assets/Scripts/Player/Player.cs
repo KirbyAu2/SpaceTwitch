@@ -2,10 +2,13 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
-    public const float DELAY_NEXT_SHOT = .2f;
+    public const float PLAYER_LEVEL_TRANSITION_TIME = 1.5f;
+    public const float CAMERA_LEVEL_TRANSITION_TIME = 1.75f;
+    public const float DELAY_NEXT_SHOT = .17f;
     public const float RAPID_SHOT_TIME = 15.0f;
     public const float MULTI_SHOT_TIME = 15.0f;
 
+    private const float CAMERA_PERCENT_BACK = .7f;
     private float _mouseSensitivity;
 
     public GameObject TestLevel;
@@ -33,6 +36,14 @@ public class Player : MonoBehaviour {
     private Player _clone; // the player's clone
     public GameObject cloneObject; // the clone object
 
+    //Flying variables
+    private bool _transitioning = false;
+    private float _startTransTime;
+    private Vector3 _startPos;
+    private Vector3 _cameraStartPos;
+
+    private bool _invulnerable = false;
+
     // Use this for initialization
     void Start () {
         isRapidActivated = isMultiActivated = isCloneActivated = false;
@@ -49,8 +60,25 @@ public class Player : MonoBehaviour {
         gameObject.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }
 
+    public void loadNextLevel(Level level) {
+        _transitioning = true;
+        currentLevel.lanes[_currentPlane].setHighlight(false);
+        _startTransTime = Time.time;
+        currentLevel = level;
+        _startPos = gameObject.transform.position;
+        _cameraStartPos = CameraController.currentCamera.gameObject.transform.position;
+    }
+
+    public bool isTransitioning {
+        get {
+            return _transitioning;
+        }
+    }
+
     public void init(Level level) {
         currentLevel = level;
+        CameraController.currentCamera.gameObject.transform.position = currentLevel.cameraPosition.transform.position;
+        _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
         _alive = true;
     }
 
@@ -75,10 +103,38 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        if (_transitioning && currentLevel.SpawnLane != null) {
+            if (isClone) {
+                GameManager.Instance.removeShip(this);
+                Destroy(gameObject);
+            }
+            gameObject.transform.position = Vector3.Lerp(_startPos, currentLevel.SpawnLane.Front, (Time.time - _startTransTime) / PLAYER_LEVEL_TRANSITION_TIME);
+            CameraController.currentCamera.gameObject.transform.position = Vector3.Lerp(_cameraStartPos, currentLevel.cameraPosition.transform.position,
+                (Time.time - _startTransTime) / CAMERA_LEVEL_TRANSITION_TIME);
+            if (gameObject.transform.position == currentLevel.SpawnLane.Front && 
+                CameraController.currentCamera.gameObject.transform.position == currentLevel.cameraPosition.transform.position) {
+                _transitioning = false;
+                if (currentLevel.SpawnLane != null) {
+                    _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
+                } else {
+                    _currentPlane = 0;
+                }
+            }
+            return;
+        }
+        if (currentLevel == null || currentLevel.lanes == null) {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space)) { // testing purposes
             ActivateClone();
             ActivateMulti();
             ActivateRapid();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F1)) {
+            _invulnerable = !_invulnerable;
+            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width/2,Screen.height/2,"God Mode : " + _invulnerable.ToString(),GUIManager.Instance.defaultStyle,4));
         }
 
         if (!_alive) {
@@ -169,9 +225,24 @@ public class Player : MonoBehaviour {
         }
     }
 
+    private void setCamera() {
+        if (isTransitioning) {
+            float midY = currentLevel.gameObject.GetComponent<EdgeGeneration>().midY;
+            float midZ = currentLevel.gameObject.GetComponent<EdgeGeneration>().midZ;
+            CameraController.currentCamera.gameObject.transform.position =
+                new Vector3(gameObject.transform.position.x + currentLevel.gameObject.renderer.bounds.size.z * CAMERA_PERCENT_BACK,
+                            midY,
+                            midZ
+                            );
+        } else {
+            CameraController.currentCamera.gameObject.transform.position = currentLevel.cameraPosition.transform.position;
+        }
+
+    }
+    
     public Lane CurrentLane {
         get {
-            if(currentLevel != null && currentLevel.lanes != null) {
+            if(currentLevel != null && currentLevel.lanes != null && _currentPlane < currentLevel.lanes.Count) {
                 return currentLevel.lanes[_currentPlane];
             } else {
                 return null;
@@ -209,6 +280,9 @@ public class Player : MonoBehaviour {
     }
     
     void OnTriggerEnter(Collider other) {
+        if (_invulnerable) {
+            return;
+        }
         if (other.gameObject.tag == "Enemy") {
             if (!isClone && isCloneActivated) {
                 _clone.CloneBecomeMain();
