@@ -80,6 +80,9 @@ public class Player : MonoBehaviour {
     }
 
     public void init(Level level) {
+        if (isClone) {
+            return;
+        }
         currentLevel = level;
         CameraController.currentCamera.gameObject.transform.position = currentLevel.cameraPosition.transform.position;
         _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
@@ -93,7 +96,7 @@ public class Player : MonoBehaviour {
         // initialize clone location
         if (!currentLevel.wrapAround) { // level doesn't wrap
             _isMovementMirrored = true;
-            _currentPlane = level.lanes.Count - (plane + 1);
+            _currentPlane = level.lanes.Count - 1 - plane;
             _positionOnPlane = 1 - position;
         }
         else {
