@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
+    public const float DEFAULT_SENSITIVITY = 0.1f;
     public const int MAX_LIVES = 3;
 
     private static GameManager _instance;
@@ -10,7 +11,7 @@ public class GameManager : MonoBehaviour {
     public List<GameObject> levels;
     public GameObject playerPrefab;
 
-    public float mouseSensitivity;
+    public static float mouseSensitivity = DEFAULT_SENSITIVITY;
 
     private int _score = 0;
     private int _multiplier = 0;

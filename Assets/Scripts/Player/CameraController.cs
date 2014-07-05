@@ -27,6 +27,9 @@ public class CameraController : MonoBehaviour {
                 midPoint += s.CurrentLane.Front;
             }
         }
+        if (GameManager.Instance.CurrentLevel == null || GameManager.Instance.CurrentPlayerShips.Count < 1) {
+            return;
+        }
         midPoint = midPoint / GameManager.Instance.CurrentPlayerShips.Count;
         midPoint += GameManager.Instance.CurrentLevel.gameObject.transform.position;
         _mainCamera.transform.LookAt(Vector3.Lerp(pos, midPoint, EASING_TIME * Time.deltaTime));

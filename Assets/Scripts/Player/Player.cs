@@ -38,6 +38,8 @@ public class Player : MonoBehaviour {
     private Player _clone; // the player's clone
     public GameObject cloneObject; // the clone object
 
+    private EscapeMenu _escapeMenu;
+
     //Flying variables
     private bool _transitioning = false;
     private float _startTransTime;
@@ -58,7 +60,7 @@ public class Player : MonoBehaviour {
             currentLevel = TestLevel.GetComponent<Level>();
             init(currentLevel);
         }
-        _mouseSensitivity = GameManager.Instance.mouseSensitivity;
+        _mouseSensitivity = GameManager.mouseSensitivity;
         if (_mouseSensitivity < .1f) {
             _mouseSensitivity = .1f;
         }
@@ -94,6 +96,7 @@ public class Player : MonoBehaviour {
         _alive = true;
         _invulnerable = true;
         _invulnerabilityCooldown = Time.time;
+        _escapeMenu = gameObject.GetComponent<EscapeMenu>();
     }
 
     public void initAsClone(Level level, int plane, float position) {
@@ -113,10 +116,22 @@ public class Player : MonoBehaviour {
             }
             _positionOnPlane = position;
         }
+        _escapeMenu = GameManager.Instance.CurrentPlayerShips[0].GetComponent<EscapeMenu>();
     }
 
     // Update is called once per frame
     void Update() {
+        if (Input.GetKeyDown(KeyCode.Escape) && !isClone) {
+            if (_escapeMenu.active) {
+                _escapeMenu.exit();
+            } else {
+                _escapeMenu.display();
+            }
+        }
+        if (_escapeMenu.active) {
+            return;
+        }
+
         if (_invulnerable) {
             renderer.enabled = Mathf.Sin(Time.time * 50.0f) > 0;
         }
@@ -212,7 +227,6 @@ public class Player : MonoBehaviour {
             }
         }
         currentLevel.lanes[_currentPlane].setHighlight(true);
-        //print("Plane: " + _currentPlane + ", Position: " + _positionOnPlane);
 
         // update position
         transform.position = currentLevel.lanes[_currentPlane].Front;
@@ -357,6 +371,7 @@ public class Player : MonoBehaviour {
     public void CloneBecomeMain() {
         _isMovementMirrored = false;
         isClone = false;
+        _escapeMenu = gameObject.GetComponent<EscapeMenu>();
     }
 
 }
