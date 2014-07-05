@@ -2,8 +2,10 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
+    public const float RESPAWN_COOLDOWN = 3.0f;
     public const float PLAYER_LEVEL_TRANSITION_TIME = 1.5f;
     public const float CAMERA_LEVEL_TRANSITION_TIME = 1.75f;
+    public const float FLASHBANG_TIME = 0.75f;
     public const float DELAY_NEXT_SHOT = .17f;
     public const float RAPID_SHOT_TIME = 15.0f;
     public const float MULTI_SHOT_TIME = 15.0f;
@@ -43,8 +45,11 @@ public class Player : MonoBehaviour {
     private Vector3 _cameraStartPos;
     private AudioClip _deathSound;
     private AudioClip _shootSound;
-
+    private AlpacaSound.RetroPixel _retroPixelShader;
+    private Flashbang _flashbang;
     private bool _invulnerable = false;
+    private GameObject _previousLevel;
+    private float _invulnerabilityCooldown;
 
     // Use this for initialization
     void Start () {
@@ -53,7 +58,6 @@ public class Player : MonoBehaviour {
             currentLevel = TestLevel.GetComponent<Level>();
             init(currentLevel);
         }
-
         _mouseSensitivity = GameManager.Instance.mouseSensitivity;
         if (_mouseSensitivity < .1f) {
             _mouseSensitivity = .1f;
@@ -66,6 +70,7 @@ public class Player : MonoBehaviour {
 
     public void loadNextLevel(Level level) {
         _transitioning = true;
+        _previousLevel = currentLevel.gameObject;
         currentLevel.lanes[_currentPlane].setHighlight(false);
         _startTransTime = Time.time;
         currentLevel = level;
@@ -87,6 +92,8 @@ public class Player : MonoBehaviour {
         CameraController.currentCamera.gameObject.transform.position = currentLevel.cameraPosition.transform.position;
         _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
         _alive = true;
+        _invulnerable = true;
+        _invulnerabilityCooldown = Time.time;
     }
 
     public void initAsClone(Level level, int plane, float position) {
@@ -110,22 +117,40 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        if (_invulnerable) {
+            renderer.enabled = Mathf.Sin(Time.time * 50.0f) > 0;
+        }
+        if (Time.time > _invulnerabilityCooldown + RESPAWN_COOLDOWN) {
+            renderer.enabled = true;
+            _invulnerable = false;
+        }
         if (_transitioning && currentLevel.SpawnLane != null) {
             if (isClone) {
                 GameManager.Instance.removeShip(this);
                 Destroy(gameObject);
             }
+            setCamera();
             gameObject.transform.position = Vector3.Lerp(_startPos, currentLevel.SpawnLane.Front, (Time.time - _startTransTime) / PLAYER_LEVEL_TRANSITION_TIME);
-            CameraController.currentCamera.gameObject.transform.position = Vector3.Lerp(_cameraStartPos, currentLevel.cameraPosition.transform.position,
-                (Time.time - _startTransTime) / CAMERA_LEVEL_TRANSITION_TIME);
+            gameObject.transform.Rotate(new Vector3(1, 0, 0), 360.0f * (Time.time - _startTransTime) / PLAYER_LEVEL_TRANSITION_TIME);
             if (gameObject.transform.position == currentLevel.SpawnLane.Front && 
                 CameraController.currentCamera.gameObject.transform.position == currentLevel.cameraPosition.transform.position) {
-                _transitioning = false;
-                if (currentLevel.SpawnLane != null) {
-                    _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
-                } else {
-                    _currentPlane = 0;
-                }
+                    if (!_flashbang.running) {
+                        _flashbang.init(FLASHBANG_TIME);
+                    }
+                    if ((Time.time - _startTransTime) / (PLAYER_LEVEL_TRANSITION_TIME + FLASHBANG_TIME / 2.0f) >= 1.0f) {
+                        _retroPixelShader.enabled = false;
+                    }
+                    if (_flashbang.manualUpdate()) {
+                        return;
+                    }
+                    _retroPixelShader.enabled = false;
+                    _transitioning = false;
+                    Destroy(_previousLevel);
+                    if (currentLevel.SpawnLane != null) {
+                        _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
+                    } else {
+                        _currentPlane = 0;
+                    }
             }
             return;
         }
@@ -141,6 +166,7 @@ public class Player : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.F1)) {
             _invulnerable = !_invulnerable;
+            _invulnerabilityCooldown = (_invulnerable) ? float.MaxValue : 0;
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width/2,Screen.height/2,"God Mode : " + _invulnerable.ToString(),GUIManager.Instance.defaultStyle,4));
         }
 
@@ -233,18 +259,15 @@ public class Player : MonoBehaviour {
     }
 
     private void setCamera() {
-        if (isTransitioning) {
-            float midY = currentLevel.gameObject.GetComponent<EdgeGeneration>().midY;
-            float midZ = currentLevel.gameObject.GetComponent<EdgeGeneration>().midZ;
-            CameraController.currentCamera.gameObject.transform.position =
-                new Vector3(gameObject.transform.position.x + currentLevel.gameObject.renderer.bounds.size.z * CAMERA_PERCENT_BACK,
-                            midY,
-                            midZ
-                            );
-        } else {
-            CameraController.currentCamera.gameObject.transform.position = currentLevel.cameraPosition.transform.position;
+        if (_retroPixelShader == null) {
+            _retroPixelShader = CameraController.currentCamera.gameObject.GetComponent<AlpacaSound.RetroPixel>();
+            _flashbang = CameraController.currentCamera.gameObject.GetComponent<Flashbang>();
         }
-
+        _retroPixelShader.enabled = true;
+        float percent = (Time.time - _startTransTime) / CAMERA_LEVEL_TRANSITION_TIME;
+        CameraController.currentCamera.gameObject.transform.position = Vector3.Lerp(_cameraStartPos, currentLevel.cameraPosition.transform.position,percent);
+        _retroPixelShader.verticalResolution = (int)(percent * Screen.height);
+        _retroPixelShader.horizontalResolution = (int)(percent * Screen.width);
     }
     
     public Lane CurrentLane {
@@ -262,22 +285,21 @@ public class Player : MonoBehaviour {
         Lane currentLane = currentLevel.lanes[_currentPlane];
         GameObject shot = (GameObject)Instantiate(playerProjectile);
         shot.renderer.enabled = false;
-        shot.GetComponent<PlayerProjectile>().player = this;
-        shot.GetComponent<PlayerProjectile>().init(currentLane);
+        shot.GetComponent<PlayerProjectile>().init(currentLane,this);
         _numShots++;
         if (isMultiActivated) {
             currentLane = currentLevel.lanes[_currentPlane].LeftLane;
             if (currentLane != null) {
                 shot = (GameObject)Instantiate(playerProjectile);
-                shot.GetComponent<PlayerProjectile>().player = this;
-                shot.GetComponent<PlayerProjectile>().init(currentLane);
+                shot.GetComponent<PlayerProjectile>()._player = this;
+                shot.GetComponent<PlayerProjectile>().init(currentLane,this);
                 _numShots++;
             }
             currentLane = currentLevel.lanes[_currentPlane].RightLane;
             if (currentLane != null) {
                 shot = (GameObject)Instantiate(playerProjectile);
-                shot.GetComponent<PlayerProjectile>().player = this;
-                shot.GetComponent<PlayerProjectile>().init(currentLane);
+                shot.GetComponent<PlayerProjectile>()._player = this;
+                shot.GetComponent<PlayerProjectile>().init(currentLane,this);
                 _numShots++;
             }
         }
@@ -292,6 +314,7 @@ public class Player : MonoBehaviour {
             return;
         }
         if (other.gameObject.tag == "Enemy") {
+            ParticleManager.Instance.initParticleSystem(ParticleManager.Instance.playerDeath, gameObject.transform.position);
             if (!isClone && isCloneActivated) {
                 _clone.CloneBecomeMain();
             }

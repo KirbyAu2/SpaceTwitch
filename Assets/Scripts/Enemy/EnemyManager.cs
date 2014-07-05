@@ -16,10 +16,11 @@ public class EnemyManager : MonoBehaviour {
     public GameObject swirliePrefab;
     public GameObject confettiPrefab;
     public GameObject enemyProjectilePrefab;
+    public GameObject powerupPrefab;
 
     private List<string> _potentialEnemies;
     private List<Enemy> _currentEnemies;
-
+    private string prevEnemyID;
     private Level _currentLevel;
     private float _nextSpawnTime;
 
@@ -29,7 +30,7 @@ public class EnemyManager : MonoBehaviour {
         }
         _currentEnemies = new List<Enemy>();
         _instance = this;
-        DontDestroyOnLoad(this);
+        prevEnemyID = Level.ID_PAWN;
     }
 
     /**
@@ -59,6 +60,11 @@ public class EnemyManager : MonoBehaviour {
     }
 
     private void spawnEnemy() {
+        if (_currentLevel.isTutorial) {
+            if (!_currentLevel.Tutorial.readyToSpawn) {
+                return;
+            }
+        }
         if (_potentialEnemies == null) {
             return;
         }
@@ -67,14 +73,29 @@ public class EnemyManager : MonoBehaviour {
                 return;
             }
         }
-        if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
-            GameManager.Instance.loadNextLevel();
-            Debug.Log("All out of enemies!");
-            return;
-        } else if (_potentialEnemies.Count == 0) {
-            return;
+        if (!_currentLevel.isTutorial) {
+            if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
+                GameManager.Instance.loadNextLevel();
+                Debug.Log("All out of enemies!");
+                return;
+            } else if (_potentialEnemies.Count == 0) {
+                return;
+            }
+        } else {
+            if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
+                _currentLevel.Tutorial.endTutorial();
+                return;
+            }
         }
         string nextEnemyID = _potentialEnemies[0];
+        if (prevEnemyID != null && _currentLevel.isTutorial) {
+            if (prevEnemyID != nextEnemyID && _currentEnemies.Count > 0) {
+                return;
+            } else if(prevEnemyID != nextEnemyID) {
+                prevEnemyID = nextEnemyID;
+                _currentLevel.Tutorial.displayNext();
+            }
+        }
         _potentialEnemies.RemoveAt(0);
         GameObject g;
         _nextSpawnTime = Time.time + STANDARD_SPAWN_TIME;
@@ -103,7 +124,26 @@ public class EnemyManager : MonoBehaviour {
                 _nextSpawnTime += SWIRLIE_SPAWN_TIME;
                 break;
         }
+        if (_currentLevel.isTutorial) {
+            handleTutorial(nextEnemyID);
+        }
         _currentEnemies[_currentEnemies.Count - 1].spawn(_currentLevel.getRandomLane());
+    }
+
+    private void handleTutorial(string enemyID) {
+        switch (enemyID) {
+            case Level.ID_PAWN:
+                break;
+
+            case Level.ID_CONFETTI:
+                break;
+
+            case Level.ID_CROSSHATCH:
+                break;
+
+            case Level.ID_SWIRLIE:
+                break;
+        }
     }
 
     void Update () {

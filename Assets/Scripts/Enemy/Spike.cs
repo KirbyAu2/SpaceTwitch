@@ -93,6 +93,9 @@ public class Spike : Enemy
         {
             _parent.setVulnerability(!_invulnerable);
             _parent.RemoveSpike(this);
+            if (_child != null) {
+                Destroy(_child.gameObject);
+            }
         }
 
     }

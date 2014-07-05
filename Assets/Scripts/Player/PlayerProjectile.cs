@@ -2,36 +2,34 @@
 using System.Collections;
 
 public class PlayerProjectile : MonoBehaviour {
-    public const float BASE_VELOCITY = .6f;
+    public const float BASE_VELOCITY = 10.0f;
 
     public float speed = 1.0f;
-    public Vector3 startingLocation;
-    public Vector3 endingLocation;
     private Vector3 _extraVec;
     private Lane _currentLane;
     private float _startingTime = 0;
+    private float _velocity;
 
-    public Player player; // the player object this shot came from
+    public Player _player; // the player object this shot came from
 
     void Start () {
-        _extraVec = new Vector3(-1, 0, 0);
+        _extraVec = new Vector3(-10, 0, 0);
     }
 
-    public void init(Lane currentLane) {
+    public void init(Lane currentLane, Player p) {
+        _player = p;
         _currentLane = currentLane;
-        startingLocation = _currentLane.Front;
-        endingLocation = _currentLane.Back;
         _startingTime = Time.time;
+        gameObject.transform.position = _currentLane.Front;
+        _velocity = BASE_VELOCITY;
+        if (_player.isRapidActivated) {
+            _velocity *= 2.0f;
+        }
     }
 
     void Update () {
-        float velocity = BASE_VELOCITY;
-        if (player.isRapidActivated) {
-            velocity /= 2;
-        }
-        gameObject.transform.position = Vector3.Lerp(_currentLane.Front + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal,
-            _currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec, (Time.time - _startingTime) / velocity);
-        if (gameObject.transform.position == _currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec) {
+        gameObject.rigidbody.velocity = new Vector3(-_velocity, 0, 0);
+        if (gameObject.transform.position.x <= (_currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec).x) {
             explode();
         }
         if(!renderer.enabled) {
@@ -64,7 +62,7 @@ public class PlayerProjectile : MonoBehaviour {
      * Makes the projectile explode
      */
     public void explode() {
-        player.RemoveShot();
+        _player.RemoveShot();
         speed = 0;
         Destroy(gameObject);
     }

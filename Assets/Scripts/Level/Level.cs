@@ -19,7 +19,9 @@ public class Level : MonoBehaviour {
     public int crosshatchCount = 0;
     public int swirlieCount = 0;
     public int confettiCount = 0;
+    public bool isTutorial = false;
 
+    private Tutorial _tutorial;
     private Lane _spawnLane;
     private List<string> _potentialEnemies;
 
@@ -41,6 +43,15 @@ public class Level : MonoBehaviour {
     void Start () {
         if (pawnCount < 0 || crosshatchCount < 0 || swirlieCount < 0 || confettiCount < 0) {
             Debug.LogError("Can't have a enemy spawn count lower than zero!");
+        }
+        if (isTutorial) {
+            _tutorial = gameObject.AddComponent<Tutorial>();
+        }
+    }
+
+    public Tutorial Tutorial {
+        get {
+            return _tutorial;
         }
     }
 
@@ -68,6 +79,10 @@ public class Level : MonoBehaviour {
         }
         for (int i = 0; i < confettiCount; i++) {
             _potentialEnemies.Add(ID_CONFETTI);
+        }
+
+        if (isTutorial) {
+            return;
         }
 
         int n = _potentialEnemies.Count;

@@ -14,7 +14,6 @@ public class GUIManager : MonoBehaviour {
         }
         defaultStyle.fontSize = (int)ScreenUtil.getPixels(defaultStyle.fontSize);
         _instance = this;
-        DontDestroyOnLoad(this);
         _items = new List<GUIItem>();
     }
 
@@ -22,6 +21,12 @@ public class GUIManager : MonoBehaviour {
         get
         {
             return _instance;
+        }
+    }
+
+    public int ItemsCount {
+        get {
+            return _items.Count;
         }
     }
 	

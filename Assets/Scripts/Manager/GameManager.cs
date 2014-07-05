@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
+    public const int MAX_LIVES = 3;
+
     private static GameManager _instance;
 
     public List<GameObject> levels;
@@ -12,12 +14,14 @@ public class GameManager : MonoBehaviour {
 
     private int _score = 0;
     private int _multiplier = 0;
-    private int _lives = 3;
+    private int _lives = MAX_LIVES;
     private int _currentLevelIndex = 0;
     private bool _playingGame = false;
     private List<Player> _currentPlayerShips;
     private GameObject _currentLevelObject;
     private Level _currentLevel;
+    private bool _gameOver = false;
+    private float _gameOverStartTimer;
 
     void Start () {
         if(_instance != null) {
@@ -26,7 +30,6 @@ public class GameManager : MonoBehaviour {
         }
         _currentPlayerShips = new List<Player>();
         _instance = this;
-        DontDestroyOnLoad(this);
     }
 
     public void StartGame() {
@@ -72,6 +75,8 @@ public class GameManager : MonoBehaviour {
     }
 
     public void gameOver() {
+        _gameOver = true;
+        _gameOverStartTimer = Time.time;
         Screen.lockCursor = false;
         GUIManager.Instance.clearGUIItem();
         GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
@@ -156,10 +161,20 @@ public class GameManager : MonoBehaviour {
     }
 
     void Update () {
+        if (_gameOver) {
+            if ((Time.time - _gameOverStartTimer) / 3.0f > 1.0f) {
+                Application.LoadLevel(0);
+            }
+            return;
+        }
         if (!_playingGame) {
             if (EnemyManager.Instance != null) {
                 StartGame();
+                return;
             }
+        }
+        if (CurrentLevel.isTutorial) {
+            _lives = MAX_LIVES;
         }
     }
 }

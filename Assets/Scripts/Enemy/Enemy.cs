@@ -72,6 +72,7 @@ public abstract class Enemy : MonoBehaviour {
             return;
         }
         if(collision.gameObject.tag == "PlayerProjectile") {
+            ParticleManager.Instance.initParticleSystem(ParticleManager.Instance.enemyDeath, gameObject.transform.position);
             _deathSound = (AudioClip)Resources.Load("Sound/EnemyExplode");
             AudioSource.PlayClipAtPoint(_deathSound, transform.position);
             dropPowerup();
@@ -112,6 +113,7 @@ public abstract class Enemy : MonoBehaviour {
                 break;
         }
     }
+
     void randomPower()
     {
         float powerNumber = Random.Range(0f, 3f);
@@ -136,6 +138,9 @@ public abstract class Enemy : MonoBehaviour {
         if (temp < PERCENTAGE_DROP)
         {
             randomPower();
+            GameObject p = (GameObject)Instantiate(EnemyManager.Instance.powerupPrefab);
+            p.transform.position = gameObject.transform.position;
+            p.transform.parent = gameObject.transform;
         }
 
     }
