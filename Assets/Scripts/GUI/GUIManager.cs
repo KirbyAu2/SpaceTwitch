@@ -50,6 +50,11 @@ public class GUIManager : MonoBehaviour {
     }
 
     void OnGUI() {
+        if(GameManager.Instance.CurrentPlayerShips.Count > 0) {
+            if (GameManager.Instance.CurrentPlayerShips[0].GetComponent<EscapeMenu>().currentlyActive) {
+                return;
+            }
+        }
         foreach (GUIItem i in _items){
             Color originalColor = i.customGuiStyle.normal.textColor;
             Color temp = i.customGuiStyle.normal.textColor;

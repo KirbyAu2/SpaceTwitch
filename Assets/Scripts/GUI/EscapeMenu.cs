@@ -4,11 +4,10 @@ using System.Collections;
 public class EscapeMenu : MonoBehaviour {
     public GUIStyle style;
 
-    public bool active { get; private set; }
+    public bool currentlyActive { get; private set; }
 
     private float currentTime;
     private bool _displayOptions = false;
-    private bool _areYouSure = false;
     private BlurEffect _blur;
 
     void Start () {
@@ -23,13 +22,13 @@ public class EscapeMenu : MonoBehaviour {
         currentTime = Time.timeScale;
         Time.timeScale = 0;
         Screen.lockCursor = false;
-        active = true;
+        currentlyActive = true;
     }
 
     public void exit() {
         _blur.enabled = false;
         Time.timeScale = currentTime;
-        active = false;
+        currentlyActive = false;
         Screen.lockCursor = true;
     }
 
@@ -39,7 +38,7 @@ public class EscapeMenu : MonoBehaviour {
     }
 
     void OnGUI() {
-        if (!active) {
+        if (!currentlyActive) {
             return;
         }
         if (!_displayOptions) {

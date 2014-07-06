@@ -57,8 +57,8 @@ public abstract class Enemy : MonoBehaviour {
         }
         AudioSource.PlayClipAtPoint(_shootSound, transform.position);
         GameObject p = (GameObject)Instantiate(EnemyManager.Instance.enemyProjectilePrefab);
-        p.GetComponent<EnemyProjectile>().spawn(_currentLane);
         p.GetComponent<EnemyProjectile>().startLocation = gameObject.transform.position;
+        p.GetComponent<EnemyProjectile>().spawn(_currentLane);
     }
 
     /**
@@ -89,6 +89,8 @@ public abstract class Enemy : MonoBehaviour {
     protected void dropPowerup()
     {
         GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+        tempStyle.alignment = TextAnchor.MiddleCenter;
+        tempStyle.normal.textColor = Color.green;
         switch (_powerUp)
         {
             case PowerUps.Clone:
@@ -103,13 +105,13 @@ public abstract class Enemy : MonoBehaviour {
             case PowerUps.Multi:
                 GameManager.Instance.CurrentPlayerShips[0].ActivateMulti();
                 tempStyle.alignment = TextAnchor.MiddleCenter;
-                GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Multi-Shot!", tempStyle, 2));
+                GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(100), "Multi-Shot!", tempStyle, 2));
                 break;
 
             case PowerUps.Rapid:
                 GameManager.Instance.CurrentPlayerShips[0].ActivateRapid();
                 tempStyle.alignment = TextAnchor.MiddleCenter;
-                GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Rapid Shot!", tempStyle, 2));
+                GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(300), "Rapid Shot!", tempStyle, 2));
                 break;
         }
     }

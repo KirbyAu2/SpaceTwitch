@@ -122,13 +122,13 @@ public class Player : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (Input.GetKeyDown(KeyCode.Escape) && !isClone) {
-            if (_escapeMenu.active) {
+            if (_escapeMenu.currentlyActive) {
                 _escapeMenu.exit();
             } else {
                 _escapeMenu.display();
             }
         }
-        if (_escapeMenu.active) {
+        if (_escapeMenu.currentlyActive) {
             return;
         }
 
@@ -371,7 +371,9 @@ public class Player : MonoBehaviour {
     public void CloneBecomeMain() {
         _isMovementMirrored = false;
         isClone = false;
-        _escapeMenu = gameObject.GetComponent<EscapeMenu>();
+        if (gameObject != null) {
+            _escapeMenu = gameObject.GetComponent<EscapeMenu>();
+        }
     }
 
 }

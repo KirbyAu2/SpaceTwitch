@@ -14,7 +14,7 @@ public class Score : MonoBehaviour {
 	}
 	
 	void Update () {
-        if (BUILD_UPS_NEEDED == BuildUp) {
+        if (BUILD_UPS_NEEDED + CurrentMultiplier * 2 == BuildUp) {
             CurrentMultiplier++;
             BuildUp = 0;
         }

@@ -76,7 +76,6 @@ public class EnemyManager : MonoBehaviour {
         if (!_currentLevel.isTutorial) {
             if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
                 GameManager.Instance.loadNextLevel();
-                Debug.Log("All out of enemies!");
                 return;
             } else if (_potentialEnemies.Count == 0) {
                 return;

@@ -4,10 +4,8 @@ using System.Collections;
 public class PlayerProjectile : MonoBehaviour {
     public const float BASE_VELOCITY = 10.0f;
 
-    public float speed = 1.0f;
     private Vector3 _extraVec;
     private Lane _currentLane;
-    private float _startingTime = 0;
     private float _velocity;
 
     public Player _player; // the player object this shot came from
@@ -19,7 +17,6 @@ public class PlayerProjectile : MonoBehaviour {
     public void init(Lane currentLane, Player p) {
         _player = p;
         _currentLane = currentLane;
-        _startingTime = Time.time;
         gameObject.transform.position = _currentLane.Front;
         _velocity = BASE_VELOCITY;
         if (_player.isRapidActivated) {
@@ -34,10 +31,6 @@ public class PlayerProjectile : MonoBehaviour {
         }
         if(!renderer.enabled) {
             renderer.enabled = true;
-        }
-
-        if(speed == 0) {
-            return;
         }
     }
 
@@ -63,7 +56,6 @@ public class PlayerProjectile : MonoBehaviour {
      */
     public void explode() {
         _player.RemoveShot();
-        speed = 0;
         Destroy(gameObject);
     }
 }

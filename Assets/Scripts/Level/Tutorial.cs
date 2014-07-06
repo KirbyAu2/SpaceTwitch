@@ -28,12 +28,14 @@ public class Tutorial : MonoBehaviour {
 	
     void Update () {
         if (_tutorialOver) {
+            if (Time.time > _startTime + GAME_END_DURATION) {
+                Application.LoadLevel(0);
+            }
             return;
         }
 
         if (GUIManager.Instance.ItemsCount < 1 && _currentMessage+1 < messages.Count) {
             if (_currentMessage == 0) {
-                Debug.Log("hGKSDJGLKD");
                 readyToSpawn = true;
             }
             _currentMessageItem = new GUIItem((float)(Screen.width / 2), ScreenUtil.getPixels(280),

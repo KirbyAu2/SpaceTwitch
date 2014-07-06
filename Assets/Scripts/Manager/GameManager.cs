@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour {
             Score.CurrentMultiplier = 0;
             Score.BuildUp = 0;
             GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+            tempStyle.normal.textColor = Color.red;
             tempStyle.alignment = TextAnchor.MiddleCenter;
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Ship Destroyed", tempStyle, 2));
         }
@@ -76,6 +77,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void gameOver() {
+        CameraController.currentCamera.gameObject.GetComponent<BlurEffect>().enabled = true;
         _gameOver = true;
         _gameOverStartTimer = Time.time;
         Screen.lockCursor = false;
@@ -83,7 +85,7 @@ public class GameManager : MonoBehaviour {
         GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
         tempStyle.alignment = TextAnchor.MiddleCenter;
         tempStyle.normal.textColor = Color.red;
-        GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Game Over!", tempStyle));
+        GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, Screen.height / 2, "Game Over!", tempStyle));
     }
 
     public List<Player> CurrentPlayerShips {
@@ -96,6 +98,13 @@ public class GameManager : MonoBehaviour {
      * Loads the next level
      */
     public void loadNextLevel() {
+        if (_lives < MAX_LIVES) {
+            GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+            tempStyle.alignment = TextAnchor.MiddleCenter;
+            tempStyle.normal.textColor = Color.green;
+            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(150), "Gained Additional Ship!", tempStyle, 3));
+            _lives++;
+        }
         _currentLevelIndex++;
         Time.timeScale = 1.0f + 0.1f * _currentLevelIndex;
 
