@@ -173,6 +173,7 @@ public class Player : MonoBehaviour {
             return;
         }
 
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Space)) { // testing purposes
             ActivateClone();
             ActivateMulti();
@@ -184,6 +185,7 @@ public class Player : MonoBehaviour {
             _invulnerabilityCooldown = (_invulnerable) ? float.MaxValue : 0;
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width/2,Screen.height/2,"God Mode : " + _invulnerable.ToString(),GUIManager.Instance.defaultStyle,4));
         }
+#endif
 
         if (!_alive) {
             return;

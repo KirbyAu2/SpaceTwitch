@@ -47,6 +47,11 @@ public class Level : MonoBehaviour {
         if (isTutorial) {
             _tutorial = gameObject.AddComponent<Tutorial>();
         }
+
+        pawnCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
+        crosshatchCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
+        swirlieCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
+        confettiCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
     }
 
     public Tutorial Tutorial {

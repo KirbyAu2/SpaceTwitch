@@ -7,7 +7,9 @@ public class EnemyManager : MonoBehaviour {
     private const float PAWN_SPAWN_TIME = 0.0f;
     private const float CROSSHATCH_SPAWN_TIME = 5.0f;
     private const float SWIRLIE_SPAWN_TIME = 1.0f;
-    private const float CONFETTI_SPAWN_TIME = 2.0f;
+    private const float CONFETTI_SPAWN_TIME = 1.5f;
+    private const float DECREMENT_FOR_DIFFICULTY = 0.04f;
+    private const float LOWEST_SPAWN_TIME = 0.5f;
 
     private static EnemyManager _instance;
 
@@ -97,7 +99,7 @@ public class EnemyManager : MonoBehaviour {
         }
         _potentialEnemies.RemoveAt(0);
         GameObject g;
-        _nextSpawnTime = Time.time + STANDARD_SPAWN_TIME;
+        _nextSpawnTime = STANDARD_SPAWN_TIME;
         switch (nextEnemyID) {
             case Level.ID_PAWN:
                 g = (GameObject)Instantiate(pawnPrefab);
@@ -123,6 +125,11 @@ public class EnemyManager : MonoBehaviour {
                 _nextSpawnTime += SWIRLIE_SPAWN_TIME;
                 break;
         }
+        _nextSpawnTime -= (GameManager.Instance.CurrentDifficulty * DECREMENT_FOR_DIFFICULTY);
+        if(_nextSpawnTime < LOWEST_SPAWN_TIME) {
+            _nextSpawnTime = LOWEST_SPAWN_TIME;
+        }
+        _nextSpawnTime += Time.time;
         if (_currentLevel.isTutorial) {
             handleTutorial(nextEnemyID);
         }

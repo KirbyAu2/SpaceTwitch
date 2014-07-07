@@ -13,7 +13,7 @@ public class Confetti : Enemy {
     private float _currentSpeed;
     private Vector3 _currentStartPoint;
     private Vector3 _currentTargetPoint;
-    private Edge _destinatioEdge;
+    private Lane _destinatioLane;
     private Vector3 _destination;
     private float _startTime = 0;
 
@@ -44,7 +44,7 @@ public class Confetti : Enemy {
         }
 
         if (_currentTargetPoint == _destination) {
-            _currentTargetPoint = (_atBackOfLane) ? _destinatioEdge.Front : _destinatioEdge.Back;
+            _currentTargetPoint = (_atBackOfLane) ? _destinatioLane.Front : _destinatioLane.Back;
             _goingDownLane = true;
             _destination = _currentTargetPoint;
             return;
@@ -71,8 +71,12 @@ public class Confetti : Enemy {
     private void getNewDestination() {
         int targetLaneIndex = int.MaxValue;
         Lane tempLane = null;
+
+        int backupCount = 0;
+
         while (Mathf.Abs(targetLaneIndex - GameManager.Instance.CurrentLevel.getLaneIndex(_currentLane)) > MAX_LANE_MOVE ||
             Mathf.Abs(targetLaneIndex - GameManager.Instance.CurrentLevel.getLaneIndex(_currentLane)) < 2) {
+            backupCount++;
             tempLane = GameManager.Instance.CurrentLevel.getRandomLane();
             if (tempLane == _currentLane) {
                 continue;
@@ -83,15 +87,30 @@ public class Confetti : Enemy {
                     targetLaneIndex = GameManager.Instance.CurrentLevel.lanes.Count - targetLaneIndex;
                 }
             }
+
+            if (backupCount > 50) {
+                if (_currentLane.RightLane != null) {
+                    tempLane = _currentLane.RightLane;
+                    if (tempLane.RightLane != null) {
+                        tempLane = tempLane.RightLane;
+                    }
+                } else {
+                    tempLane = _currentLane.LeftLane;
+                    if (tempLane.LeftLane != null) {
+                        tempLane = tempLane.LeftLane;
+                    }
+                }
+                break;
+            }
         }
 
+        backupCount = 0;
         if (tempLane == null) {
             Debug.LogError("Not a valid lane!");
         }
 
-        //Get random edge
-        _destinatioEdge = (Random.value * 2.0f > 1.0f) ? tempLane.RightEdge : tempLane.LeftEdge;
-        _destination = (_atBackOfLane) ? _destinatioEdge.Back : _destinatioEdge.Front;
+        _destinatioLane = tempLane;
+        _destination = (_atBackOfLane) ? _destinatioLane.Back : _destinatioLane.Front;
 
         //Basic path finding dist check
         //Check left first
@@ -101,6 +120,7 @@ public class Confetti : Enemy {
         }
         Lane checkLane = _currentLane.LeftLane;
         while (checkLane != _currentLane && checkLane != null) {
+            backupCount++;
             checkLane = checkLane.LeftLane;
             leftCount++;
             if (checkLane == null) {
@@ -110,15 +130,20 @@ public class Confetti : Enemy {
             if (checkLane == tempLane) {
                 break;
             }
+            if (backupCount > 50) {
+                leftCount = int.MinValue;
+                break;
+            }
         }
-
+        backupCount = 0;
         //Check right first
         int rightCount = 1;
-        if (_currentLane.LeftLane == null) {
+        if (_currentLane.RightLane == null) {
             rightCount = 0;
         }
         checkLane = _currentLane.RightLane;
         while (checkLane != _currentLane && checkLane != null) {
+            backupCount++;
             checkLane = checkLane.RightLane;
             rightCount++;
             if (checkLane == null) {
@@ -128,7 +153,12 @@ public class Confetti : Enemy {
             if (checkLane == tempLane) {
                 break;
             }
+            if (backupCount > 50) {
+                rightCount = int.MinValue;
+                break;
+            }
         }
+        backupCount = 0;
 
         _goingRight = rightCount > leftCount;
 
@@ -138,13 +168,13 @@ public class Confetti : Enemy {
         _currentLane = spawnLane;
         _alive = true;
         getNewDestination();
-        gameObject.transform.position = _currentLane.RightEdge.Back;
+        gameObject.transform.position = _currentLane.Back;
         _atBackOfLane = true;
         _isInMiddle = true;
         _currentTargetPoint = _currentLane.RightEdge.Back;
         _currentStartPoint = _currentLane.RightEdge.Back;
         _destination = _currentLane.RightEdge.Back;
-        _destinatioEdge = _currentLane.RightEdge;
+        _destinatioLane = _currentLane;
     }
 
     void OnDrawGizmos() {

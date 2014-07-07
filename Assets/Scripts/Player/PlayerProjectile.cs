@@ -17,7 +17,7 @@ public class PlayerProjectile : MonoBehaviour {
     public void init(Lane currentLane, Player p) {
         _player = p;
         _currentLane = currentLane;
-        gameObject.transform.position = _currentLane.Front;
+        gameObject.transform.position = _currentLane.Front + gameObject.renderer.bounds.size.y/2 * _currentLane.Normal;
         _velocity = BASE_VELOCITY;
         if (_player.isRapidActivated) {
             _velocity *= 2.0f;
