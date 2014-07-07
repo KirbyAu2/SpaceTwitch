@@ -72,22 +72,29 @@ public abstract class Enemy : MonoBehaviour {
             return;
         }
         if(collision.gameObject.tag == "PlayerProjectile") {
-            ParticleManager.Instance.initParticleSystem(ParticleManager.Instance.enemyDeath, gameObject.transform.position);
-            _deathSound = (AudioClip)Resources.Load("Sound/EnemyExplode");
-            AudioSource.PlayClipAtPoint(_deathSound, transform.position);
-            dropPowerup();
+            explode();
             PlayerProjectile p = collision.gameObject.GetComponent<PlayerProjectile>();
-            _alive = false;
-            EnemyManager.Instance.removeEnemy(this);
             p.explode();
-            Destroy(gameObject);
-            Score.CurrentScore += _score * (Score.CurrentMultiplier + 1);
-            Score.BuildUp++;
         }
+    }
+
+    public void explode() {
+        ParticleManager.Instance.initParticleSystem(ParticleManager.Instance.enemyDeath, gameObject.transform.position);
+        _deathSound = (AudioClip)Resources.Load("Sound/EnemyExplode");
+        AudioSource.PlayClipAtPoint(_deathSound, transform.position);
+        dropPowerup();
+        _alive = false;
+        EnemyManager.Instance.removeEnemy(this);
+        Destroy(gameObject);
+        Score.CurrentScore += _score * (Score.CurrentMultiplier + 1);
+        Score.BuildUp++;
     }
 
     protected void dropPowerup()
     {
+        if (GameManager.Instance.CurrentPlayerShips.Count < 1) {
+            return;
+        }
         GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
         tempStyle.alignment = TextAnchor.MiddleCenter;
         tempStyle.normal.textColor = Color.green;
@@ -145,5 +152,12 @@ public abstract class Enemy : MonoBehaviour {
             p.transform.parent = gameObject.transform;
         }
 
+    }
+
+    void OnDrawGizmos() {
+        if (_invulnerable) {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawSphere(gameObject.transform.position, .5f);
+        }
     }
 }

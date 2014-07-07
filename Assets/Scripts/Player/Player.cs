@@ -328,6 +328,9 @@ public class Player : MonoBehaviour {
             return;
         }
         if (other.gameObject.tag == "Enemy") {
+            if (_retroPixelShader != null) {
+                _retroPixelShader.enabled = false;
+            }
             ParticleManager.Instance.initParticleSystem(ParticleManager.Instance.playerDeath, gameObject.transform.position);
             if (!isClone && isCloneActivated) {
                 _clone.CloneBecomeMain();
@@ -335,6 +338,7 @@ public class Player : MonoBehaviour {
             AudioSource.PlayClipAtPoint(_deathSound, transform.position);
             currentLevel.lanes[_currentPlane].setHighlight(false);
             GameManager.Instance.removeShip(this);
+            other.gameObject.GetComponent<Enemy>().explode();
             Destroy(gameObject);
         }
     }

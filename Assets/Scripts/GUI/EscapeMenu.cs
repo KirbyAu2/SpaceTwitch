@@ -11,6 +11,7 @@ public class EscapeMenu : MonoBehaviour {
     private BlurEffect _blur;
 
     void Start () {
+        style.fontSize = (int)(ScreenUtil.getPixels(style.fontSize));
         currentTime = Time.timeScale;
     }
 

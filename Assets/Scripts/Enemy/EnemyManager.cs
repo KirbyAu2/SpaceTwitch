@@ -7,7 +7,7 @@ public class EnemyManager : MonoBehaviour {
     private const float PAWN_SPAWN_TIME = 0.0f;
     private const float CROSSHATCH_SPAWN_TIME = 5.0f;
     private const float SWIRLIE_SPAWN_TIME = 1.0f;
-    private const float CONFETTI_SPAWN_TIME = 5.0f;
+    private const float CONFETTI_SPAWN_TIME = 2.0f;
 
     private static EnemyManager _instance;
 

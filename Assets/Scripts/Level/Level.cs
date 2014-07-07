@@ -55,15 +55,8 @@ public class Level : MonoBehaviour {
         }
     }
 
-    public void Shuffle(List<string> list) {
-        int n = list.Count;
-        while (n > 1) {
-            n--;
-            int k = (int)(Random.value * (n + 1));
-            string value = list[k];
-            list[k] = list[n];
-            list[n] = value;
-        }
+    public int getLaneIndex(Lane l) {
+        return lanes.IndexOf(l);
     }
 
     private void populatePotentialEnemies() {
@@ -71,14 +64,14 @@ public class Level : MonoBehaviour {
         for (int i = 0; i < pawnCount; i++) {
             _potentialEnemies.Add(ID_PAWN);
         }
-        for (int i = 0; i < crosshatchCount; i++) {
-            _potentialEnemies.Add(ID_CROSSHATCH);
-        }
         for (int i = 0; i < swirlieCount; i++) {
             _potentialEnemies.Add(ID_SWIRLIE);
         }
         for (int i = 0; i < confettiCount; i++) {
             _potentialEnemies.Add(ID_CONFETTI);
+        }
+        for (int i = 0; i < crosshatchCount; i++) {
+            _potentialEnemies.Add(ID_CROSSHATCH);
         }
 
         if (isTutorial) {

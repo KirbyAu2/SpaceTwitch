@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
 
     private static GameManager _instance;
 
+    public Texture2D _livesIcon;
     public List<GameObject> levels;
     public GameObject playerPrefab;
 
@@ -77,6 +78,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void gameOver() {
+        Score.submit();
         CameraController.currentCamera.gameObject.GetComponent<BlurEffect>().enabled = true;
         _gameOver = true;
         _gameOverStartTimer = Time.time;
@@ -185,6 +187,13 @@ public class GameManager : MonoBehaviour {
         }
         if (CurrentLevel.isTutorial) {
             _lives = MAX_LIVES;
+        }
+    }
+
+    void OnGUI() {
+        for (int i = 0; i < _lives; i++) {
+            GUI.DrawTexture(new Rect(Screen.width - ScreenUtil.getPixels(_livesIcon.width) * (i + 1), 0, 
+                ScreenUtil.getPixels(_livesIcon.width), ScreenUtil.getPixels(_livesIcon.height)), _livesIcon);
         }
     }
 }

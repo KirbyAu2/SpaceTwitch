@@ -11,6 +11,7 @@ public class Score : MonoBehaviour {
 
 	void Start () {
         style.fontSize = (int)ScreenUtil.getPixels(style.fontSize);
+        CurrentScore = 0;
 	}
 	
 	void Update () {
@@ -19,6 +20,10 @@ public class Score : MonoBehaviour {
             BuildUp = 0;
         }
 	}
+
+    public static void submit() {
+        KongregateAPI.Submit("High Score", CurrentScore);
+    }
 
     void OnGUI() {
         GUI.Label(new Rect(0, 0, 0, 0), CurrentScore.ToString(), style);

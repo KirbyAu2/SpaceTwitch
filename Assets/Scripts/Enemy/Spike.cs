@@ -66,6 +66,7 @@ public class Spike : Enemy
         if (s == _child)
         {
             _child = null;
+            _invulnerable = false;
         }
         _swirlie.TailSpike = this;
         _head.NumOfSpikes--;
@@ -79,6 +80,13 @@ public class Spike : Enemy
 
     void Update()
     {
+        if (_swirlie == null) {
+            _invulnerable = false;
+        } else if (_swirlie.gameObject == null) {
+            _swirlie = null;
+            _invulnerable = false;
+        }
+        gameObject.collider.enabled = !_invulnerable;
         if (_head.NumOfSpikes > MAX_SPIKE_COUNT - 2 || _child != null) {
             return;
         }
@@ -91,7 +99,7 @@ public class Spike : Enemy
     void OnDestroy() {
         if (this != _head)
         {
-            _parent.setVulnerability(!_invulnerable);
+            _parent.setVulnerability(true);
             _parent.RemoveSpike(this);
             if (_child != null) {
                 Destroy(_child.gameObject);
@@ -109,7 +117,7 @@ public class Spike : Enemy
         _swirlie = swirlie;
         _parent = parent;
         _head = getHead();
-        _invulnerable = (parent != null)?_parent.Invulernable:true;
+        _invulnerable = swirlie != null;
         if (_parent == null)
         {
             gameObject.transform.position = (spawnLane.Front - spawnLane.Back) * DEFAULT_DIST_FROM_BACK + spawnLane.Back;

@@ -8,6 +8,7 @@ public class Tutorial : MonoBehaviour {
     private const string MOVEMENT = "Swipe the mouse left or right to move";
     private const string PAWN = "Pawns spawn at the back of lanes";
     private const string SWIRLIE_SPIKES = "Spikes can only be destroyed \nafter the Swirlie has been destroyed!";
+    private const string CONFETTI = "Confettis go up and down rows";
 
     public List<string> messages;
     public bool readyToSpawn = false;
@@ -23,6 +24,7 @@ public class Tutorial : MonoBehaviour {
         messages.Add(MOVEMENT);
         messages.Add(PAWN);
         messages.Add(SWIRLIE_SPIKES);
+        messages.Add(CONFETTI);
         GUIManager.Instance.addGUIItem(_currentMessageItem);
     }
 	
