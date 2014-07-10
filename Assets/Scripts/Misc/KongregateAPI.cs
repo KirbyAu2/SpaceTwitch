@@ -24,8 +24,7 @@ public class KongregateAPI : MonoBehaviour {
     void Start()
     {
         if (_instance != null) {
-            Destroy(this.gameObject);
-            Destroy(this);
+            Destroy(gameObject);
             return;
         }
         _instance = this;

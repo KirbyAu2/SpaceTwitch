@@ -19,6 +19,7 @@ public class EscapeMenu : MonoBehaviour {
         if (_blur == null) {
             _blur = CameraController.currentCamera.gameObject.GetComponent<BlurEffect>();
         }
+        _displayOptions = false;
         _blur.enabled = true;
         currentTime = Time.timeScale;
         Time.timeScale = 0;

@@ -108,7 +108,11 @@ public class Level : MonoBehaviour {
     void OnDestroy()
     {
         foreach(Spike spike in spikeList){
-            Destroy(gameObject);
+            if (spike != null) {
+                if (spike.gameObject != null) {
+                    Destroy(spike.gameObject);
+                }
+            }
         }
     }
 

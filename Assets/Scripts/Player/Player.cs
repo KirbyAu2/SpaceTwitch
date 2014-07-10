@@ -133,6 +133,7 @@ public class Player : MonoBehaviour {
         if (_escapeMenu.currentlyActive) {
             return;
         }
+        Screen.lockCursor = true;
 
         if (_invulnerable) {
             renderer.enabled = Mathf.Sin(Time.time * 50.0f) > 0;
