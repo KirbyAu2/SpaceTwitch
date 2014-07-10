@@ -11,6 +11,7 @@ public class Level : MonoBehaviour {
 
     public List<Edge> edges;
     public List<Lane> lanes;
+    public List<Spike> spikeList;
 
     public bool wrapAround;
     public bool debugDraw = false;
@@ -102,6 +103,13 @@ public class Level : MonoBehaviour {
 
     void Update() {
 
+    }
+
+    void OnDestroy()
+    {
+        foreach(Spike spike in spikeList){
+            Destroy(gameObject);
+        }
     }
 
     public Lane getRandomLane() {

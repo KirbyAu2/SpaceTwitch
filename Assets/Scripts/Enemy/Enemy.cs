@@ -95,7 +95,7 @@ public abstract class Enemy : MonoBehaviour {
         if (GameManager.Instance.CurrentPlayerShips.Count < 1) {
             return;
         }
-        GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+        GUIStyle tempStyle = new GUIStyle (GUIManager.Instance.defaultStyle);
         tempStyle.alignment = TextAnchor.MiddleCenter;
         tempStyle.normal.textColor = Color.green;
         switch (_powerUp)
