@@ -73,8 +73,6 @@ public abstract class Enemy : MonoBehaviour {
         }
         if(collision.gameObject.tag == "PlayerProjectile") {
             explode();
-            PlayerProjectile p = collision.gameObject.GetComponent<PlayerProjectile>();
-            p.explode();
         }
     }
 

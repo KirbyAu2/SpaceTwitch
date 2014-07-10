@@ -24,10 +24,12 @@ public class KongregateAPI : MonoBehaviour {
     void Start()
     {
         if (_instance != null) {
+            Destroy(this.gameObject);
+            Destroy(this);
             return;
         }
         _instance = this;
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(this);
         Connect();
     }
 
