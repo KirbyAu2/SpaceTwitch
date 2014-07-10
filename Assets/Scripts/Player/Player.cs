@@ -72,6 +72,8 @@ public class Player : MonoBehaviour {
 
     public void loadNextLevel(Level level) {
         _transitioning = true;
+        _invulnerable = false;
+        _invulnerabilityCooldown = Time.time - RESPAWN_COOLDOWN;
         _previousLevel = currentLevel.gameObject;
         currentLevel.lanes[_currentPlane].setHighlight(false);
         _startTransTime = Time.time;
@@ -121,7 +123,7 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (Input.GetKeyDown(KeyCode.Escape) && !isClone) {
+        if (Input.GetKeyDown(KeyCode.P) && !isClone) {
             if (_escapeMenu.currentlyActive) {
                 _escapeMenu.exit();
             } else {
@@ -241,9 +243,12 @@ public class Player : MonoBehaviour {
         transform.eulerAngles = new Vector3(angleUp, 180, 0);
 
         // shoot
+        if (_numShots < 0)
+            _numShots = 0;
+
         int maxMultiShots = maxShots;
         if (isMultiActivated) {
-            maxMultiShots *= 3;
+            maxMultiShots = maxShots * 3;
         }
         if (Input.GetMouseButton(0) && _reload < 0 && _numShots < maxMultiShots) {
             Shoot();
