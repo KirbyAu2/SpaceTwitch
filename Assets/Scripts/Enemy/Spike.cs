@@ -76,6 +76,9 @@ public class Spike : Enemy
     void Start()
     {
         _score = 50;
+        Level temp = GetComponent<Level>();
+        temp.spikeList.Add(this);
+        
     }
 
     void Update()
