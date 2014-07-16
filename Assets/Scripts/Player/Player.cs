@@ -123,10 +123,8 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (Input.GetKeyDown(KeyCode.P) && !isClone) {
-            if (_escapeMenu.currentlyActive) {
-                _escapeMenu.exit();
-            } else {
+        if (Input.GetKeyDown(KeyCode.Escape) && !isClone) {
+            if (!_escapeMenu.currentlyActive) {
                 _escapeMenu.display();
             }
         }
