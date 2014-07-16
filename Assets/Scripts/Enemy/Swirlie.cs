@@ -24,12 +24,19 @@ public class Swirlie : Enemy {
         }
     }
 
+    /*
+     * Calls randomEnemyDrop() when spawned to see if the enemy will drop powerup 
+     */
     void Start()
     {
         _score = 200;
         randomEnemyDrop();
     }
 
+    /*
+     * Swirlie shoots projectile
+     * Calls PositionChanging() to make it move
+     */ 
     void Update() {
         if (!Alive)
         {
@@ -43,6 +50,9 @@ public class Swirlie : Enemy {
         PositionChanging();
     }
 
+    /*
+     * Moves the Swirlie up and down the growing spike
+     */
     void PositionChanging() {
         Vector3 positionA = _headSpike.gameObject.transform.position;
         Vector3 positionB = _tailSpike.gameObject.transform.position;
@@ -50,11 +60,17 @@ public class Swirlie : Enemy {
             .5f + .5f * Mathf.Sin(_currentLane.Front.z + Time.time * PATROL_SPEED));
     }
 
+    /*
+     * When Swirlie is destroyed, the Spike is now vulnerable
+     */
     void OnDestroy()
     {
         _tailSpike.setVulnerability(true);
     }
 
+    /*
+     * Spawns Swirlie on same lane as spike
+     */
     public override void spawn(Lane spawnLane) {
         _heightOffset = renderer.bounds.size.y / 2.0f;
         _shootTime = Time.time;

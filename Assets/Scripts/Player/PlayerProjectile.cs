@@ -14,6 +14,9 @@ public class PlayerProjectile : MonoBehaviour {
         _extraVec = new Vector3(-10, 0, 0);
     }
 
+    /*
+     * Initializes local variables 
+     */
     public void init(Lane currentLane, Player p) {
         _player = p;
         _currentLane = currentLane;
@@ -24,6 +27,9 @@ public class PlayerProjectile : MonoBehaviour {
         }
     }
 
+    /*
+     * When shot, moves the projectile down the lane
+     */
     void Update () {
         gameObject.rigidbody.velocity = new Vector3(-_velocity, 0, 0);
         if (gameObject.transform.position.x <= (_currentLane.Back + (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal + _extraVec).x) {
@@ -34,6 +40,10 @@ public class PlayerProjectile : MonoBehaviour {
         }
     }
 
+    /*
+     * Checks collsion between player projectile with enemy and enemy projectiles
+     * If it hits, explode (unless invulnerable)
+     */
     void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.tag == "Enemy") {
             if (collision.gameObject == null)

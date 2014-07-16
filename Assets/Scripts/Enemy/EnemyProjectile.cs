@@ -15,6 +15,10 @@ public class EnemyProjectile : Enemy {
         startLocation = Vector3.zero;
     }
 	
+    /*
+     * Moves enemy projectile doesn current lane
+     * Destroys when it gets to the end of the lane
+     */
     void Update () {
         if (!Alive) {
             return;
@@ -28,6 +32,9 @@ public class EnemyProjectile : Enemy {
         }
     }
 
+    /*
+     * Spawns enemy projectile
+     */
     public override void spawn(Lane spawnLane) {
         if (startLocation == Vector3.zero) {
             startLocation = spawnLane.Back;

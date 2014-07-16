@@ -7,11 +7,17 @@ public class Pawn : Enemy {
 
     private float _shootTime;
 
+    /*
+     * calls randomEnemyDrop() when spawned
+     */
     void Start () {
         _score = 100;
         randomEnemyDrop();
     }
 	
+    /*
+     * Pawn shoots projectiles
+     */
     void Update () {
         if (!Alive) {
             return;
@@ -22,6 +28,9 @@ public class Pawn : Enemy {
         }
     }
 
+    /*
+     * Initializes and spawns pawn
+     */
     public override void spawn(Lane spawnLane) {
         _shootTime = Time.time;
         _currentLane = spawnLane;

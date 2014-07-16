@@ -53,6 +53,9 @@ public class Spike : Enemy
         }
     }
 
+    /*
+     * Adds Spike
+     */
     private void AddSpike()
     {
         GameObject c = (GameObject)Instantiate(spikePrefab);
@@ -61,6 +64,9 @@ public class Spike : Enemy
         _head.NumOfSpikes++;
     }
 
+    /*
+     * Removes Spike
+     */
     private void RemoveSpike(Spike s)
     {
         if (s == _child)
@@ -79,6 +85,11 @@ public class Spike : Enemy
         GameManager.Instance.CurrentLevel.spikeList.Add(this);
     }
 
+    /*
+     * Toggles invulnerability depending on whether swirlie is still alive
+     * Checks for max spike count
+     * Adds spikes after time duration 
+     */
     void Update()
     {
         if (_swirlie == null) {
@@ -97,6 +108,9 @@ public class Spike : Enemy
         }
     }
 
+    /*
+     * When Spike is hit, destroys last spike and sets vulnerability to parent spike
+     */
     void OnDestroy() {
         if (this != _head)
         {
@@ -113,7 +127,9 @@ public class Spike : Enemy
     {
         throw new System.NotImplementedException();
     }
-
+    /*
+     * Initializes position to spawn new spike
+     */
     public void init(Lane spawnLane, Swirlie swirlie, Spike parent = null) {
         _swirlie = swirlie;
         _parent = parent;

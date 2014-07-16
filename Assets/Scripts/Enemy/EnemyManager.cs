@@ -57,38 +57,49 @@ public class EnemyManager : MonoBehaviour {
         }
     }
 
+    /*
+     * Removes enemy
+     */
     public void removeEnemy(Enemy e) {
         _currentEnemies.Remove(e);
     }
 
+    /*
+     * Checks and Spawns enemies 
+     */
     private void spawnEnemy() {
+        //Return if in tutorial and not ready to spawn
         if (_currentLevel.isTutorial) {
             if (!_currentLevel.Tutorial.readyToSpawn) {
                 return;
             }
         }
+        //Return if no potential enemies
         if (_potentialEnemies == null) {
             return;
         }
+        //Return if level is transitioning
         if (GameManager.Instance.CurrentPlayerShips.Count > 0) {
             if (GameManager.Instance.CurrentPlayerShips[0].isTransitioning) {
                 return;
             }
         }
+        //Load next level if no more enemies
         if (!_currentLevel.isTutorial) {
             if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
                 GameManager.Instance.loadNextLevel();
                 return;
-            } else if (_potentialEnemies.Count == 0) {
+            } else if (_potentialEnemies.Count == 0) { //Return if no more potential enemies
                 return;
             }
         } else {
+            //End tutorial if no more enemies in tutorial
             if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
                 _currentLevel.Tutorial.endTutorial();
                 return;
             }
         }
-        string nextEnemyID = _potentialEnemies[0];
+        string nextEnemyID = _potentialEnemies[0]; //what is the next enemy
         if (prevEnemyID != null && _currentLevel.isTutorial) {
             if (prevEnemyID != nextEnemyID && _currentEnemies.Count > 0) {
                 return;
@@ -100,6 +111,8 @@ public class EnemyManager : MonoBehaviour {
         _potentialEnemies.RemoveAt(0);
         GameObject g;
         _nextSpawnTime = STANDARD_SPAWN_TIME;
+        
+        //Spawns Enemies 
         switch (nextEnemyID) {
             case Level.ID_PAWN:
                 g = (GameObject)Instantiate(pawnPrefab);
@@ -130,28 +143,13 @@ public class EnemyManager : MonoBehaviour {
             _nextSpawnTime = LOWEST_SPAWN_TIME;
         }
         _nextSpawnTime += Time.time;
-        if (_currentLevel.isTutorial) {
-            handleTutorial(nextEnemyID);
-        }
+
         _currentEnemies[_currentEnemies.Count - 1].spawn(_currentLevel.getRandomLane());
     }
 
-    private void handleTutorial(string enemyID) {
-        switch (enemyID) {
-            case Level.ID_PAWN:
-                break;
-
-            case Level.ID_CONFETTI:
-                break;
-
-            case Level.ID_CROSSHATCH:
-                break;
-
-            case Level.ID_SWIRLIE:
-                break;
-        }
-    }
-
+    /*
+     * Calls to spawn Enemies when time 
+     */
     void Update () {
         if (GameManager.Instance != null) {
             if (!GameManager.Instance.PlayingGame) {

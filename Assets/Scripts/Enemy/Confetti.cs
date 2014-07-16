@@ -20,7 +20,9 @@ public class Confetti : Enemy {
     void Start () {
 	
     }
-	
+	/*
+     * Moves the Confetti down the lane or from lane to lane 
+     */
     void Update () {
         if (gameObject.transform.position ==_currentTargetPoint) {
             getNextPoint();
@@ -32,6 +34,9 @@ public class Confetti : Enemy {
         }
     }
 
+    /*
+     * Looks to see the next it moves to depending on the dierection it is moving
+     */
     private void getNextPoint() {
         _startTime = Time.time;
         _currentStartPoint = gameObject.transform.position;
@@ -68,11 +73,15 @@ public class Confetti : Enemy {
         _isInMiddle = !_isInMiddle;
     }
 
+    /*
+     * Confetti moves down a lane, then randomly picks a lane and moves lane to lane to get to the destination
+     * Basic pathfinding to find the shortest way to that lane
+     */
     private void getNewDestination() {
         int targetLaneIndex = int.MaxValue;
         Lane tempLane = null;
 
-        int backupCount = 0;
+        int backupCount = 0; //To make sure that there isn't a infinite while loop
 
         while (Mathf.Abs(targetLaneIndex - GameManager.Instance.CurrentLevel.getLaneIndex(_currentLane)) > MAX_LANE_MOVE ||
             Mathf.Abs(targetLaneIndex - GameManager.Instance.CurrentLevel.getLaneIndex(_currentLane)) < 2) {
@@ -164,6 +173,9 @@ public class Confetti : Enemy {
 
     }
 
+    /*
+     * Spawns Confetti on alne and sets destination
+     */
     public override void spawn(Lane spawnLane) {
         _currentLane = spawnLane;
         _alive = true;
@@ -177,6 +189,9 @@ public class Confetti : Enemy {
         _destinatioLane = _currentLane;
     }
 
+   /*
+    * Function that draws to help debugging 
+    */
     void OnDrawGizmos() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawSphere(_destination, 0.3f);
