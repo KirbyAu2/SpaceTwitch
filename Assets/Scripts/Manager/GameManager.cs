@@ -42,9 +42,9 @@ public class GameManager : MonoBehaviour {
         loadNextLevel();
         spawnPlayer(true);
         Screen.lockCursor = true;
-        AudioSource music = GameObject.Find("IngameMusic").audio;
-        if (music != null)
-            _music = music;
+        GameObject musicObject = GameObject.Find("IngameMusic");
+        if (musicObject != null)
+            _music = musicObject.audio;
     }
 
     public void spawnPlayer(bool firstTime = false) {
