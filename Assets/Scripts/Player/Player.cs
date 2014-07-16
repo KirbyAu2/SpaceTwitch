@@ -70,6 +70,11 @@ public class Player : MonoBehaviour {
         _shootSound = (AudioClip)Resources.Load("Sound/PlayerShoot");
     }
 
+    public void UpdateSensitivity()
+    {
+        _mouseSensitivity = GameManager.mouseSensitivity;
+    }
+
     public void loadNextLevel(Level level) {
         _transitioning = true;
         _invulnerable = false;
