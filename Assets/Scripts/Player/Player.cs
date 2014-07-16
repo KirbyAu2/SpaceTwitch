@@ -304,7 +304,7 @@ public class Player : MonoBehaviour {
     }
 
     void Shoot() {
-        AudioSource.PlayClipAtPoint(_shootSound, transform.position);
+        AudioSource.PlayClipAtPoint(_shootSound, transform.position, GameManager.effectsVolume);
         Lane currentLane = currentLevel.lanes[_currentPlane];
         GameObject shot = (GameObject)Instantiate(playerProjectile);
         shot.renderer.enabled = false;
@@ -342,7 +342,7 @@ public class Player : MonoBehaviour {
             if (!isClone && isCloneActivated) {
                 _clone.CloneBecomeMain();
             }
-            AudioSource.PlayClipAtPoint(_deathSound, transform.position);
+            AudioSource.PlayClipAtPoint(_deathSound, transform.position, GameManager.effectsVolume);
             currentLevel.lanes[_currentPlane].setHighlight(false);
             GameManager.Instance.removeShip(this);
             other.gameObject.GetComponent<Enemy>().explode();
