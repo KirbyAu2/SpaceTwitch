@@ -2,6 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * The EnemyManager class manages enemy spawning and enemies still alive in the level
+ * Checks enemy ID when it is spawned
+ */
 public class EnemyManager : MonoBehaviour {
     private const float STANDARD_SPAWN_TIME = 1.0f;
     private const float PAWN_SPAWN_TIME = 0.0f;

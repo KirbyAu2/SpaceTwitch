@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * The Player Projectiles are shot from the player ship
+ * Projectiles shoot straight down the current lane that the player ship was on when shot
+ * The projectile can collide with the enemies and the enemy projectiles
+ * When it collides, both ends will be destroyed
+ */
 public class PlayerProjectile : MonoBehaviour {
     public const float BASE_VELOCITY = 10.0f;
 

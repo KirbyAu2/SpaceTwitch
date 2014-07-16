@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * The Confetti enemy spawns on a random lane and moves up lanes
+ * Confetti will then pick a random lane and move from lane to lane to that lane
+ * If Confetti runs into the player ship, both will die
+ */
 public class Confetti : Enemy {
     public const int MAX_LANE_MOVE = 5;
     public const float DEFAULT_SPEED_PER_UNIT = 1.0f;
@@ -18,7 +23,8 @@ public class Confetti : Enemy {
     private float _startTime = 0;
 
     void Start () {
-	
+        _score = 300;
+        randomEnemyDrop();
     }
 	/*
      * Moves the Confetti down the lane or from lane to lane 

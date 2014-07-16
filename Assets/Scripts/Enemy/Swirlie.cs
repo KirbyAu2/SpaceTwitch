@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * The Swirlie enemy will move back and forth on the Spikes enemy
+ * Swirlie will shoot projectiles down the lane 
+ * Swirlie must be killed for the player to damage the Spikes enemy
+ */
 public class Swirlie : Enemy {
     private const float PATROL_SPEED = 3.0f;
     private const float SHOOTING_DELAY = 3.0f;

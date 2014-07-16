@@ -8,7 +8,11 @@ public enum PowerUps
     Multi,
     None
 }
-
+/*
+ * The Enemy class manages enemy deaths, collision, and power-up drops
+ * When the enemy collides with player projectiles, it will die
+ * Random enemies will be attached with a random powerup that is granted to the player when that enemy dies
+ */
 public abstract class Enemy : MonoBehaviour {
     private const float PERCENTAGE_DROP = 20f; //Twenty percent of enemies drop items
     protected bool _alive = false;

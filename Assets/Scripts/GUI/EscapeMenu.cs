@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * The EscapeMenu class will draw the escape menu when the game is paused
+ * The escape menu allows the player to change options, go back to main menu, or resume the game
+ */
 public class EscapeMenu : MonoBehaviour {
     public GUIStyle style;
 
@@ -15,6 +19,7 @@ public class EscapeMenu : MonoBehaviour {
         currentTime = Time.timeScale;
     }
 
+    //Escape menu display
     public void display() {
         if (_blur == null) {
             _blur = CameraController.currentCamera.gameObject.GetComponent<BlurEffect>();
@@ -27,6 +32,7 @@ public class EscapeMenu : MonoBehaviour {
         currentlyActive = true;
     }
 
+    //Exit Escape menu back to game 
     public void exit() {
         _blur.enabled = false;
         Time.timeScale = currentTime;
@@ -39,6 +45,11 @@ public class EscapeMenu : MonoBehaviour {
 
     }
 
+    /*
+     * OnGUI is called for rendering and handling GUI events. 
+     * Buttons for 'Resume Game', 'Main Menu', and 'Options'
+     * As well as buttons for Options menu
+     */
     void OnGUI() {
         if (!currentlyActive) {
             return;
@@ -54,19 +65,22 @@ public class EscapeMenu : MonoBehaviour {
                 _displayOptions = true;
             }
         }
+        //In option Menu
         if (_displayOptions) {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
             GUI.Label(new Rect(Screen.width / 2 - 3 * Screen.width / 16, Screen.height / 2 - ScreenUtil.getPixels(100), 3 * Screen.width / 8, ScreenUtil.getPixels(200)), "Options", style);
             GUI.color = prev;
 
+            //Volume Slider
             GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Volume", style);
             AudioListener.volume = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400),
                 ScreenUtil.getPixels(50)), AudioListener.volume, 0f, 1.0f);
+            //Sensitivity Slider
             GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(150), ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Sensitivity", style);
             GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(230), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
                 GameManager.mouseSensitivity, 0.1f, 0.5f);
-
+            //Back to Escape Menu button
             if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(200)) / 2, Screen.height - ScreenUtil.getPixels(150), ScreenUtil.getPixels(200), style.fontSize), "Back", style)) {
                 _displayOptions = false;
             }

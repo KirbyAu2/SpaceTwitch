@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * Enemy Projectiles are shot from the Pawn and Swirlie enemies
+ * The projectiles can collide and destroy player projectiles and the player ship
+ * Enemy projectiles shoot straight down the lane
+ */
 public class EnemyProjectile : Enemy {
     //Time it takes to get to the end of a lane
     private const float BASE_VELOCITY = 20.0f;

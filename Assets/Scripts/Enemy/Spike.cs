@@ -2,6 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * The Spikes enemy will spawn on a random lane and grow up to five spikes.
+ * The Swirlie enemy will spawn on the spikes and shoot down the lane
+ * The Spikes are invulnerable until Swirlie is dead 
+ */
 public class Spike : Enemy
 {
     public const float DEFAULT_DIST_FROM_BACK = .2f;

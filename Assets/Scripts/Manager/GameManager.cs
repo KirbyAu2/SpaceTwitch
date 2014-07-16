@@ -2,6 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * The GameManager class manages the game
+ * GameManager starts the game and go back to main menu when game over
+ * Manages levels completion and loads new level
+ * Keeps track of player lives until game over
+ */
 public class GameManager : MonoBehaviour {
     public const float DEFAULT_SENSITIVITY = 0.1f;
     public const int MAX_LIVES = 3;
@@ -26,6 +32,7 @@ public class GameManager : MonoBehaviour {
     private float _gameOverStartTimer;
 
     void Start () {
+        //Implements Singleton 
         if(_instance != null) {
             Debug.LogError("Can't initialize more than one instance of Game Manager!");
             return;
@@ -34,6 +41,7 @@ public class GameManager : MonoBehaviour {
         _instance = this;
     }
 
+    //Starts the game
     public void StartGame() {
         _playingGame = true;
         _currentLevelIndex--;
@@ -42,20 +50,30 @@ public class GameManager : MonoBehaviour {
         Screen.lockCursor = true;
     }
 
+    /*
+     * Spawns player ship
+     * Draws GUI messages 
+     * Reinitializes multiplier
+     * Check lives
+     */
     public void spawnPlayer(bool firstTime = false) {
         if (firstTime) {
             GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
             tempStyle.alignment = TextAnchor.MiddleCenter;
+            //Prints message if new game
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Level Begin", tempStyle, 2));
         } else {
+            //Restarts multiplier
             Score.CurrentMultiplier = 0;
             Score.BuildUp = 0;
             GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
             tempStyle.normal.textColor = Color.red;
             tempStyle.alignment = TextAnchor.MiddleCenter;
+            //Prints message when ship destroyed
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Ship Destroyed", tempStyle, 2));
         }
         _currentPlayerShips.Clear();
+        //If stil have lives, player loses one life, else game over
         if (!firstTime && _lives > 0) {
             _lives--;
         } else if (_lives < 1) {
@@ -65,11 +83,13 @@ public class GameManager : MonoBehaviour {
         Instantiate(playerPrefab);
     }
 
+    //Add player ship
     public void addShip(Player s) {
         _currentPlayerShips.Add(s);
         s.init(_currentLevel);
     }
 
+    //Removes player ship; if only one, then call to spawn new player ship
     public void removeShip(Player s) {
         _currentPlayerShips.Remove(s);
         if(_currentPlayerShips.Count < 1) {
@@ -77,6 +97,9 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    /*
+     * When game over, submit score and print gui mesage
+     */
     public void gameOver() {
         Score.submit();
         CameraController.currentCamera.gameObject.GetComponent<BlurEffect>().enabled = true;
@@ -100,6 +123,7 @@ public class GameManager : MonoBehaviour {
      * Loads the next level
      */
     public void loadNextLevel() {
+        //Player games one life
         if (_lives < MAX_LIVES) {
             GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
             tempStyle.alignment = TextAnchor.MiddleCenter;
@@ -109,7 +133,7 @@ public class GameManager : MonoBehaviour {
         }
         _currentLevelIndex++;
         Time.timeScale = 1.0f + 0.1f * _currentLevelIndex;
-
+        //Loads new level
         Vector3 newLevelPosition = 
             new Vector3((_currentLevelIndex+1) * levels[_currentLevelIndex % levels.Count].gameObject.renderer.bounds.size.x * -6.0f,0,0);
         _currentLevelObject = (GameObject)Instantiate(levels[_currentLevelIndex % levels.Count], newLevelPosition,
@@ -172,13 +196,16 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    
     void Update () {
+        //Goes back to main menu if game over
         if (_gameOver) {
             if ((Time.time - _gameOverStartTimer) / 3.0f > 1.0f) {
                 Application.LoadLevel(0);
             }
             return;
         }
+        //Calls to start game
         if (!_playingGame) {
             if (EnemyManager.Instance != null) {
                 StartGame();
@@ -190,6 +217,10 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    /*
+     * OnGUI is called for rendering and handlng GUI events 
+     * Draws the lives icon 
+     */
     void OnGUI() {
         for (int i = 0; i < _lives; i++) {
             GUI.DrawTexture(new Rect(Screen.width - ScreenUtil.getPixels(_livesIcon.width) * (i + 1), 0, 

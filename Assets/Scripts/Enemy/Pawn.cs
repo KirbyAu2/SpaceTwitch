@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * The Pawn enemy is the most basic enemy that spawns on a random lane
+ * Pawns shoot projectiles down the lane that can damage the player
+ */
 public class Pawn : Enemy {
     //Time it takes until next shot
     private const float SHOOTING_DELAY = 3.0f;
