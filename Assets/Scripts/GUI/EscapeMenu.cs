@@ -8,7 +8,6 @@ public class EscapeMenu : MonoBehaviour {
 
     private float currentTime;
     private bool _displayOptions = false;
-    private BlurEffect _blur;
 
     void Start () {
         style.fontSize = (int)(ScreenUtil.getPixels(style.fontSize));
@@ -16,10 +15,7 @@ public class EscapeMenu : MonoBehaviour {
     }
 
     public void display() {
-        if (_blur == null) {
-            _blur = CameraController.currentCamera.gameObject.GetComponent<BlurEffect>();
-        }
-        _blur.enabled = true;
+        CameraController.currentCamera.setBlurShader(true);
         currentTime = Time.timeScale;
         Time.timeScale = 0;
         Screen.lockCursor = false;
@@ -27,7 +23,7 @@ public class EscapeMenu : MonoBehaviour {
     }
 
     public void exit() {
-        _blur.enabled = false;
+        CameraController.currentCamera.setBlurShader(false);
         Time.timeScale = currentTime;
         currentlyActive = false;
         Screen.lockCursor = true;
