@@ -53,7 +53,6 @@ public class Player : MonoBehaviour {
     private Vector3 _cameraStartPos;
     private AudioClip _deathSound;
     private AudioClip _shootSound;
-    private AlpacaSound.RetroPixel _retroPixelShader;
     private Flashbang _flashbang;
     private bool _invulnerable = false;
     private GameObject _previousLevel;
@@ -74,6 +73,16 @@ public class Player : MonoBehaviour {
         gameObject.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
         _deathSound = (AudioClip)Resources.Load("Sound/ShipExplode");
         _shootSound = (AudioClip)Resources.Load("Sound/PlayerShoot");
+    }
+
+
+    /**
+     * Updates the sensitivity
+     * 
+     */
+    public void UpdateSensitivity()
+    {
+        _mouseSensitivity = GameManager.mouseSensitivity;
     }
 
     //During transition and loading next level
@@ -109,6 +118,9 @@ public class Player : MonoBehaviour {
         _escapeMenu = gameObject.GetComponent<EscapeMenu>();
     }
 
+    /**
+     * Initializes the ship if it is a clone
+     */
     public void initAsClone(Level level, int plane, float position) {
         isClone = true;
         currentLevel = level;
@@ -166,13 +178,13 @@ public class Player : MonoBehaviour {
                         _flashbang.init(FLASHBANG_TIME);
                     }
                     if ((Time.time - _startTransTime) / (PLAYER_LEVEL_TRANSITION_TIME + FLASHBANG_TIME / 2.0f) >= 1.0f) {
-                        _retroPixelShader.enabled = false;
+                        CameraController.currentCamera.setRetroShader(false);
                     }
                     if (_flashbang.manualUpdate()) {
                         return;
                     }
-                    _retroPixelShader.enabled = false;
-                    _transitioning = false;
+                CameraController.currentCamera.setRetroShader(false);
+                _transitioning = false;
                     Destroy(_previousLevel);
                     if (currentLevel.SpawnLane != null) {
                         _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
@@ -186,6 +198,8 @@ public class Player : MonoBehaviour {
             return;
         }
 
+        //This is a preprocess directive, exclusively used with Unity Editor
+        //#yoyoloop
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Space)) { // testing purposes
             ActivateClone();
@@ -292,15 +306,14 @@ public class Player : MonoBehaviour {
 
     //sets camera resolution
     private void setCamera() {
-        if (_retroPixelShader == null) {
-            _retroPixelShader = CameraController.currentCamera.gameObject.GetComponent<AlpacaSound.RetroPixel>();
+        if (_flashbang == null) {
             _flashbang = CameraController.currentCamera.gameObject.GetComponent<Flashbang>();
         }
-        _retroPixelShader.enabled = true;
+        CameraController.currentCamera.setRetroShader(true);
         float percent = (Time.time - _startTransTime) / CAMERA_LEVEL_TRANSITION_TIME;
-        CameraController.currentCamera.gameObject.transform.position = Vector3.Lerp(_cameraStartPos, currentLevel.cameraPosition.transform.position,percent);
-        _retroPixelShader.verticalResolution = (int)(percent * Screen.height);
-        _retroPixelShader.horizontalResolution = (int)(percent * Screen.width);
+
+        CameraController.currentCamera.gameObject.transform.position = 
+            Vector3.Lerp(_cameraStartPos, currentLevel.cameraPosition.transform.position,percent);
     }
     
     //gets current lane
@@ -320,7 +333,7 @@ public class Player : MonoBehaviour {
      * If multi-shot is activated, player projectile will shoot down the lane left of current lane as well as the lane right of current lane
      */
     void Shoot() {
-        AudioSource.PlayClipAtPoint(_shootSound, transform.position);
+        AudioSource.PlayClipAtPoint(_shootSound, transform.position, GameManager.effectsVolume);
         Lane currentLane = currentLevel.lanes[_currentPlane];
         GameObject shot = (GameObject)Instantiate(playerProjectile);
         shot.renderer.enabled = false;
@@ -344,6 +357,9 @@ public class Player : MonoBehaviour {
         }
     }
     
+    /*
+     * Lowers shot count
+     */
     public void RemoveShot() {
         _numShots--;
     }
@@ -357,14 +373,12 @@ public class Player : MonoBehaviour {
             return;
         }
         if (other.gameObject.tag == "Enemy") {
-            if (_retroPixelShader != null) {
-                _retroPixelShader.enabled = false;
-            }
+            CameraController.currentCamera.setRetroShader(false);
             ParticleManager.Instance.initParticleSystem(ParticleManager.Instance.playerDeath, gameObject.transform.position);
             if (!isClone && isCloneActivated) {
                 _clone.CloneBecomeMain();
             }
-            AudioSource.PlayClipAtPoint(_deathSound, transform.position);
+            AudioSource.PlayClipAtPoint(_deathSound, transform.position, GameManager.effectsVolume);
             currentLevel.lanes[_currentPlane].setHighlight(false);
             GameManager.Instance.removeShip(this);
             other.gameObject.GetComponent<Enemy>().explode();

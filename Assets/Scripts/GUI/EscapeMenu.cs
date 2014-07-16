@@ -12,7 +12,6 @@ public class EscapeMenu : MonoBehaviour {
 
     private float currentTime;
     private bool _displayOptions = false;
-    private BlurEffect _blur;
 
     void Start () {
         style.fontSize = (int)(ScreenUtil.getPixels(style.fontSize));
@@ -21,11 +20,8 @@ public class EscapeMenu : MonoBehaviour {
 
     //Escape menu display
     public void display() {
-        if (_blur == null) {
-            _blur = CameraController.currentCamera.gameObject.GetComponent<BlurEffect>();
-        }
+        CameraController.currentCamera.setBlurShader(true);
         _displayOptions = false;
-        _blur.enabled = true;
         currentTime = Time.timeScale;
         Time.timeScale = 0;
         Screen.lockCursor = false;
@@ -34,7 +30,7 @@ public class EscapeMenu : MonoBehaviour {
 
     //Exit Escape menu back to game 
     public void exit() {
-        _blur.enabled = false;
+        CameraController.currentCamera.setBlurShader(false);
         Time.timeScale = currentTime;
         currentlyActive = false;
         Screen.lockCursor = true;
@@ -72,17 +68,28 @@ public class EscapeMenu : MonoBehaviour {
             GUI.Label(new Rect(Screen.width / 2 - 3 * Screen.width / 16, Screen.height / 2 - ScreenUtil.getPixels(100), 3 * Screen.width / 8, ScreenUtil.getPixels(200)), "Options", style);
             GUI.color = prev;
 
-            //Volume Slider
-            GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Volume", style);
+            GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "General Volume", style);
             AudioListener.volume = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400),
                 ScreenUtil.getPixels(50)), AudioListener.volume, 0f, 1.0f);
-            //Sensitivity Slider
+            GUI.Label(new Rect((Screen.width + ScreenUtil.getPixels(600)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Effects Volume", style);
+            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((Screen.width + ScreenUtil.getPixels(600)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
+                GameManager.effectsVolume, 0f, 1.0f);
+            GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(1400)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Music Volume", style);
+            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(1400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
+                GameManager.musicVolume, 0f, 1.0f);
             GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(150), ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Sensitivity", style);
             GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(230), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
                 GameManager.mouseSensitivity, 0.1f, 0.5f);
-            //Back to Escape Menu button
+
+            GameManager.Instance.UpdateMusicVolume();
+
             if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(200)) / 2, Screen.height - ScreenUtil.getPixels(150), ScreenUtil.getPixels(200), style.fontSize), "Back", style)) {
                 _displayOptions = false;
+                // update sensitivity when options are closed
+                foreach (Player player in GameManager.Instance.CurrentPlayerShips)
+                {
+                    player.UpdateSensitivity();
+                }
             }
         }
     }

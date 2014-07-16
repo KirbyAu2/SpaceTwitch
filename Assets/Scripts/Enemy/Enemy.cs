@@ -65,9 +65,9 @@ public abstract class Enemy : MonoBehaviour {
         if (!_shootSound) {
             _shootSound = (AudioClip)Resources.Load("Sound/EnemyShoot");
         }
-        AudioSource.PlayClipAtPoint(_shootSound, transform.position);
+        AudioSource.PlayClipAtPoint(_shootSound, transform.position, GameManager.effectsVolume);
         GameObject p = (GameObject)Instantiate(EnemyManager.Instance.enemyProjectilePrefab);
-        //p.GetComponent<EnemyProjectile>().startLocation = gameObject.transform.position;
+        p.GetComponent<EnemyProjectile>().startLocation = gameObject.transform.position - (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal;
         p.GetComponent<EnemyProjectile>().spawn(_currentLane);
     }
 
@@ -96,7 +96,7 @@ public abstract class Enemy : MonoBehaviour {
     public void explode() {
         ParticleManager.Instance.initParticleSystem(ParticleManager.Instance.enemyDeath, gameObject.transform.position);
         _deathSound = (AudioClip)Resources.Load("Sound/EnemyExplode");
-        AudioSource.PlayClipAtPoint(_deathSound, transform.position);
+        AudioSource.PlayClipAtPoint(_deathSound, transform.position, GameManager.effectsVolume);
         dropPowerup();
         _alive = false;
         EnemyManager.Instance.removeEnemy(this);

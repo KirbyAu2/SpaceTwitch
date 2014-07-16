@@ -13,13 +13,17 @@ public class GameManager : MonoBehaviour {
     public const int MAX_LIVES = 3;
 
     private static GameManager _instance;
+    private AudioSource _music;
 
     public Texture2D _livesIcon;
     public List<GameObject> levels;
     public GameObject playerPrefab;
+    public bool enableSeebright = false;
 
     public static float mouseSensitivity = DEFAULT_SENSITIVITY;
+    public static float effectsVolume = 1.0f, musicVolume = 1.0f;
 
+    private SeebrightSDK _seebrightSDK;
     private int _score = 0;
     private int _multiplier = 0;
     private int _lives = MAX_LIVES;
@@ -30,6 +34,7 @@ public class GameManager : MonoBehaviour {
     private Level _currentLevel;
     private bool _gameOver = false;
     private float _gameOverStartTimer;
+    private bool _needToInitSeebrightCamera = false;
 
     void Start () {
         //Implements Singleton 
@@ -37,8 +42,24 @@ public class GameManager : MonoBehaviour {
             Debug.LogError("Can't initialize more than one instance of Game Manager!");
             return;
         }
+        _needToInitSeebrightCamera = enableSeebright;
         _currentPlayerShips = new List<Player>();
         _instance = this;
+    }
+
+
+    /**
+     * Handles the initialization of all things Seebright
+     */
+    private void initSeebright() {
+        if(CameraController.currentCamera != null) {
+            CameraController.currentCamera.initSeebright();
+            _needToInitSeebrightCamera = false;
+        } else {
+            _needToInitSeebrightCamera = true;
+            return;
+        }
+        _seebrightSDK = GetComponentInChildren<SeebrightSDK>();
     }
 
     //Starts the game
@@ -48,6 +69,9 @@ public class GameManager : MonoBehaviour {
         loadNextLevel();
         spawnPlayer(true);
         Screen.lockCursor = true;
+        GameObject musicObject = GameObject.Find("IngameMusic");
+        if (musicObject != null)
+            _music = musicObject.audio;
     }
 
     /*
@@ -102,7 +126,7 @@ public class GameManager : MonoBehaviour {
      */
     public void gameOver() {
         Score.submit();
-        CameraController.currentCamera.gameObject.GetComponent<BlurEffect>().enabled = true;
+        CameraController.currentCamera.setBlurShader(true);
         _gameOver = true;
         _gameOverStartTimer = Time.time;
         Screen.lockCursor = false;
@@ -196,8 +220,21 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    
+    /**
+     * Updates the music for the game
+     */
+    public void UpdateMusicVolume()
+    {
+        _music.volume = musicVolume;
+    }
+
+    /*
+     * Update function that runs every frame; Called within Unity
+     */
     void Update () {
+        if(_needToInitSeebrightCamera && enableSeebright) {
+            initSeebright();
+        }
         //Goes back to main menu if game over
         if (_gameOver) {
             if ((Time.time - _gameOverStartTimer) / 3.0f > 1.0f) {
