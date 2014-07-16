@@ -16,6 +16,7 @@ public class Level : MonoBehaviour {
     public bool wrapAround;
     public bool debugDraw = false;
     public GameObject cameraPosition;
+    public GameObject seebrightPosition;
     public int pawnCount = 0;
     public int crosshatchCount = 0;
     public int swirlieCount = 0;
@@ -48,7 +49,9 @@ public class Level : MonoBehaviour {
         if (isTutorial) {
             _tutorial = gameObject.AddComponent<Tutorial>();
         }
-
+        if(GameManager.Instance.enableSeebright) {
+            cameraPosition = seebrightPosition;
+        }
         pawnCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
         crosshatchCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
         swirlieCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
@@ -102,7 +105,9 @@ public class Level : MonoBehaviour {
     }
 
     void Update() {
-
+        if(GameManager.Instance.enableSeebright && seebrightPosition != cameraPosition) {
+            cameraPosition = seebrightPosition;
+        }
     }
 
     void OnDestroy()

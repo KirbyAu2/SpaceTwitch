@@ -11,9 +11,11 @@ public class GameManager : MonoBehaviour {
     public Texture2D _livesIcon;
     public List<GameObject> levels;
     public GameObject playerPrefab;
+    public bool enableSeebright = false;
 
     public static float mouseSensitivity = DEFAULT_SENSITIVITY;
 
+    private SeebrightSDK _seebrightSDK;
     private int _score = 0;
     private int _multiplier = 0;
     private int _lives = MAX_LIVES;
@@ -24,14 +26,30 @@ public class GameManager : MonoBehaviour {
     private Level _currentLevel;
     private bool _gameOver = false;
     private float _gameOverStartTimer;
+    private bool _needToInitSeebrightCamera = false;
 
     void Start () {
         if(_instance != null) {
             Debug.LogError("Can't initialize more than one instance of Game Manager!");
             return;
         }
+        _needToInitSeebrightCamera = enableSeebright;
         _currentPlayerShips = new List<Player>();
         _instance = this;
+    }
+
+    /**
+     * Handles the initialization of all things Seebright
+     */
+    private void initSeebright() {
+        if(CameraController.currentCamera != null) {
+            CameraController.currentCamera.initSeebright();
+            _needToInitSeebrightCamera = false;
+        } else {
+            _needToInitSeebrightCamera = true;
+            return;
+        }
+        _seebrightSDK = GetComponentInChildren<SeebrightSDK>();
     }
 
     public void StartGame() {
@@ -79,7 +97,7 @@ public class GameManager : MonoBehaviour {
 
     public void gameOver() {
         Score.submit();
-        CameraController.currentCamera.gameObject.GetComponent<BlurEffect>().enabled = true;
+        CameraController.currentCamera.setBlurShader(true);
         _gameOver = true;
         _gameOverStartTimer = Time.time;
         Screen.lockCursor = false;
@@ -173,6 +191,9 @@ public class GameManager : MonoBehaviour {
     }
 
     void Update () {
+        if(_needToInitSeebrightCamera && enableSeebright) {
+            initSeebright();
+        }
         if (_gameOver) {
             if ((Time.time - _gameOverStartTimer) / 3.0f > 1.0f) {
                 Application.LoadLevel(0);
