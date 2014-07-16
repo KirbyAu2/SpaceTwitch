@@ -62,13 +62,13 @@ public class GameManager : MonoBehaviour {
 
     public void spawnPlayer(bool firstTime = false) {
         if (firstTime) {
-            GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+            GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
             tempStyle.alignment = TextAnchor.MiddleCenter;
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Level Begin", tempStyle, 2));
         } else {
             Score.CurrentMultiplier = 0;
             Score.BuildUp = 0;
-            GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+            GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
             tempStyle.normal.textColor = Color.red;
             tempStyle.alignment = TextAnchor.MiddleCenter;
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Ship Destroyed", tempStyle, 2));
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour {
         _gameOverStartTimer = Time.time;
         Screen.lockCursor = false;
         GUIManager.Instance.clearGUIItem();
-        GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+        GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
         tempStyle.alignment = TextAnchor.MiddleCenter;
         tempStyle.normal.textColor = Color.red;
         GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, Screen.height / 2, "Game Over!", tempStyle));
@@ -119,7 +119,7 @@ public class GameManager : MonoBehaviour {
      */
     public void loadNextLevel() {
         if (_lives < MAX_LIVES) {
-            GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+            GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
             tempStyle.alignment = TextAnchor.MiddleCenter;
             tempStyle.normal.textColor = Color.green;
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(150), "Gained Additional Ship!", tempStyle, 3));

@@ -16,6 +16,7 @@ public class EscapeMenu : MonoBehaviour {
 
     public void display() {
         CameraController.currentCamera.setBlurShader(true);
+        _displayOptions = false;
         currentTime = Time.timeScale;
         Time.timeScale = 0;
         Screen.lockCursor = false;
@@ -64,6 +65,11 @@ public class EscapeMenu : MonoBehaviour {
 
             if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(200)) / 2, Screen.height - ScreenUtil.getPixels(150), ScreenUtil.getPixels(200), style.fontSize), "Back", style)) {
                 _displayOptions = false;
+                // update sensitivity when options are closed
+                foreach (Player player in GameManager.Instance.CurrentPlayerShips)
+                {
+                    player.UpdateSensitivity();
+                }
             }
         }
     }

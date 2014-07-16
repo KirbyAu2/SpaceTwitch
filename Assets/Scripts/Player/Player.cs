@@ -69,8 +69,15 @@ public class Player : MonoBehaviour {
         _shootSound = (AudioClip)Resources.Load("Sound/PlayerShoot");
     }
 
+    public void UpdateSensitivity()
+    {
+        _mouseSensitivity = GameManager.mouseSensitivity;
+    }
+
     public void loadNextLevel(Level level) {
         _transitioning = true;
+        _invulnerable = false;
+        _invulnerabilityCooldown = Time.time - RESPAWN_COOLDOWN;
         _previousLevel = currentLevel.gameObject;
         currentLevel.lanes[_currentPlane].setHighlight(false);
         _startTransTime = Time.time;
@@ -121,15 +128,14 @@ public class Player : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (Input.GetKeyDown(KeyCode.Escape) && !isClone) {
-            if (_escapeMenu.currentlyActive) {
-                _escapeMenu.exit();
-            } else {
+            if (!_escapeMenu.currentlyActive) {
                 _escapeMenu.display();
             }
         }
         if (_escapeMenu.currentlyActive) {
             return;
         }
+        Screen.lockCursor = true;
 
         if (_invulnerable) {
             renderer.enabled = Mathf.Sin(Time.time * 50.0f) > 0;
@@ -240,9 +246,12 @@ public class Player : MonoBehaviour {
         transform.eulerAngles = new Vector3(angleUp, 180, 0);
 
         // shoot
+        if (_numShots < 0)
+            _numShots = 0;
+
         int maxMultiShots = maxShots;
         if (isMultiActivated) {
-            maxMultiShots *= 3;
+            maxMultiShots = maxShots * 3;
         }
         if (Input.GetMouseButton(0) && _reload < 0 && _numShots < maxMultiShots) {
             Shoot();

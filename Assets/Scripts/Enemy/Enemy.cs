@@ -57,7 +57,7 @@ public abstract class Enemy : MonoBehaviour {
         }
         AudioSource.PlayClipAtPoint(_shootSound, transform.position);
         GameObject p = (GameObject)Instantiate(EnemyManager.Instance.enemyProjectilePrefab);
-        p.GetComponent<EnemyProjectile>().startLocation = gameObject.transform.position;
+        //p.GetComponent<EnemyProjectile>().startLocation = gameObject.transform.position;
         p.GetComponent<EnemyProjectile>().spawn(_currentLane);
     }
 
@@ -73,8 +73,6 @@ public abstract class Enemy : MonoBehaviour {
         }
         if(collision.gameObject.tag == "PlayerProjectile") {
             explode();
-            PlayerProjectile p = collision.gameObject.GetComponent<PlayerProjectile>();
-            p.explode();
         }
     }
 
@@ -95,7 +93,7 @@ public abstract class Enemy : MonoBehaviour {
         if (GameManager.Instance.CurrentPlayerShips.Count < 1) {
             return;
         }
-        GUIStyle tempStyle = GUIManager.Instance.defaultStyle;
+        GUIStyle tempStyle = new GUIStyle (GUIManager.Instance.defaultStyle);
         tempStyle.alignment = TextAnchor.MiddleCenter;
         tempStyle.normal.textColor = Color.green;
         switch (_powerUp)
