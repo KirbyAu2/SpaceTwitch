@@ -7,12 +7,14 @@ public class GameManager : MonoBehaviour {
     public const int MAX_LIVES = 3;
 
     private static GameManager _instance;
+    private AudioSource _music;
 
     public Texture2D _livesIcon;
     public List<GameObject> levels;
     public GameObject playerPrefab;
 
     public static float mouseSensitivity = DEFAULT_SENSITIVITY;
+    public static float effectsVolume = 1.0f, musicVolume = 1.0f;
 
     private int _score = 0;
     private int _multiplier = 0;
@@ -40,6 +42,7 @@ public class GameManager : MonoBehaviour {
         loadNextLevel();
         spawnPlayer(true);
         Screen.lockCursor = true;
+        _music = GameObject.Find("IngameMusic").audio;
     }
 
     public void spawnPlayer(bool firstTime = false) {
@@ -170,6 +173,11 @@ public class GameManager : MonoBehaviour {
         get {
             return _lives;
         }
+    }
+
+    public void UpdateMusicVolume()
+    {
+        _music.volume = musicVolume;
     }
 
     void Update () {
