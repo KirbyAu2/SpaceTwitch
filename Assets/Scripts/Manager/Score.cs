@@ -34,9 +34,11 @@ public class Score : MonoBehaviour {
      * Shows current scrore and multiplier on top left corner of screen 
      */
     void OnGUI() {
-        GUI.Label(new Rect(0, 0, 0, 0), CurrentScore.ToString(), style);
-        GUI.color = Color.red;
-        GUI.Label(new Rect(0, style.fontSize, ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight), 
+        //Buffer needed incase Seebright is enabled
+        float buffer = GameManager.Instance.enableSeebright ? ScreenUtil.getPixelHeight(50) : 0;
+        GUI.Label(new Rect(buffer, buffer, 0, 0), CurrentScore.ToString(), style);
+        GUI.color = Color.blue;
+        GUI.Label(new Rect(buffer, buffer + style.fontSize, ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight), 
             "Multiplier : " + CurrentMultiplier.ToString(), style);
     }
 }

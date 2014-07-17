@@ -267,9 +267,11 @@ public class GameManager : MonoBehaviour {
         if(_livesIcon == null) {
             return;
         }
+        //A buffer to add in case seebright is enabled
+        float topBuffer = GameManager.Instance.enableSeebright ? ScreenUtil.getPixelHeight(50) : 0;
         for (int i = 0; i < _lives; i++) {
-            GUI.DrawTexture(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(_livesIcon.width) * (i + 1), 0, 
-                ScreenUtil.getPixelHeight(_livesIcon.width), ScreenUtil.getPixelWidth(_livesIcon.height)), _livesIcon);
+            GUI.DrawTexture(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelHeight(_livesIcon.width) * (i + 1), topBuffer, 
+                ScreenUtil.getPixelHeight(_livesIcon.width), ScreenUtil.getPixelHeight(_livesIcon.height)), _livesIcon);
         }
     }
 }

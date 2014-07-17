@@ -7,7 +7,6 @@ public class ScreenUtil {
     public static float getPixelWidth(float x) {
         float newX = (x / DEFAULT_WIDTH) * Screen.width;
         if(GameManager.Instance.enableSeebright) {
-            Debug.Log("wtf is going on!");
             newX /= 2.0f;
         }
         return newX;

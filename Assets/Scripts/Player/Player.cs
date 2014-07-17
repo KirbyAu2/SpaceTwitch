@@ -144,7 +144,12 @@ public class Player : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         //Escape Menu
-        if (Input.GetKeyDown(KeyCode.Escape) && !isClone) {
+#if UNITY_EDITOR
+        bool escapeMenuKeyPressed = Input.GetKeyDown(KeyCode.Escape);
+#else
+        bool escapeMenuKeyPressed = GameManager.Instance.enableSeebright ? SBRemote.GetButton(SBRemote.BUTTON_BACK) : Input.GetKeyDown(KeyCode.Escape);
+#endif
+        if (escapeMenuKeyPressed && !isClone) {
             if (!_escapeMenu.currentlyActive) {
                 _escapeMenu.display();
             }
@@ -217,7 +222,13 @@ public class Player : MonoBehaviour {
         if (!_alive) {
             return;
         }
+
+#if UNITY_EDITOR
         float mouseMove = Input.GetAxis("Mouse X");
+#else
+        float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL)/2048 : Input.GetAxis("Mouse X");
+#endif
+
         float shipMove = mouseMove * _mouseSensitivity;
         if (_isMovementMirrored) {
             _positionOnPlane -= shipMove;
@@ -275,7 +286,14 @@ public class Player : MonoBehaviour {
         if (isMultiActivated) {
             maxMultiShots = maxShots * 3;
         }
-        if (Input.GetMouseButton(0) && _reload < 0 && _numShots < maxMultiShots) {
+
+#if UNITY_EDITOR
+        bool triggerPressed = Input.GetMouseButton(0);
+#else
+        bool triggerPressed = (GameManager.Instance.enableSeebright) ? SBRemote.GetButton(SBRemote.BUTTON_TRIGGER) : Input.GetMouseButton(0);
+#endif
+
+        if (triggerPressed && _reload < 0 && _numShots < maxMultiShots) {
             Shoot();
             _reload = DELAY_NEXT_SHOT;
         

@@ -37,8 +37,8 @@ public class Menu : MonoBehaviour {
      * Buttons in Main Menu for 'Play Game', 'Tutorial', 'Options', 'Credits'
      */
     void OnGUI() {
-        GUI.DrawTexture(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(logo.width)) / 2 - ScreenUtil.getPixelWidth(30),
-            ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(logo.width), ScreenUtil.getPixelWidth(logo.height)), logo);
+        GUI.DrawTexture(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelHeight(logo.width)) / 2 - ScreenUtil.getPixelHeight(30),
+            ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelHeight(logo.width), ScreenUtil.getPixelHeight(logo.height)), logo);
         if(!_displayOptions && !_displayCredits){
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2, 
                 ScreenUtil.getPixelWidth(400), style.fontSize), "Play Game", style)) {
