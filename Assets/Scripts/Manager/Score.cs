@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * Score class handles scoring and multiplier throughout the game
+ * Submits score to Kongregate
+ */
 public class Score : MonoBehaviour {
     public const int BUILD_UPS_NEEDED = 5;
 
@@ -20,11 +24,15 @@ public class Score : MonoBehaviour {
             BuildUp = 0;
         }
 	}
-
+    
+    //Submits score to Kongregate
     public static void submit() {
         KongregateAPI.Submit("High Score", CurrentScore);
     }
 
+    /*
+     * Shows current scrore and multiplier on top left corner of screen 
+     */
     void OnGUI() {
         GUI.Label(new Rect(0, 0, 0, 0), CurrentScore.ToString(), style);
         GUI.color = Color.red;

@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * The EscapeMenu class will draw the escape menu when the game is paused
+ * The escape menu allows the player to change options, go back to main menu, or resume the game
+ */
 public class EscapeMenu : MonoBehaviour {
     public GUIStyle style;
 
@@ -14,6 +18,7 @@ public class EscapeMenu : MonoBehaviour {
         currentTime = Time.timeScale;
     }
 
+    //Escape menu display
     public void display() {
         CameraController.currentCamera.setBlurShader(true);
         _displayOptions = false;
@@ -23,6 +28,7 @@ public class EscapeMenu : MonoBehaviour {
         currentlyActive = true;
     }
 
+    //Exit Escape menu back to game 
     public void exit() {
         CameraController.currentCamera.setBlurShader(false);
         Time.timeScale = currentTime;
@@ -35,6 +41,11 @@ public class EscapeMenu : MonoBehaviour {
 
     }
 
+    /*
+     * OnGUI is called for rendering and handling GUI events. 
+     * Buttons for 'Resume Game', 'Main Menu', and 'Options'
+     * As well as buttons for Options menu
+     */
     void OnGUI() {
         if (!currentlyActive) {
             return;
@@ -55,25 +66,22 @@ public class EscapeMenu : MonoBehaviour {
                 _displayOptions = true;
             }
         }
+        //In option Menu
         if (_displayOptions) {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 - 
                 ScreenUtil.getPixelHeight(100), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
             GUI.color = prev;
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2,
-                ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "General Volume", style);
-            AudioListener.volume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400),
-                ScreenUtil.getPixelHeight(50)), AudioListener.volume, 0f, 1.0f);
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(600)) / 2, ScreenUtil.ScreenHeight / 2, 
+
+            GUI.Label(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, ScreenUtil.ScreenHeight / 2, 
                 ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Effects Volume", style);
-            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(600)) / 2, 
+            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, 
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.effectsVolume, 0f, 1.0f);
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1400)) / 2, ScreenUtil.ScreenHeight / 2, 
+            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, ScreenUtil.ScreenHeight / 2, 
                 ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Music Volume", style);
-            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1400)) / 2, 
+            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, 
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.musicVolume, 0f, 1.0f);
             GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
@@ -82,7 +90,9 @@ public class EscapeMenu : MonoBehaviour {
             GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(230), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.mouseSensitivity, 0.1f, 0.5f);
-            GameManager.Instance.UpdateMusicVolume();
+            if(GameManager.Instance != null) {
+                GameManager.Instance.UpdateMusicVolume();
+            }
 
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2, 
                 ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", style)) {

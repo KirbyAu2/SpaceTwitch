@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+/*
+ * The Tutorial class manages the tutorial level for the game
+ * Displays messages to help player
+ */
 public class Tutorial : MonoBehaviour {
     private const float GAME_END_DURATION = 4.0f;
     private const int MOVEMENT_TUT_DURATION = 1;
@@ -19,6 +23,7 @@ public class Tutorial : MonoBehaviour {
     private bool _tutorialOver = false;
 
     void Start () {
+        //Adds GUI messages to list 
         _currentMessageItem = new GUIItem((float)(ScreenUtil.ScreenWidth / 2), 
             (float)(ScreenUtil.ScreenHeight / 2), MOVEMENT, GUIManager.Instance.defaultStyle, MOVEMENT_TUT_DURATION);
         messages = new List<string>();
@@ -30,6 +35,7 @@ public class Tutorial : MonoBehaviour {
     }
 	
     void Update () {
+        //Returns back to Main menu when tutorial is over
         if (_tutorialOver) {
             if (Time.time > _startTime + GAME_END_DURATION) {
                 Application.LoadLevel(0);
@@ -47,10 +53,14 @@ public class Tutorial : MonoBehaviour {
         }
     }
 
+    //Displays next Gui message 
     public void displayNext() {
         GUIManager.Instance.removeGUIItem(_currentMessageItem);
     }
 
+    /*
+     * Prints end message and Ends tutorial 
+     */
     public void endTutorial() {
         if (_tutorialOver) {
             return;

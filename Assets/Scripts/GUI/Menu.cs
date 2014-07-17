@@ -1,7 +1,12 @@
 ﻿
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
+/*
+ * The Menu class draws the main menu.
+ * As well as, the options menu and credits screen 
+ */
 public class Menu : MonoBehaviour {
     public GUIStyle style;
     public Texture2D logo;
@@ -9,14 +14,28 @@ public class Menu : MonoBehaviour {
     private bool _displayOptions = false;
     private bool _displayCredits = false;
 
+    private Transform[] _levelModels;
+
     void Start () {
         style.fontSize = (int)ScreenUtil.getPixelHeight(style.fontSize);
+        _levelModels = GetComponentsInChildren<Transform>();
     }
 	
     void Update () {
         Screen.lockCursor = false;
+
+        transform.Rotate(new Vector3(0, 0, -.2f));
+
+        foreach (Transform t in _levelModels)
+        {
+            t.Rotate(new Vector3(0, 0, .35f));
+        }
     }
 
+    /*
+     * OnGUI is called for rendering and handling GUI events
+     * Buttons in Main Menu for 'Play Game', 'Tutorial', 'Options', 'Credits'
+     */
     void OnGUI() {
         GUI.DrawTexture(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(logo.width)) / 2 - ScreenUtil.getPixelWidth(30),
             ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(logo.width), ScreenUtil.getPixelWidth(logo.height)), logo);
@@ -39,6 +58,8 @@ public class Menu : MonoBehaviour {
                 _displayCredits = true;
             }
         }
+
+        //In Options Menu
         if (_displayOptions)
         {
             Color prev = GUI.color;
@@ -46,19 +67,14 @@ public class Menu : MonoBehaviour {
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 - 
                 ScreenUtil.getPixelHeight(100), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
             GUI.color = prev;
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2,
-                ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "General Volume", style);
-            AudioListener.volume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400),
-                ScreenUtil.getPixelHeight(50)), AudioListener.volume, 0f, 1.0f);
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(600)) / 2, ScreenUtil.ScreenHeight / 2, 
+            GUI.Label(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, ScreenUtil.ScreenHeight / 2, 
                 ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Effects Volume", style);
-            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(600)) / 2, 
+            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, 
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.effectsVolume, 0f, 1.0f);
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1400)) / 2, ScreenUtil.ScreenHeight / 2, 
+            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, ScreenUtil.ScreenHeight / 2, 
                 ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Music Volume", style);
-            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1400)) / 2, 
+            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, 
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.musicVolume, 0f, 1.0f);
             GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
@@ -67,18 +83,24 @@ public class Menu : MonoBehaviour {
             GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(230), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.mouseSensitivity, 0.1f, 0.5f);
-            GameManager.Instance.UpdateMusicVolume();
+                
+            if (GameManager.Instance != null) {
+                GameManager.Instance.UpdateMusicVolume();
+            }
             
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2, 
                 ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", style)) {
                 _displayOptions = false;
                 // update sensitivity when options are closed
-                foreach (Player player in GameManager.Instance.CurrentPlayerShips)
-                {
-                    player.UpdateSensitivity();
+                if (GameManager.Instance != null) {
+                    foreach (Player player in GameManager.Instance.CurrentPlayerShips) {
+                        player.UpdateSensitivity();
+                    }
                 }
             }
         }
+        //Credits Screen
+        //Displays Credits
         if (_displayCredits) {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
