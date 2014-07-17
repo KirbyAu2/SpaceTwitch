@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour {
     public List<GameObject> levels;
     public GameObject playerPrefab;
     public bool enableSeebright = false;
+    public bool isMenu = false;
 
     public static float mouseSensitivity = DEFAULT_SENSITIVITY;
     public static float effectsVolume = 1.0f, musicVolume = 1.0f;
@@ -250,6 +251,9 @@ public class GameManager : MonoBehaviour {
                 return;
             }
         }
+        if(isMenu) {
+            return;
+        }
         if (CurrentLevel.isTutorial) {
             _lives = MAX_LIVES;
         }
@@ -260,6 +264,9 @@ public class GameManager : MonoBehaviour {
      * Draws the lives icon 
      */
     void OnGUI() {
+        if(_livesIcon == null) {
+            return;
+        }
         for (int i = 0; i < _lives; i++) {
             GUI.DrawTexture(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(_livesIcon.width) * (i + 1), 0, 
                 ScreenUtil.getPixelHeight(_livesIcon.width), ScreenUtil.getPixelWidth(_livesIcon.height)), _livesIcon);
