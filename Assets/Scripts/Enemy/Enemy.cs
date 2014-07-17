@@ -67,7 +67,7 @@ public abstract class Enemy : MonoBehaviour {
         }
         AudioSource.PlayClipAtPoint(_shootSound, transform.position, GameManager.effectsVolume);
         GameObject p = (GameObject)Instantiate(EnemyManager.Instance.enemyProjectilePrefab);
-        p.GetComponent<EnemyProjectile>().startLocation = gameObject.transform.position - (gameObject.renderer.bounds.size.y / 2) * _currentLane.Normal;
+        p.GetComponent<EnemyProjectile>().startLocation = gameObject.transform.position - (p.gameObject.renderer.bounds.size.y / 2.0f) * _currentLane.Normal;
         p.GetComponent<EnemyProjectile>().spawn(_currentLane);
     }
 
