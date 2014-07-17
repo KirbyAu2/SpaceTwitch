@@ -1,6 +1,7 @@
 ﻿
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Menu : MonoBehaviour {
     public GUIStyle style;
@@ -9,12 +10,22 @@ public class Menu : MonoBehaviour {
     private bool _displayOptions = false;
     private bool _displayCredits = false;
 
+    private Transform[] _levelModels;
+
     void Start () {
         style.fontSize = (int)ScreenUtil.getPixels(style.fontSize);
+        _levelModels = GetComponentsInChildren<Transform>();
     }
 	
     void Update () {
         Screen.lockCursor = false;
+
+        transform.Rotate(new Vector3(0, 0, -.2f));
+
+        foreach (Transform t in _levelModels)
+        {
+            t.Rotate(new Vector3(0, 0, .35f));
+        }
     }
 
     void OnGUI() {
