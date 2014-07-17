@@ -1,6 +1,7 @@
 ﻿
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 /*
  * The Menu class draws the main menu.
@@ -13,12 +14,22 @@ public class Menu : MonoBehaviour {
     private bool _displayOptions = false;
     private bool _displayCredits = false;
 
+    private Transform[] _levelModels;
+
     void Start () {
         style.fontSize = (int)ScreenUtil.getPixels(style.fontSize);
+        _levelModels = GetComponentsInChildren<Transform>();
     }
 	
     void Update () {
         Screen.lockCursor = false;
+
+        transform.Rotate(new Vector3(0, 0, -.2f));
+
+        foreach (Transform t in _levelModels)
+        {
+            t.Rotate(new Vector3(0, 0, .35f));
+        }
     }
 
     /*
@@ -51,27 +62,27 @@ public class Menu : MonoBehaviour {
             GUI.Label(new Rect(Screen.width/2 - 3*Screen.width/16, Screen.height/2 - ScreenUtil.getPixels(100), 3*Screen.width/8, ScreenUtil.getPixels(200)), "Options",style);
             GUI.color = prev;
 
-            GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "General Volume", style);
-            AudioListener.volume = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400),
-                ScreenUtil.getPixels(50)), AudioListener.volume, 0f, 1.0f);
-            GUI.Label(new Rect((Screen.width + ScreenUtil.getPixels(600)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Effects Volume", style);
-            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((Screen.width + ScreenUtil.getPixels(600)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
+            GUI.Label(new Rect((Screen.width + ScreenUtil.getPixels(200)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Effects Volume", style);
+            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((Screen.width + ScreenUtil.getPixels(200)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
                 GameManager.effectsVolume, 0f, 1.0f);
-            GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(1400)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Music Volume", style);
-            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(1400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
+            GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(1000)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Music Volume", style);
+            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(1000)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
                 GameManager.musicVolume, 0f, 1.0f);
             GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(150), ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Sensitivity", style);
             GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(400))/ 2, Screen.height / 2 + ScreenUtil.getPixels(230), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
                 GameManager.mouseSensitivity, 0.1f, 0.5f);
 
-            GameManager.Instance.UpdateMusicVolume();
+            if (GameManager.Instance != null) {
+                GameManager.Instance.UpdateMusicVolume();
+            }
 
             if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(200)) / 2, Screen.height - ScreenUtil.getPixels(150), ScreenUtil.getPixels(200), style.fontSize), "Back",style)) {
                 _displayOptions = false;
                 // update sensitivity when options are closed
-                foreach (Player player in GameManager.Instance.CurrentPlayerShips)
-                {
-                    player.UpdateSensitivity();
+                if (GameManager.Instance != null) {
+                    foreach (Player player in GameManager.Instance.CurrentPlayerShips) {
+                        player.UpdateSensitivity();
+                    }
                 }
             }
         }
