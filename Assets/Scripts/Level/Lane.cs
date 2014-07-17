@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * The Lane class stores information about the lanes 
+ * Makes the plane 
+ */
 public class Lane {
     private const float HIGHLIGHT_OFFSET = 0.02f;
 
@@ -13,6 +17,9 @@ public class Lane {
     private Vector3 _normal;
     private GameObject _highlightLane;
 
+    /*
+     * Initializes Lane from edges
+     */
     public Lane(Edge leftEdge, Edge rightEdge) {
         _leftEdge = leftEdge;
         _rightEdge = rightEdge;
@@ -23,6 +30,11 @@ public class Lane {
         createPlane();
     }
 
+    /*
+     * Creates a plane 
+     * Uses vertices to map out uv and makes triangles
+     * Renders and creates a mesh
+     */
     private void createPlane() {
         Mesh m = new Mesh();
         m.name = "Scripted_Plane_New_Mesh";
@@ -39,6 +51,7 @@ public class Lane {
         _highlightLane.SetActive(false);
     }
 
+    //set lane to highlight 
     public void setHighlight(bool v) {
         _highlightLane.SetActive(v);
     }

@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * The Edge Class contains all of the information that we need for all of the edges
+ */ 
 public class Edge {
 
     private Vector3 _front;

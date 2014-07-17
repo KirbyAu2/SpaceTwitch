@@ -3,6 +3,10 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * The Menu class draws the main menu.
+ * As well as, the options menu and credits screen 
+ */
 public class Menu : MonoBehaviour {
     public GUIStyle style;
     public Texture2D logo;
@@ -28,6 +32,10 @@ public class Menu : MonoBehaviour {
         }
     }
 
+    /*
+     * OnGUI is called for rendering and handling GUI events
+     * Buttons in Main Menu for 'Play Game', 'Tutorial', 'Options', 'Credits'
+     */
     void OnGUI() {
         GUI.DrawTexture(new Rect((Screen.width - ScreenUtil.getPixels(logo.width)) / 2 - ScreenUtil.getPixels(30), ScreenUtil.getPixels(100), ScreenUtil.getPixels(logo.width), ScreenUtil.getPixels(logo.height)), logo);
         if(!_displayOptions && !_displayCredits){
@@ -45,6 +53,8 @@ public class Menu : MonoBehaviour {
                 _displayCredits = true;
             }
         }
+
+        //In Options Menu
         if (_displayOptions)
         {
             Color prev = GUI.color;
@@ -76,6 +86,8 @@ public class Menu : MonoBehaviour {
                 }
             }
         }
+        //Credits Screen
+        //Displays Credits
         if (_displayCredits) {
             Color prev = GUI.color;
             GUI.color = Color.magenta;

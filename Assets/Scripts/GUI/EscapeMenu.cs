@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * The EscapeMenu class will draw the escape menu when the game is paused
+ * The escape menu allows the player to change options, go back to main menu, or resume the game
+ */
 public class EscapeMenu : MonoBehaviour {
     public GUIStyle style;
 
@@ -14,6 +18,7 @@ public class EscapeMenu : MonoBehaviour {
         currentTime = Time.timeScale;
     }
 
+    //Escape menu display
     public void display() {
         CameraController.currentCamera.setBlurShader(true);
         _displayOptions = false;
@@ -23,6 +28,7 @@ public class EscapeMenu : MonoBehaviour {
         currentlyActive = true;
     }
 
+    //Exit Escape menu back to game 
     public void exit() {
         CameraController.currentCamera.setBlurShader(false);
         Time.timeScale = currentTime;
@@ -35,6 +41,11 @@ public class EscapeMenu : MonoBehaviour {
 
     }
 
+    /*
+     * OnGUI is called for rendering and handling GUI events. 
+     * Buttons for 'Resume Game', 'Main Menu', and 'Options'
+     * As well as buttons for Options menu
+     */
     void OnGUI() {
         if (!currentlyActive) {
             return;
@@ -50,6 +61,7 @@ public class EscapeMenu : MonoBehaviour {
                 _displayOptions = true;
             }
         }
+        //In option Menu
         if (_displayOptions) {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
