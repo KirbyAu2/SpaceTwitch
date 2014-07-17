@@ -10,7 +10,7 @@ public class Score : MonoBehaviour {
     public static int BuildUp = 0;
 
 	void Start () {
-        style.fontSize = (int)ScreenUtil.getPixels(style.fontSize);
+        style.fontSize = (int)ScreenUtil.getPixelHeight(style.fontSize);
         CurrentScore = 0;
 	}
 	
@@ -28,6 +28,7 @@ public class Score : MonoBehaviour {
     void OnGUI() {
         GUI.Label(new Rect(0, 0, 0, 0), CurrentScore.ToString(), style);
         GUI.color = Color.red;
-        GUI.Label(new Rect(0, style.fontSize, Screen.width, Screen.height), "Multiplier : " + CurrentMultiplier.ToString(), style);
+        GUI.Label(new Rect(0, style.fontSize, ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight), 
+            "Multiplier : " + CurrentMultiplier.ToString(), style);
     }
 }
