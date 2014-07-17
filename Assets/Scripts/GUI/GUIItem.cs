@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * The GUIItem class takes in data and makes a GUIItem
+ */
 public class GUIItem {
     private const float BEGIN_FADE_THRESH = .6f;
 
@@ -13,6 +16,7 @@ public class GUIItem {
     public float currentAlpha = 1;
 
     /**
+     * Takes in data and makes a GUIItem 
      * Set duration to -1 for unlimited showing
      */
     public GUIItem(float xposition, float yposition, string curmessage, GUIStyle cusGuiStyle, int duration = -1)

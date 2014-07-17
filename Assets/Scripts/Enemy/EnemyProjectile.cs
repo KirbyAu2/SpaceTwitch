@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * Enemy Projectiles are shot from the Pawn and Swirlie enemies
+ * The projectiles can collide and destroy player projectiles and the player ship
+ * Enemy projectiles shoot straight down the lane
+ */
 public class EnemyProjectile : Enemy {
     //Time it takes to get to the end of a lane
     private const float BASE_VELOCITY = 20.0f;
@@ -15,6 +20,10 @@ public class EnemyProjectile : Enemy {
         startLocation = Vector3.zero;
     }
 	
+    /*
+     * Moves enemy projectile doesn current lane
+     * Destroys when it gets to the end of the lane
+     */
     void Update () {
         if (!Alive) {
             return;
@@ -28,6 +37,9 @@ public class EnemyProjectile : Enemy {
         }
     }
 
+    /*
+     * Spawns enemy projectile
+     */
     public override void spawn(Lane spawnLane) {
         if (startLocation == Vector3.zero) {
             startLocation = spawnLane.Back;

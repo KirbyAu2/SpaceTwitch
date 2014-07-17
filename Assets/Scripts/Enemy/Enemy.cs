@@ -1,16 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public enum PowerUps
+public enum PowerUps 
 {
     Clone,
     Rapid,
     Multi,
     None
 }
-
+/*
+ * The Enemy class manages enemy deaths, collision, and power-up drops
+ * When the enemy collides with player projectiles, it will die
+ * Random enemies will be attached with a random powerup that is granted to the player when that enemy dies
+ */
 public abstract class Enemy : MonoBehaviour {
-    private const float PERCENTAGE_DROP = 20f; //Ten percent of enemies drop items
+    private const float PERCENTAGE_DROP = 20f; //Twenty percent of enemies drop items
     protected bool _alive = false;
     protected Lane _currentLane;
     protected int _score = 0;
@@ -47,10 +51,16 @@ public abstract class Enemy : MonoBehaviour {
 
     }
 
+    /*
+     * toggles in vulnerability 
+     */
     public void setVulnerability(bool value) {
         _invulnerable = !value;
     }
 
+    /*
+     * Spawns enemy projectiles w/sfx
+     */
     protected void spawnProjectile() {
         if (!_shootSound) {
             _shootSound = (AudioClip)Resources.Load("Sound/EnemyShoot");
@@ -66,6 +76,9 @@ public abstract class Enemy : MonoBehaviour {
      */
     abstract public void spawn(Lane spawnLane);
 
+    /*
+     * Calls explode() when enemy hit by PlayerProjectile
+     */
     void OnCollisionEnter(Collision collision) {
         if (_invulnerable)
         {
@@ -76,6 +89,10 @@ public abstract class Enemy : MonoBehaviour {
         }
     }
 
+    /*
+     * When enemy dies, it will make the explosion and sound
+     * Destroy game object and increases score and multiplier 
+     */
     public void explode() {
         ParticleManager.Instance.initParticleSystem(ParticleManager.Instance.enemyDeath, gameObject.transform.position);
         _deathSound = (AudioClip)Resources.Load("Sound/EnemyExplode");
@@ -88,6 +105,10 @@ public abstract class Enemy : MonoBehaviour {
         Score.BuildUp++;
     }
 
+    /*
+     * Holds cases for all three power ups
+     * Prints Power up message and calls to activate power up
+     */
     protected void dropPowerup()
     {
         if (GameManager.Instance.CurrentPlayerShips.Count < 1) {
@@ -121,7 +142,10 @@ public abstract class Enemy : MonoBehaviour {
         }
     }
 
-    void randomPower()
+    /*
+     * Function that when called, chooses a random power up to activate out of the three
+     */
+    void randomPower() 
     {
         float powerNumber = Random.Range(0f, 3f);
         if (powerNumber > 2f)
@@ -138,7 +162,10 @@ public abstract class Enemy : MonoBehaviour {
         }
     }
 
-    protected void randomEnemyDrop()
+    /*
+     * Function that will choose random enemies to hold the power-up drops
+     */
+    protected void randomEnemyDrop() 
     {
         
         float temp = Random.Range(0f, 100f);
@@ -152,7 +179,10 @@ public abstract class Enemy : MonoBehaviour {
 
     }
 
-    void OnDrawGizmos() {
+    /*
+     * Function that draws to help debugging 
+     */
+    void OnDrawGizmos() { 
         if (_invulnerable) {
             Gizmos.color = Color.magenta;
             Gizmos.DrawSphere(gameObject.transform.position, .5f);

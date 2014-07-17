@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * Player Class contains player shooting, power-ups, transistions, and player ship initializations.
+ * The player ship shoots projectiles that collides with the enemy
+ * The power ups will help the player by increasing the shot speed, making more shots, or making a second clone ship that the player can control
+ * When a level is complete, the player ship transistions to the next level. 
+ */
 public class Player : MonoBehaviour {
     public const float RESPAWN_COOLDOWN = 3.0f;
     public const float PLAYER_LEVEL_TRANSITION_TIME = 1.5f;
@@ -52,7 +58,7 @@ public class Player : MonoBehaviour {
     private GameObject _previousLevel;
     private float _invulnerabilityCooldown;
 
-    // Use this for initialization
+    //Initializes player ship
     void Start () {
         isRapidActivated = isMultiActivated = isCloneActivated = false;
         if (TestLevel != null) {
@@ -69,11 +75,17 @@ public class Player : MonoBehaviour {
         _shootSound = (AudioClip)Resources.Load("Sound/PlayerShoot");
     }
 
+
+    /**
+     * Updates the sensitivity
+     * 
+     */
     public void UpdateSensitivity()
     {
         _mouseSensitivity = GameManager.mouseSensitivity;
     }
 
+    //During transition and loading next level
     public void loadNextLevel(Level level) {
         _transitioning = true;
         _invulnerable = false;
@@ -92,6 +104,7 @@ public class Player : MonoBehaviour {
         }
     }
 
+    //Initialize current level 
     public void init(Level level) {
         if (isClone) {
             return;
@@ -105,6 +118,9 @@ public class Player : MonoBehaviour {
         _escapeMenu = gameObject.GetComponent<EscapeMenu>();
     }
 
+    /**
+     * Initializes the ship if it is a clone
+     */
     public void initAsClone(Level level, int plane, float position) {
         isClone = true;
         currentLevel = level;
@@ -127,6 +143,7 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        //Escape Menu
         if (Input.GetKeyDown(KeyCode.Escape) && !isClone) {
             if (!_escapeMenu.currentlyActive) {
                 _escapeMenu.display();
@@ -145,6 +162,7 @@ public class Player : MonoBehaviour {
             _invulnerable = false;
         }
         if (_transitioning && currentLevel.SpawnLane != null) {
+            //if transitioning levels and clone is active, destroy clone
             if (isClone) {
                 GameManager.Instance.removeShip(this);
                 Destroy(gameObject);
@@ -152,6 +170,8 @@ public class Player : MonoBehaviour {
             setCamera();
             gameObject.transform.position = Vector3.Lerp(_startPos, currentLevel.SpawnLane.Front, (Time.time - _startTransTime) / PLAYER_LEVEL_TRANSITION_TIME);
             gameObject.transform.Rotate(new Vector3(1, 0, 0), 360.0f * (Time.time - _startTransTime) / PLAYER_LEVEL_TRANSITION_TIME);
+            
+            //Level Transition
             if (gameObject.transform.position == currentLevel.SpawnLane.Front && 
                 CameraController.currentCamera.gameObject.transform.position == currentLevel.cameraPosition.transform.position) {
                     if (!_flashbang.running) {
@@ -178,6 +198,8 @@ public class Player : MonoBehaviour {
             return;
         }
 
+        //This is a preprocess directive, exclusively used with Unity Editor
+        //#yoyoloop
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Space)) { // testing purposes
             ActivateClone();
@@ -282,6 +304,7 @@ public class Player : MonoBehaviour {
         }
     }
 
+    //sets camera resolution
     private void setCamera() {
         if (_flashbang == null) {
             _flashbang = CameraController.currentCamera.gameObject.GetComponent<Flashbang>();
@@ -293,6 +316,7 @@ public class Player : MonoBehaviour {
             Vector3.Lerp(_cameraStartPos, currentLevel.cameraPosition.transform.position,percent);
     }
     
+    //gets current lane
     public Lane CurrentLane {
         get {
             if(currentLevel != null && currentLevel.lanes != null && _currentPlane < currentLevel.lanes.Count) {
@@ -303,6 +327,11 @@ public class Player : MonoBehaviour {
         }
     }
 
+    /*
+     * When player shoots, player projectile will shoot down lane that player was currently on when shot
+     * Instantiates player projectile gameobject
+     * If multi-shot is activated, player projectile will shoot down the lane left of current lane as well as the lane right of current lane
+     */
     void Shoot() {
         AudioSource.PlayClipAtPoint(_shootSound, transform.position, GameManager.effectsVolume);
         Lane currentLane = currentLevel.lanes[_currentPlane];
@@ -328,10 +357,17 @@ public class Player : MonoBehaviour {
         }
     }
     
+    /*
+     * Lowers shot count
+     */
     public void RemoveShot() {
         _numShots--;
     }
     
+    /*
+     * If player ship dies, creates particle effects and sfx for death
+     * Destroys gameobject and turns off plane highlight
+     */
     void OnTriggerEnter(Collider other) {
         if (_invulnerable) {
             return;
@@ -350,6 +386,7 @@ public class Player : MonoBehaviour {
         }
     }
 
+    //Activates rapid shot 
     public void ActivateRapid() {
         _rapidTime = RAPID_SHOT_TIME;
         isRapidActivated = true;
@@ -358,6 +395,7 @@ public class Player : MonoBehaviour {
         }
     }
 
+    //Activates multi-shot
     public void ActivateMulti() {
         _multiTime = MULTI_SHOT_TIME;
         isMultiActivated = true;
@@ -366,12 +404,14 @@ public class Player : MonoBehaviour {
         }
     }
 
+    //Calls to spawn clone if no clone is currently activated and when clone power up is actvated 
     public void ActivateClone() {
         if (!isClone && !isCloneActivated) {
             SpawnClone();
         }
     }
 
+    //When clone is activated, instantiate clone gameobject that mirrors player ship
     void SpawnClone() {
         isCloneActivated = true;
         GameObject playerClone = (GameObject)Instantiate(cloneObject);
@@ -379,6 +419,7 @@ public class Player : MonoBehaviour {
         _clone.initAsClone(currentLevel, _currentPlane, _positionOnPlane);
     }
 
+    //If clone is activated and main player ship dies, clone ship becomes main player ship
     public void CloneBecomeMain() {
         _isMovementMirrored = false;
         isClone = false;
