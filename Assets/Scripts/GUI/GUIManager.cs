@@ -16,7 +16,7 @@ public class GUIManager : MonoBehaviour {
         if (_instance != null) {
             Debug.LogError("Can't initialize more than one instance of GUI Manager!");
         }
-        defaultStyle.fontSize = (int)ScreenUtil.getPixels(defaultStyle.fontSize);
+        defaultStyle.fontSize = (int)ScreenUtil.getPixelHeight(defaultStyle.fontSize);
         _instance = this;
         _items = new List<GUIItem>();
     }
@@ -63,6 +63,9 @@ public class GUIManager : MonoBehaviour {
      * Initializes text font, style, color, and positioning 
      */
     void OnGUI() {
+        if(GameManager.Instance == null) {
+            return;
+        }
         if(GameManager.Instance.CurrentPlayerShips.Count > 0) {
             if (GameManager.Instance.CurrentPlayerShips[0].GetComponent<EscapeMenu>().currentlyActive) {
                 return;

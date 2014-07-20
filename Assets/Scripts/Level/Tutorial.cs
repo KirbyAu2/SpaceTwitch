@@ -24,7 +24,8 @@ public class Tutorial : MonoBehaviour {
 
     void Start () {
         //Adds GUI messages to list 
-        _currentMessageItem = new GUIItem((float)(Screen.width / 2), (float)(Screen.height / 2), MOVEMENT, GUIManager.Instance.defaultStyle, MOVEMENT_TUT_DURATION);
+        _currentMessageItem = new GUIItem((float)(ScreenUtil.ScreenWidth / 2), 
+            (float)(ScreenUtil.ScreenHeight / 2), MOVEMENT, GUIManager.Instance.defaultStyle, MOVEMENT_TUT_DURATION);
         messages = new List<string>();
         messages.Add(MOVEMENT);
         messages.Add(PAWN);
@@ -46,7 +47,7 @@ public class Tutorial : MonoBehaviour {
             if (_currentMessage == 0) {
                 readyToSpawn = true;
             }
-            _currentMessageItem = new GUIItem((float)(Screen.width / 2), ScreenUtil.getPixels(280),
+            _currentMessageItem = new GUIItem((float)(ScreenUtil.ScreenWidth / 2), ScreenUtil.getPixelHeight(280),
                 messages[++_currentMessage], GUIManager.Instance.defaultStyle);
             GUIManager.Instance.addGUIItem(_currentMessageItem);
         }
@@ -67,6 +68,7 @@ public class Tutorial : MonoBehaviour {
         displayNext();
         _startTime = Time.time;
         _tutorialOver = true;
-        GUIManager.Instance.addGUIItem(new GUIItem((float)(Screen.width / 2), (float)(Screen.height / 2), TUTORIAL_COMPLETE, GUIManager.Instance.defaultStyle, (int)GAME_END_DURATION));
+        GUIManager.Instance.addGUIItem(new GUIItem((float)(ScreenUtil.ScreenWidth / 2), (float)(ScreenUtil.ScreenHeight / 2), 
+            TUTORIAL_COMPLETE, GUIManager.Instance.defaultStyle, (int)GAME_END_DURATION));
     }
 }

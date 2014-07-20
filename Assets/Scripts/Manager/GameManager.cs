@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour {
     public List<GameObject> levels;
     public GameObject playerPrefab;
     public bool enableSeebright = false;
+    public bool isMenu = false;
 
     public static float mouseSensitivity = DEFAULT_SENSITIVITY;
     public static float effectsVolume = 1.0f, musicVolume = 1.0f;
@@ -85,7 +86,7 @@ public class GameManager : MonoBehaviour {
             GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
             tempStyle.alignment = TextAnchor.MiddleCenter;
             //Prints message if new game
-            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Level Begin", tempStyle, 2));
+            GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(200), "Level Begin", tempStyle, 2));
         } else {
             //Restarts multiplier
             Score.CurrentMultiplier = 0;
@@ -94,7 +95,7 @@ public class GameManager : MonoBehaviour {
             tempStyle.normal.textColor = Color.red;
             tempStyle.alignment = TextAnchor.MiddleCenter;
             //Prints message when ship destroyed
-            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Ship Destroyed", tempStyle, 2));
+            GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(200), "Ship Destroyed", tempStyle, 2));
         }
         _currentPlayerShips.Clear();
         //If stil have lives, player loses one life, else game over
@@ -134,7 +135,7 @@ public class GameManager : MonoBehaviour {
         GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
         tempStyle.alignment = TextAnchor.MiddleCenter;
         tempStyle.normal.textColor = Color.red;
-        GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, Screen.height / 2, "Game Over!", tempStyle));
+        GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.ScreenHeight / 2, "Game Over!", tempStyle));
     }
 
     public List<Player> CurrentPlayerShips {
@@ -152,7 +153,8 @@ public class GameManager : MonoBehaviour {
             GUIStyle tempStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
             tempStyle.alignment = TextAnchor.MiddleCenter;
             tempStyle.normal.textColor = Color.green;
-            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(150), "Gained Additional Ship!", tempStyle, 3));
+            GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(150), 
+                "Gained Additional Ship!", tempStyle, 3));
             _lives++;
         }
         _currentLevelIndex++;
@@ -249,6 +251,9 @@ public class GameManager : MonoBehaviour {
                 return;
             }
         }
+        if(isMenu) {
+            return;
+        }
         if (CurrentLevel.isTutorial) {
             _lives = MAX_LIVES;
         }
@@ -259,9 +264,14 @@ public class GameManager : MonoBehaviour {
      * Draws the lives icon 
      */
     void OnGUI() {
+        if(_livesIcon == null) {
+            return;
+        }
+        //A buffer to add in case seebright is enabled
+        float topBuffer = GameManager.Instance.enableSeebright ? ScreenUtil.getPixelHeight(50) : 0;
         for (int i = 0; i < _lives; i++) {
-            GUI.DrawTexture(new Rect(Screen.width - ScreenUtil.getPixels(_livesIcon.width) * (i + 1), 0, 
-                ScreenUtil.getPixels(_livesIcon.width), ScreenUtil.getPixels(_livesIcon.height)), _livesIcon);
+            GUI.DrawTexture(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelHeight(_livesIcon.width) * (i + 1), topBuffer, 
+                ScreenUtil.getPixelHeight(_livesIcon.width), ScreenUtil.getPixelHeight(_livesIcon.height)), _livesIcon);
         }
     }
 }

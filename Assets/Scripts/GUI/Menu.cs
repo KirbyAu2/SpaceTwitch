@@ -17,7 +17,7 @@ public class Menu : MonoBehaviour {
     private Transform[] _levelModels;
 
     void Start () {
-        style.fontSize = (int)ScreenUtil.getPixels(style.fontSize);
+        style.fontSize = (int)ScreenUtil.getPixelHeight(style.fontSize);
         _levelModels = GetComponentsInChildren<Transform>();
     }
 	
@@ -37,19 +37,24 @@ public class Menu : MonoBehaviour {
      * Buttons in Main Menu for 'Play Game', 'Tutorial', 'Options', 'Credits'
      */
     void OnGUI() {
-        GUI.DrawTexture(new Rect((Screen.width - ScreenUtil.getPixels(logo.width)) / 2 - ScreenUtil.getPixels(30), ScreenUtil.getPixels(100), ScreenUtil.getPixels(logo.width), ScreenUtil.getPixels(logo.height)), logo);
+        GUI.DrawTexture(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelHeight(logo.width)) / 2 - ScreenUtil.getPixelHeight(30),
+            ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelHeight(logo.width), ScreenUtil.getPixelHeight(logo.height)), logo);
         if(!_displayOptions && !_displayCredits){
-            if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), style.fontSize), "Play Game", style)) {
+            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2, 
+                ScreenUtil.getPixelWidth(400), style.fontSize), "Play Game", style)) {
                 Application.LoadLevel(1);
             }
-            if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400), style.fontSize), "Tutorial", style)) {
+            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), style.fontSize), "Tutorial", style)) {
                 Application.LoadLevel(2);
             }
-            if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(200), ScreenUtil.getPixels(400), style.fontSize), "Options", style))
+            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(400), style.fontSize), "Options", style))
             {
                 _displayOptions = true;
             }
-            if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(300), ScreenUtil.getPixels(400), style.fontSize), "Credits", style)) {
+            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelWidth(300), ScreenUtil.getPixelWidth(400), style.fontSize), "Credits", style)) {
                 _displayCredits = true;
             }
         }
@@ -59,24 +64,32 @@ public class Menu : MonoBehaviour {
         {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
-            GUI.Label(new Rect(Screen.width/2 - 3*Screen.width/16, Screen.height/2 - ScreenUtil.getPixels(100), 3*Screen.width/8, ScreenUtil.getPixels(200)), "Options",style);
+            GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 - 
+                ScreenUtil.getPixelHeight(100), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
             GUI.color = prev;
-
-            GUI.Label(new Rect((Screen.width + ScreenUtil.getPixels(200)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Effects Volume", style);
-            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((Screen.width + ScreenUtil.getPixels(200)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
+            GUI.Label(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, ScreenUtil.ScreenHeight / 2, 
+                ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Effects Volume", style);
+            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, 
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.effectsVolume, 0f, 1.0f);
-            GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(1000)) / 2, Screen.height / 2, ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Music Volume", style);
-            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(1000)) / 2, Screen.height / 2 + ScreenUtil.getPixels(100), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
+            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, ScreenUtil.ScreenHeight / 2, 
+                ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Music Volume", style);
+            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, 
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.musicVolume, 0f, 1.0f);
-            GUI.Label(new Rect((Screen.width - ScreenUtil.getPixels(400)) / 2, Screen.height / 2 + ScreenUtil.getPixels(150), ScreenUtil.getPixels(400), ScreenUtil.getPixels(200)), "Sensitivity", style);
-            GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((Screen.width - ScreenUtil.getPixels(400))/ 2, Screen.height / 2 + ScreenUtil.getPixels(230), ScreenUtil.getPixels(400), ScreenUtil.getPixels(50)),
+            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), 
+                "Sensitivity", style);
+            GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(230), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.mouseSensitivity, 0.1f, 0.5f);
-
+                
             if (GameManager.Instance != null) {
                 GameManager.Instance.UpdateMusicVolume();
             }
-
-            if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(200)) / 2, Screen.height - ScreenUtil.getPixels(150), ScreenUtil.getPixels(200), style.fontSize), "Back",style)) {
+            
+            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2, 
+                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", style)) {
                 _displayOptions = false;
                 // update sensitivity when options are closed
                 if (GameManager.Instance != null) {
@@ -91,34 +104,36 @@ public class Menu : MonoBehaviour {
         if (_displayCredits) {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
-            GUI.Label(new Rect(Screen.width / 2 - 3 * Screen.width / 16, Screen.height / 2 - ScreenUtil.getPixels(100), 3 * Screen.width / 8, ScreenUtil.getPixels(200)), "Credits", style);
+            GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(100), 
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Credits", style);
             GUI.color = prev;
             GUI.color = Color.green;
-            GUI.Label(new Rect(Screen.width / 2 - 3 * Screen.width / 16, Screen.height / 2,
-                3 * Screen.width / 8, ScreenUtil.getPixels(200)), "Anthony Dao", style);
+            GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2,
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Anthony Dao", style);
             style.fontSize /= 2;
             GUI.color = Color.white;
-            GUI.Label(new Rect(Screen.width / 2 - 3 * Screen.width / 16, Screen.height / 2 + ScreenUtil.getPixels(55),
-                3 * Screen.width / 8, ScreenUtil.getPixels(200)), "Programming ( Enemies-Menus-GUI ) / Design", style);
+            GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(55),
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Programming ( Enemies-Menus-GUI ) / Design", style);
             style.fontSize *= 2;
             GUI.color = Color.green;
-            GUI.Label(new Rect(Screen.width / 2 - 3 * Screen.width / 16, Screen.height / 2 + ScreenUtil.getPixels(120),
-                3 * Screen.width / 8, ScreenUtil.getPixels(200)), "Chase Khamashta", style);
+            GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(120),
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Chase Khamashta", style);
             style.fontSize /= 2;
             GUI.color = Color.white;
-            GUI.Label(new Rect(Screen.width / 2 - 3 * Screen.width / 16, Screen.height / 2 + ScreenUtil.getPixels(170),
-                3 * Screen.width / 8, ScreenUtil.getPixels(200)), "Programming ( Player-Controls-Enemies-Powerups ) / Design", style);
+            GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(170),
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Programming ( Player-Controls-Enemies-Powerups ) / Design", style);
             style.fontSize *= 2;
             GUI.color = Color.green;
-            GUI.Label(new Rect(Screen.width / 2 - 3 * Screen.width / 16, Screen.height / 2 + ScreenUtil.getPixels(240),
-                3 * Screen.width / 8, ScreenUtil.getPixels(200)), "Orlando Salvatore", style);
+            GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(240),
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Orlando Salvatore", style);
             style.fontSize /= 2;
             GUI.color = Color.white;
-            GUI.Label(new Rect(Screen.width / 2 - 3 * Screen.width / 16, Screen.height / 2 + ScreenUtil.getPixels(290),
-                3 * Screen.width / 8, ScreenUtil.getPixels(200)), "Programming ( Enemies-Level Generation-Transitions-Tutorial-Menus-Scoring )/ Art / Music / Design", style);
+            GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(290),
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), 
+                "Programming ( Enemies-Level Generation-Transitions-Tutorial-Menus-Scoring )/ Art / Music / Design", style);
             style.fontSize *= 2;
-
-            if (GUI.Button(new Rect((Screen.width - ScreenUtil.getPixels(200)) / 2, Screen.height - ScreenUtil.getPixels(100), ScreenUtil.getPixels(200), style.fontSize), "Back", style)) {
+            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2, 
+                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", style)) {
                 _displayCredits = false;
             }
         }

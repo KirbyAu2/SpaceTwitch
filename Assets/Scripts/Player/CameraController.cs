@@ -109,7 +109,6 @@ public class CameraController : MonoBehaviour {
      * Sets the current Blur Shader(s) to the given value
      */
     public void setBlurShader(bool value) {
-        Debug.Log("Turning blur on: " + value);
         if(GameManager.Instance.enableSeebright) {
             _blurShaderLHS.enabled = value;
             _blurShaderRHS.enabled = value;

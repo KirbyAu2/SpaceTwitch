@@ -123,7 +123,8 @@ public abstract class Enemy : MonoBehaviour {
                 if (GameManager.Instance.CurrentPlayerShips[0].isCloneActivated == false)
                 {
                     tempStyle.alignment = TextAnchor.MiddleCenter;
-                    GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(200), "Clone!", tempStyle, 2));
+                    GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(200), 
+                                                           "Clone!", tempStyle, 2));
                 }
                 GameManager.Instance.CurrentPlayerShips[0].ActivateClone();
                 break;
@@ -131,13 +132,15 @@ public abstract class Enemy : MonoBehaviour {
             case PowerUps.Multi:
                 GameManager.Instance.CurrentPlayerShips[0].ActivateMulti();
                 tempStyle.alignment = TextAnchor.MiddleCenter;
-                GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(100), "Multi-Shot!", tempStyle, 2));
+                GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(100), 
+                                                       "Multi-Shot!", tempStyle, 2));
                 break;
 
             case PowerUps.Rapid:
                 GameManager.Instance.CurrentPlayerShips[0].ActivateRapid();
                 tempStyle.alignment = TextAnchor.MiddleCenter;
-                GUIManager.Instance.addGUIItem(new GUIItem(Screen.width / 2, ScreenUtil.getPixels(300), "Rapid Shot!", tempStyle, 2));
+                GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(300), 
+                                                       "Rapid Shot!", tempStyle, 2));
                 break;
         }
     }
