@@ -268,12 +268,13 @@ public class Player : MonoBehaviour {
         transform.eulerAngles = new Vector3(angleUp, 180, 0);
 
         // shoot
-        if (_numShots < 0)
+        if (_numShots < 0) { 
             _numShots = 0;
+        }
 
         int maxMultiShots = maxShots;
         if (isMultiActivated) {
-            maxMultiShots = maxShots * 3;
+            maxMultiShots = maxShots * 3 - 2; // -2 for +3 shots from multi shot so it fires at 12 max (<13)
         }
         if (Input.GetMouseButton(0) && _reload < 0 && _numShots < maxMultiShots) {
             Shoot();
@@ -337,21 +338,19 @@ public class Player : MonoBehaviour {
         Lane currentLane = currentLevel.lanes[_currentPlane];
         GameObject shot = (GameObject)Instantiate(playerProjectile);
         shot.renderer.enabled = false;
-        shot.GetComponent<PlayerProjectile>().init(currentLane,this);
+        shot.GetComponent<PlayerProjectile>().init(currentLane, this);
         _numShots++;
         if (isMultiActivated) {
             currentLane = currentLevel.lanes[_currentPlane].LeftLane;
             if (currentLane != null) {
                 shot = (GameObject)Instantiate(playerProjectile);
-                shot.GetComponent<PlayerProjectile>()._player = this;
-                shot.GetComponent<PlayerProjectile>().init(currentLane,this);
+                shot.GetComponent<PlayerProjectile>().init(currentLane, this);
                 _numShots++;
             }
             currentLane = currentLevel.lanes[_currentPlane].RightLane;
             if (currentLane != null) {
                 shot = (GameObject)Instantiate(playerProjectile);
-                shot.GetComponent<PlayerProjectile>()._player = this;
-                shot.GetComponent<PlayerProjectile>().init(currentLane,this);
+                shot.GetComponent<PlayerProjectile>().init(currentLane, this);
                 _numShots++;
             }
         }
@@ -395,6 +394,9 @@ public class Player : MonoBehaviour {
         }
     }
 
+    void SetRapidTime(float time){
+        _rapidTime = time;
+    }
     //Activates multi-shot
     public void ActivateMulti() {
         _multiTime = MULTI_SHOT_TIME;
@@ -402,6 +404,11 @@ public class Player : MonoBehaviour {
         if (!isClone && isCloneActivated) {
             _clone.ActivateMulti();
         }
+    }
+
+    void SetMultiTime(float time)
+    {
+        _multiTime = time;
     }
 
     //Calls to spawn clone if no clone is currently activated and when clone power up is actvated 
@@ -417,6 +424,14 @@ public class Player : MonoBehaviour {
         GameObject playerClone = (GameObject)Instantiate(cloneObject);
         _clone = playerClone.GetComponent<Player>();
         _clone.initAsClone(currentLevel, _currentPlane, _positionOnPlane);
+        if (isMultiActivated) {
+            _clone.SetMultiTime(_multiTime);
+            _clone.isMultiActivated = true;
+        }
+        if (isRapidActivated) {
+            _clone.SetRapidTime(_rapidTime);
+            _clone.isRapidActivated = true;
+        }
     }
 
     //If clone is activated and main player ship dies, clone ship becomes main player ship
