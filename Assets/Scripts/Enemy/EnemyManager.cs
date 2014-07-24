@@ -2,12 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * The EnemyManager class manages enemy spawning and enemies still alive in the level
+ * Checks enemy ID when it is spawned
+ */
 public class EnemyManager : MonoBehaviour {
     private const float STANDARD_SPAWN_TIME = 1.0f;
     private const float PAWN_SPAWN_TIME = 0.0f;
     private const float CROSSHATCH_SPAWN_TIME = 5.0f;
     private const float SWIRLIE_SPAWN_TIME = 1.0f;
-    private const float CONFETTI_SPAWN_TIME = 2.0f;
+    private const float CONFETTI_SPAWN_TIME = 1.5f;
+    private const float DECREMENT_FOR_DIFFICULTY = 0.04f;
+    private const float LOWEST_SPAWN_TIME = 0.5f;
 
     private static EnemyManager _instance;
 
@@ -55,38 +61,49 @@ public class EnemyManager : MonoBehaviour {
         }
     }
 
+    /*
+     * Removes enemy
+     */
     public void removeEnemy(Enemy e) {
         _currentEnemies.Remove(e);
     }
 
+    /*
+     * Checks and Spawns enemies 
+     */
     private void spawnEnemy() {
+        //Return if in tutorial and not ready to spawn
         if (_currentLevel.isTutorial) {
             if (!_currentLevel.Tutorial.readyToSpawn) {
                 return;
             }
         }
+        //Return if no potential enemies
         if (_potentialEnemies == null) {
             return;
         }
+        //Return if level is transitioning
         if (GameManager.Instance.CurrentPlayerShips.Count > 0) {
             if (GameManager.Instance.CurrentPlayerShips[0].isTransitioning) {
                 return;
             }
         }
+        //Load next level if no more enemies
         if (!_currentLevel.isTutorial) {
             if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
                 GameManager.Instance.loadNextLevel();
                 return;
-            } else if (_potentialEnemies.Count == 0) {
+            } else if (_potentialEnemies.Count == 0) { //Return if no more potential enemies
                 return;
             }
         } else {
+            //End tutorial if no more enemies in tutorial
             if (_potentialEnemies.Count == 0 && _currentEnemies.Count == 0) {
                 _currentLevel.Tutorial.endTutorial();
                 return;
             }
         }
-        string nextEnemyID = _potentialEnemies[0];
+        string nextEnemyID = _potentialEnemies[0]; //what is the next enemy
         if (prevEnemyID != null && _currentLevel.isTutorial) {
             if (prevEnemyID != nextEnemyID && _currentEnemies.Count > 0) {
                 return;
@@ -97,7 +114,9 @@ public class EnemyManager : MonoBehaviour {
         }
         _potentialEnemies.RemoveAt(0);
         GameObject g;
-        _nextSpawnTime = Time.time + STANDARD_SPAWN_TIME;
+        _nextSpawnTime = STANDARD_SPAWN_TIME;
+        
+        //Spawns Enemies 
         switch (nextEnemyID) {
             case Level.ID_PAWN:
                 g = (GameObject)Instantiate(pawnPrefab);
@@ -123,28 +142,18 @@ public class EnemyManager : MonoBehaviour {
                 _nextSpawnTime += SWIRLIE_SPAWN_TIME;
                 break;
         }
-        if (_currentLevel.isTutorial) {
-            handleTutorial(nextEnemyID);
+        _nextSpawnTime -= (GameManager.Instance.CurrentDifficulty * DECREMENT_FOR_DIFFICULTY);
+        if(_nextSpawnTime < LOWEST_SPAWN_TIME) {
+            _nextSpawnTime = LOWEST_SPAWN_TIME;
         }
+        _nextSpawnTime += Time.time;
+
         _currentEnemies[_currentEnemies.Count - 1].spawn(_currentLevel.getRandomLane());
     }
 
-    private void handleTutorial(string enemyID) {
-        switch (enemyID) {
-            case Level.ID_PAWN:
-                break;
-
-            case Level.ID_CONFETTI:
-                break;
-
-            case Level.ID_CROSSHATCH:
-                break;
-
-            case Level.ID_SWIRLIE:
-                break;
-        }
-    }
-
+    /*
+     * Calls to spawn Enemies when time 
+     */
     void Update () {
         if (GameManager.Instance != null) {
             if (!GameManager.Instance.PlayingGame) {
