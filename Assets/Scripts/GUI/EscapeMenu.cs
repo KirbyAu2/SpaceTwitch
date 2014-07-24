@@ -12,8 +12,15 @@ public class EscapeMenu : MonoBehaviour {
 
     private float currentTime;
     private bool _displayOptions = false;
+    private JoystickButtonMenu mainMenu, optionMenu;
+    private int numberOfButtons = 3;
+    private Rect[] rectangleArray = { new Rect(15, 15, 15, 15), new Rect(30, 15, 15, 15), new Rect(45, 15, 15, 15) };
+    private string[] stringArray = { "Resume", "Options", "Main Menu" };
+    private string inputJoyButton = SBRemote.BUTTON_SELECT;
+    private JoystickButtonMenu.JoyAxis joystickInputAxis = JoystickButtonMenu.JoyAxis.Vertical;
 
     void Start () {
+        mainMenu = new JoystickButtonMenu(numberOfButtons, rectangleArray, stringArray, inputJoyButton,joystickInputAxis);
         style.fontSize = (int)(ScreenUtil.getPixelHeight(style.fontSize));
         currentTime = Time.timeScale;
     }
@@ -38,7 +45,15 @@ public class EscapeMenu : MonoBehaviour {
 
 	
     void Update () {
-
+#if UNITY_EDITOR
+#else
+        if (GameManager.Instance.enableSeebright)
+        {
+            mainMenu.CheckJoystickAxis();
+            mainMenu.CheckJoystickButton();
+           
+        }
+#endif
     }
 
     /*
@@ -47,6 +62,13 @@ public class EscapeMenu : MonoBehaviour {
      * As well as buttons for Options menu
      */
     void OnGUI() {
+#if UNITY_EDITOR
+#else
+        if (GameManager.Instance.enableSeebright)
+        {
+            mainMenu.DisplayButtons();
+        }
+#endif
         if (!currentlyActive) {
             return;
         }
@@ -70,26 +92,55 @@ public class EscapeMenu : MonoBehaviour {
         if (_displayOptions) {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
-            GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 - 
-                ScreenUtil.getPixelHeight(100), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
-            GUI.color = prev;
 
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, ScreenUtil.ScreenHeight / 2, 
-                ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Effects Volume", style);
-            GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
-                GameManager.effectsVolume, 0f, 1.0f);
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, ScreenUtil.ScreenHeight / 2, 
-                ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Music Volume", style);
-            GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
-                GameManager.musicVolume, 0f, 1.0f);
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), 
-                "Sensitivity", style);
-            GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(230), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
-                GameManager.mouseSensitivity, 0.1f, 0.5f);
+            if (GameManager.Instance.enableSeebright == false)
+            {
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 -
+                    ScreenUtil.getPixelHeight(100), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
+                GUI.color = prev;
+                GUI.Label(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, ScreenUtil.ScreenHeight / 2,
+                    ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Effects Volume", style);
+                GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                    GameManager.effectsVolume, 0f, 1.0f);
+                GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, ScreenUtil.ScreenHeight / 2,
+                    ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Music Volume", style);
+                GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                    GameManager.musicVolume, 0f, 1.0f);
+                GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)),
+                    "Sensitivity", style);
+                GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(230), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                    GameManager.mouseSensitivity, 0.1f, 0.5f);
+            }
+            else if (GameManager.Instance.enableSeebright == true)
+            {
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 -
+                    ScreenUtil.getPixelHeight(200), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
+                GUI.color = prev;
+                //SFX Volume
+                GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(100),
+                    ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Effects Volume", style);
+                GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
+                    ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(30), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                    GameManager.effectsVolume, 0f, 1.0f);
+                //Music Volume
+                GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(20),
+                    ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Music Volume", style);
+                GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(90), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                    GameManager.musicVolume, 0f, 1.0f);
+                //Sensitivity Control
+                GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(140), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)),
+                    "Sensitivity", style);
+                GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(210), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                    GameManager.mouseSensitivity, 0.1f, 0.5f);
+            }
+
             if(GameManager.Instance != null) {
                 GameManager.Instance.UpdateMusicVolume();
             }
