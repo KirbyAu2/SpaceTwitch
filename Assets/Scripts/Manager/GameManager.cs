@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour {
     public List<GameObject> levels;
     public GameObject playerPrefab;
     public bool enableSeebright = false;
+    public bool motionEnabled = false;
     public bool isMenu = false;
 
     public static float mouseSensitivity = DEFAULT_SENSITIVITY;
@@ -227,7 +228,9 @@ public class GameManager : MonoBehaviour {
      */
     public void UpdateMusicVolume()
     {
-        _music.volume = musicVolume;
+        if (_music != null) { 
+            _music.volume = musicVolume;
+        }
     }
 
     /*
