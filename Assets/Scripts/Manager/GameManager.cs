@@ -227,7 +227,9 @@ public class GameManager : MonoBehaviour {
      */
     public void UpdateMusicVolume()
     {
-        _music.volume = musicVolume;
+        if (_music != null) { 
+            _music.volume = musicVolume;
+        }
     }
 
     /*
