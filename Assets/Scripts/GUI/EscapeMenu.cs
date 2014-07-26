@@ -13,6 +13,7 @@ public class EscapeMenu : MonoBehaviour {
     private float currentTime;
     private bool _displayOptions = false;
     private bool _focusChanged = false;
+    private float _focusTimerMax = .2f;
     private float _focusTimer = 0;
     private int _focusID = 0;
 
@@ -48,21 +49,16 @@ public class EscapeMenu : MonoBehaviour {
     int ManageFocus(int ID, int length)
     {
         GUI.FocusControl(ID.ToString());
-        /*
-        if (_focusChanged )
+
+        _focusTimer += .01f;
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < length && _focusTimer > _focusTimerMax)
         {
-            _focusChanged = false;
-            _focusTimer = Time.timeSinceLevelLoad;
-        }
-         */
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < length && Time.timeSinceLevelLoad > _focusTimer + .2f)
-        {
-            _focusTimer = Time.timeSinceLevelLoad;
+            _focusTimer = 0;
             ID++;
         }
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 0 && ID > 0 && Time.timeSinceLevelLoad > _focusTimer + .2f)
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 0 && ID > 0 && _focusTimer > _focusTimerMax)
         {
-            _focusTimer = Time.timeSinceLevelLoad;
+            _focusTimer = 0;
             ID--;
         }
         return ID;
