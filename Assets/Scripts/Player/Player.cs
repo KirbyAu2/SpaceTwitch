@@ -227,11 +227,7 @@ public class Player : MonoBehaviour {
         float mouseMove = Input.GetAxis("Mouse X");
 #else
         float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL)/(2048 * 4) : Input.GetAxis("Mouse X");  
-        if (GameManager.Instance.motionEnabled) {
-            mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetOrientation().eulerAngles.z : Input.GetAxis("Mouse X");  
-        }
 #endif
-      //  SBRemote.GetOrientation();
         float shipMove = mouseMove * _mouseSensitivity;
         if (_isMovementMirrored) {
             _positionOnPlane -= shipMove;
