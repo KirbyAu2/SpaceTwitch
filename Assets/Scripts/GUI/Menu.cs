@@ -13,6 +13,10 @@ public class Menu : MonoBehaviour {
 
     private bool _displayOptions = false;
     private bool _displayCredits = false;
+    private bool _focusChanged = false;
+    private float _focusTimerMax = .2f;
+    private float _focusTimer = 0;
+    private int _focusID = -1;
 
     private Transform[] _levelModels;
 
@@ -33,6 +37,24 @@ public class Menu : MonoBehaviour {
         }
     }
 
+    int ManageFocus(int ID, int length)
+    {
+        GUI.FocusControl(ID.ToString());
+
+        _focusTimer += .01f;
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < length && _focusTimer > _focusTimerMax)
+        {
+            _focusTimer = 0;
+            ID++;
+        }
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 0 && ID > 0 && _focusTimer > _focusTimerMax)
+        {
+            _focusTimer = 0;
+            ID--;
+        }
+        return ID;
+    }
+
     /*
      * OnGUI is called for rendering and handling GUI events
      * Buttons in Main Menu for 'Play Game', 'Tutorial', 'Options', 'Credits'
@@ -41,24 +63,58 @@ public class Menu : MonoBehaviour {
         GUI.DrawTexture(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelHeight(logo.width)) / 2 - ScreenUtil.getPixelHeight(30),
             ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelHeight(logo.width), ScreenUtil.getPixelHeight(logo.height)), logo);
         if(!_displayOptions && !_displayCredits){
+            GUI.SetNextControlName("0");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2, 
                 ScreenUtil.getPixelWidth(400), style.fontSize), "Play Game", style)) {
                 Application.LoadLevel(1);
             }
+            GUI.SetNextControlName("1");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), style.fontSize), "Tutorial", style)) {
                 Application.LoadLevel(2);
             }
+            GUI.SetNextControlName("2");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(400), style.fontSize), "Options", style))
             {
                 _displayOptions = true;
             }
+            GUI.SetNextControlName("3");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelWidth(300), ScreenUtil.getPixelWidth(400), style.fontSize), "Credits", style)) {
                 _displayCredits = true;
             }
+            _focusID = ManageFocus(_focusID, 2);
+            if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
+            {
+                if (_focusID < 0)
+                {
+                    return;
+                }
+                else if (_focusID == 0)
+                {
+                    Application.LoadLevel(1);
+                }
+                else if (_focusID == 1)
+                {
+                    Application.LoadLevel(2);
+                }
+                else if (_focusID == 2)
+                {
+                    _displayOptions = true;
+                }
+                else if (_focusID == 3)
+                {
+                    _displayCredits = true;
+                }
+            }
+
         }
+        else
+        {
+            _focusID = -1;
+        }
+        
 
         //In Options Menu
         if (_displayOptions)
