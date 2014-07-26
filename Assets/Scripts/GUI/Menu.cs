@@ -110,14 +110,10 @@ public class Menu : MonoBehaviour {
             }
 
         }
-        else
-        {
-            _focusID = -1;
-        }
         
 
         //In Options Menu
-        if (_displayOptions)
+        else if (_displayOptions)
         {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
@@ -185,7 +181,7 @@ public class Menu : MonoBehaviour {
         }
         //Credits Screen
         //Displays Credits
-        if (_displayCredits) {
+        else if (_displayCredits) {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(100), 
