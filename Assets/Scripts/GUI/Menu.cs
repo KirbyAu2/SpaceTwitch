@@ -84,7 +84,7 @@ public class Menu : MonoBehaviour {
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelWidth(300), ScreenUtil.getPixelWidth(400), style.fontSize), "Credits", style)) {
                 _displayCredits = true;
             }
-            _focusID = ManageFocus(_focusID, 2);
+            _focusID = ManageFocus(_focusID, 3);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
                 if (_focusID < 0)
