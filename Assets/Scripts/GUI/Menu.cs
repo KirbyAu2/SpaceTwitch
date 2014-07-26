@@ -208,7 +208,7 @@ public class Menu : MonoBehaviour {
                 }
                 else if (_focusID == 2 && GameManager.mouseSensitivity < .5f)
                 {
-                    GameManager.mouseSensitivity += .01f;
+                    GameManager.mouseSensitivity += .005f;
                 }
             }
             if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) < -2048*4*2) {
@@ -222,7 +222,7 @@ public class Menu : MonoBehaviour {
                 }
                 else if (_focusID == 2 && GameManager.mouseSensitivity > .1f)
                 {
-                    GameManager.mouseSensitivity -= .01f;
+                    GameManager.mouseSensitivity -= .005f;
                 }
             }
         }
