@@ -194,17 +194,12 @@ public class EscapeMenu : MonoBehaviour {
                 {
                     return;
                 }
-                else if (_focusID == 0)
+                else if (_focusID == 0 || _focusID == 1 || _focusID == 2)
                 {
-                    _sliderSelecter = !_sliderSelecter;
-                }
-                else if (_focusID == 1)
-                {
-                    _sliderSelecter = !_sliderSelecter;
-                }
-                else if (_focusID == 2)
-                {
-                    _sliderSelecter = !_sliderSelecter;
+                    if (_sliderSelecter)
+                        _sliderSelecter = false;
+                    else
+                        _sliderSelecter = true;
                 }
                 else if (_focusID == 3)
                 {
