@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+/*
+ * The Tutorial class manages the tutorial level for the game
+ * Displays messages to help player
+ */
 public class Tutorial : MonoBehaviour {
     private const float GAME_END_DURATION = 4.0f;
     private const int MOVEMENT_TUT_DURATION = 1;
@@ -19,7 +23,9 @@ public class Tutorial : MonoBehaviour {
     private bool _tutorialOver = false;
 
     void Start () {
-        _currentMessageItem = new GUIItem((float)(Screen.width / 2), (float)(Screen.height / 2), MOVEMENT, GUIManager.Instance.defaultStyle, MOVEMENT_TUT_DURATION);
+        //Adds GUI messages to list 
+        _currentMessageItem = new GUIItem((float)(ScreenUtil.ScreenWidth / 2), 
+            (float)(ScreenUtil.ScreenHeight / 2), MOVEMENT, GUIManager.Instance.defaultStyle, MOVEMENT_TUT_DURATION);
         messages = new List<string>();
         messages.Add(MOVEMENT);
         messages.Add(PAWN);
@@ -29,6 +35,7 @@ public class Tutorial : MonoBehaviour {
     }
 	
     void Update () {
+        //Returns back to Main menu when tutorial is over
         if (_tutorialOver) {
             if (Time.time > _startTime + GAME_END_DURATION) {
                 Application.LoadLevel(0);
@@ -40,16 +47,20 @@ public class Tutorial : MonoBehaviour {
             if (_currentMessage == 0) {
                 readyToSpawn = true;
             }
-            _currentMessageItem = new GUIItem((float)(Screen.width / 2), ScreenUtil.getPixels(280),
+            _currentMessageItem = new GUIItem((float)(ScreenUtil.ScreenWidth / 2), ScreenUtil.getPixelHeight(280),
                 messages[++_currentMessage], GUIManager.Instance.defaultStyle);
             GUIManager.Instance.addGUIItem(_currentMessageItem);
         }
     }
 
+    //Displays next Gui message 
     public void displayNext() {
         GUIManager.Instance.removeGUIItem(_currentMessageItem);
     }
 
+    /*
+     * Prints end message and Ends tutorial 
+     */
     public void endTutorial() {
         if (_tutorialOver) {
             return;
@@ -57,6 +68,7 @@ public class Tutorial : MonoBehaviour {
         displayNext();
         _startTime = Time.time;
         _tutorialOver = true;
-        GUIManager.Instance.addGUIItem(new GUIItem((float)(Screen.width / 2), (float)(Screen.height / 2), TUTORIAL_COMPLETE, GUIManager.Instance.defaultStyle, (int)GAME_END_DURATION));
+        GUIManager.Instance.addGUIItem(new GUIItem((float)(ScreenUtil.ScreenWidth / 2), (float)(ScreenUtil.ScreenHeight / 2), 
+            TUTORIAL_COMPLETE, GUIManager.Instance.defaultStyle, (int)GAME_END_DURATION));
     }
 }

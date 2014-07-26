@@ -2,6 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * The Spikes enemy will spawn on a random lane and grow up to five spikes.
+ * The Swirlie enemy will spawn on the spikes and shoot down the lane
+ * The Spikes are invulnerable until Swirlie is dead 
+ */
 public class Spike : Enemy
 {
     public const float DEFAULT_DIST_FROM_BACK = .2f;
@@ -53,6 +58,9 @@ public class Spike : Enemy
         }
     }
 
+    /*
+     * Adds Spike
+     */
     private void AddSpike()
     {
         GameObject c = (GameObject)Instantiate(spikePrefab);
@@ -61,6 +69,9 @@ public class Spike : Enemy
         _head.NumOfSpikes++;
     }
 
+    /*
+     * Removes Spike
+     */
     private void RemoveSpike(Spike s)
     {
         if (s == _child)
@@ -76,8 +87,14 @@ public class Spike : Enemy
     void Start()
     {
         _score = 50;
+        GameManager.Instance.CurrentLevel.spikeList.Add(this);
     }
 
+    /*
+     * Toggles invulnerability depending on whether swirlie is still alive
+     * Checks for max spike count
+     * Adds spikes after time duration 
+     */
     void Update()
     {
         if (_swirlie == null) {
@@ -96,6 +113,9 @@ public class Spike : Enemy
         }
     }
 
+    /*
+     * When Spike is hit, destroys last spike and sets vulnerability to parent spike
+     */
     void OnDestroy() {
         if (this != _head)
         {
@@ -112,7 +132,9 @@ public class Spike : Enemy
     {
         throw new System.NotImplementedException();
     }
-
+    /*
+     * Initializes position to spawn new spike
+     */
     public void init(Lane spawnLane, Swirlie swirlie, Spike parent = null) {
         _swirlie = swirlie;
         _parent = parent;

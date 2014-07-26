@@ -2,6 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * The Level class manages Levels and enemy count
+ * Each level has a different count of enemies depending on difficulty
+ */
 public class Level : MonoBehaviour {
     public const string ID_PAWN = "pawn";
     public const string ID_CROSSHATCH = "crosshatch";
@@ -11,10 +15,12 @@ public class Level : MonoBehaviour {
 
     public List<Edge> edges;
     public List<Lane> lanes;
+    public List<Spike> spikeList;
 
     public bool wrapAround;
     public bool debugDraw = false;
     public GameObject cameraPosition;
+    public GameObject seebrightPosition;
     public int pawnCount = 0;
     public int crosshatchCount = 0;
     public int swirlieCount = 0;
@@ -47,6 +53,15 @@ public class Level : MonoBehaviour {
         if (isTutorial) {
             _tutorial = gameObject.AddComponent<Tutorial>();
         }
+
+        if(GameManager.Instance.enableSeebright) {
+            cameraPosition = seebrightPosition;
+        }
+        //Algorithm to get number of enemies in each level depending on difficulty
+        pawnCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
+        crosshatchCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
+        swirlieCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
+        confettiCount *= (GameManager.Instance.CurrentDifficulty/5 + 1);
     }
 
     public Tutorial Tutorial {
@@ -59,6 +74,10 @@ public class Level : MonoBehaviour {
         return lanes.IndexOf(l);
     }
 
+    /*
+     * Adds enemies to list of potential enemies 
+     * Uses for loop to add all enemies according to count
+     */
     private void populatePotentialEnemies() {
         _potentialEnemies = new List<string>();
         for (int i = 0; i < pawnCount; i++) {
@@ -96,13 +115,33 @@ public class Level : MonoBehaviour {
     }
 
     void Update() {
-
+        if(GameManager.Instance.enableSeebright && seebrightPosition != cameraPosition) {
+            cameraPosition = seebrightPosition;
+        }
     }
 
+    //When player beats level and level is destroyed, destroy all spike gameObjects in spikeList
+    void OnDestroy()
+    {
+        foreach(Spike spike in spikeList){
+            if (spike != null) {
+                if (spike.gameObject != null) {
+                    Destroy(spike.gameObject);
+                }
+            }
+        }
+    }
+
+    //gets random lane
     public Lane getRandomLane() {
         return lanes[(int)(Random.value * lanes.Count)];
     }
 
+    /*
+     * Draws gizmos that are also pickable and always drawn. 
+     * Allows us to quickly pick important objects in scene 
+     * Helps with debugging
+     */
     void OnDrawGizmos() {
         if (!debugDraw) {
             return;

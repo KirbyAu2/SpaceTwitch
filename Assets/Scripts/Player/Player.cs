@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * Player Class contains player shooting, power-ups, transistions, and player ship initializations.
+ * The player ship shoots projectiles that collides with the enemy
+ * The power ups will help the player by increasing the shot speed, making more shots, or making a second clone ship that the player can control
+ * When a level is complete, the player ship transistions to the next level. 
+ */
 public class Player : MonoBehaviour {
     public const float RESPAWN_COOLDOWN = 3.0f;
     public const float PLAYER_LEVEL_TRANSITION_TIME = 1.5f;
@@ -47,13 +53,12 @@ public class Player : MonoBehaviour {
     private Vector3 _cameraStartPos;
     private AudioClip _deathSound;
     private AudioClip _shootSound;
-    private AlpacaSound.RetroPixel _retroPixelShader;
     private Flashbang _flashbang;
     private bool _invulnerable = false;
     private GameObject _previousLevel;
     private float _invulnerabilityCooldown;
 
-    // Use this for initialization
+    //Initializes player ship
     void Start () {
         isRapidActivated = isMultiActivated = isCloneActivated = false;
         if (TestLevel != null) {
@@ -70,8 +75,21 @@ public class Player : MonoBehaviour {
         _shootSound = (AudioClip)Resources.Load("Sound/PlayerShoot");
     }
 
+
+    /**
+     * Updates the sensitivity
+     * 
+     */
+    public void UpdateSensitivity()
+    {
+        _mouseSensitivity = GameManager.mouseSensitivity;
+    }
+
+    //During transition and loading next level
     public void loadNextLevel(Level level) {
         _transitioning = true;
+        _invulnerable = false;
+        _invulnerabilityCooldown = Time.time - RESPAWN_COOLDOWN;
         _previousLevel = currentLevel.gameObject;
         currentLevel.lanes[_currentPlane].setHighlight(false);
         _startTransTime = Time.time;
@@ -86,6 +104,7 @@ public class Player : MonoBehaviour {
         }
     }
 
+    //Initialize current level 
     public void init(Level level) {
         if (isClone) {
             return;
@@ -99,6 +118,9 @@ public class Player : MonoBehaviour {
         _escapeMenu = gameObject.GetComponent<EscapeMenu>();
     }
 
+    /**
+     * Initializes the ship if it is a clone
+     */
     public void initAsClone(Level level, int plane, float position) {
         isClone = true;
         currentLevel = level;
@@ -121,16 +143,21 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (Input.GetKeyDown(KeyCode.Escape) && !isClone) {
-            if (_escapeMenu.currentlyActive) {
-                _escapeMenu.exit();
-            } else {
+        //Escape Menu
+#if UNITY_EDITOR
+        bool escapeMenuKeyPressed = Input.GetKeyDown(KeyCode.Escape);
+#else
+        bool escapeMenuKeyPressed = GameManager.Instance.enableSeebright ? SBRemote.GetButton(SBRemote.BUTTON_BACK) : Input.GetKeyDown(KeyCode.Escape);
+#endif
+        if (escapeMenuKeyPressed && !isClone) {
+            if (!_escapeMenu.currentlyActive) {
                 _escapeMenu.display();
             }
         }
         if (_escapeMenu.currentlyActive) {
             return;
         }
+        Screen.lockCursor = true;
 
         if (_invulnerable) {
             renderer.enabled = Mathf.Sin(Time.time * 50.0f) > 0;
@@ -140,6 +167,7 @@ public class Player : MonoBehaviour {
             _invulnerable = false;
         }
         if (_transitioning && currentLevel.SpawnLane != null) {
+            //if transitioning levels and clone is active, destroy clone
             if (isClone) {
                 GameManager.Instance.removeShip(this);
                 Destroy(gameObject);
@@ -147,19 +175,21 @@ public class Player : MonoBehaviour {
             setCamera();
             gameObject.transform.position = Vector3.Lerp(_startPos, currentLevel.SpawnLane.Front, (Time.time - _startTransTime) / PLAYER_LEVEL_TRANSITION_TIME);
             gameObject.transform.Rotate(new Vector3(1, 0, 0), 360.0f * (Time.time - _startTransTime) / PLAYER_LEVEL_TRANSITION_TIME);
+            
+            //Level Transition
             if (gameObject.transform.position == currentLevel.SpawnLane.Front && 
                 CameraController.currentCamera.gameObject.transform.position == currentLevel.cameraPosition.transform.position) {
                     if (!_flashbang.running) {
                         _flashbang.init(FLASHBANG_TIME);
                     }
                     if ((Time.time - _startTransTime) / (PLAYER_LEVEL_TRANSITION_TIME + FLASHBANG_TIME / 2.0f) >= 1.0f) {
-                        _retroPixelShader.enabled = false;
+                        CameraController.currentCamera.setRetroShader(false);
                     }
                     if (_flashbang.manualUpdate()) {
                         return;
                     }
-                    _retroPixelShader.enabled = false;
-                    _transitioning = false;
+                CameraController.currentCamera.setRetroShader(false);
+                _transitioning = false;
                     Destroy(_previousLevel);
                     if (currentLevel.SpawnLane != null) {
                         _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
@@ -173,6 +203,9 @@ public class Player : MonoBehaviour {
             return;
         }
 
+        //This is a preprocess directive, exclusively used with Unity Editor
+        //#yoyoloop
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Space)) { // testing purposes
             ActivateClone();
             ActivateMulti();
@@ -184,11 +217,21 @@ public class Player : MonoBehaviour {
             _invulnerabilityCooldown = (_invulnerable) ? float.MaxValue : 0;
             GUIManager.Instance.addGUIItem(new GUIItem(Screen.width/2,Screen.height/2,"God Mode : " + _invulnerable.ToString(),GUIManager.Instance.defaultStyle,4));
         }
+#endif
 
         if (!_alive) {
             return;
         }
+
+#if UNITY_EDITOR
         float mouseMove = Input.GetAxis("Mouse X");
+#else
+        float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL)/(2048 * 4) : Input.GetAxis("Mouse X");  
+        if (GameManager.Instance.motionEnabled) {
+            mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetOrientation().eulerAngles.z : Input.GetAxis("Mouse X");  
+        }
+#endif
+      //  SBRemote.GetOrientation();
         float shipMove = mouseMove * _mouseSensitivity;
         if (_isMovementMirrored) {
             _positionOnPlane -= shipMove;
@@ -239,11 +282,22 @@ public class Player : MonoBehaviour {
         transform.eulerAngles = new Vector3(angleUp, 180, 0);
 
         // shoot
+        if (_numShots < 0) { 
+            _numShots = 0;
+        }
+
         int maxMultiShots = maxShots;
         if (isMultiActivated) {
-            maxMultiShots *= 3;
+            maxMultiShots = maxShots * 3 - 2; // -2 for +3 shots from multi shot so it fires at 12 max (<13)
         }
-        if (Input.GetMouseButton(0) && _reload < 0 && _numShots < maxMultiShots) {
+
+#if UNITY_EDITOR
+        bool triggerPressed = Input.GetMouseButton(0);
+#else
+        bool triggerPressed = (GameManager.Instance.enableSeebright) ? SBRemote.GetButton(SBRemote.BUTTON_TRIGGER) : Input.GetMouseButton(0);
+#endif
+
+        if (triggerPressed && _reload < 0 && _numShots < maxMultiShots) {
             Shoot();
             _reload = DELAY_NEXT_SHOT;
         
@@ -272,18 +326,19 @@ public class Player : MonoBehaviour {
         }
     }
 
+    //sets camera resolution
     private void setCamera() {
-        if (_retroPixelShader == null) {
-            _retroPixelShader = CameraController.currentCamera.gameObject.GetComponent<AlpacaSound.RetroPixel>();
+        if (_flashbang == null) {
             _flashbang = CameraController.currentCamera.gameObject.GetComponent<Flashbang>();
         }
-        _retroPixelShader.enabled = true;
+        CameraController.currentCamera.setRetroShader(true);
         float percent = (Time.time - _startTransTime) / CAMERA_LEVEL_TRANSITION_TIME;
-        CameraController.currentCamera.gameObject.transform.position = Vector3.Lerp(_cameraStartPos, currentLevel.cameraPosition.transform.position,percent);
-        _retroPixelShader.verticalResolution = (int)(percent * Screen.height);
-        _retroPixelShader.horizontalResolution = (int)(percent * Screen.width);
+
+        CameraController.currentCamera.gameObject.transform.position = 
+            Vector3.Lerp(_cameraStartPos, currentLevel.cameraPosition.transform.position,percent);
     }
     
+    //gets current lane
     public Lane CurrentLane {
         get {
             if(currentLevel != null && currentLevel.lanes != null && _currentPlane < currentLevel.lanes.Count) {
@@ -294,48 +349,56 @@ public class Player : MonoBehaviour {
         }
     }
 
+    /*
+     * When player shoots, player projectile will shoot down lane that player was currently on when shot
+     * Instantiates player projectile gameobject
+     * If multi-shot is activated, player projectile will shoot down the lane left of current lane as well as the lane right of current lane
+     */
     void Shoot() {
-        AudioSource.PlayClipAtPoint(_shootSound, transform.position);
+        AudioSource.PlayClipAtPoint(_shootSound, transform.position, GameManager.effectsVolume);
         Lane currentLane = currentLevel.lanes[_currentPlane];
         GameObject shot = (GameObject)Instantiate(playerProjectile);
         shot.renderer.enabled = false;
-        shot.GetComponent<PlayerProjectile>().init(currentLane,this);
+        shot.GetComponent<PlayerProjectile>().init(currentLane, this);
         _numShots++;
         if (isMultiActivated) {
             currentLane = currentLevel.lanes[_currentPlane].LeftLane;
             if (currentLane != null) {
                 shot = (GameObject)Instantiate(playerProjectile);
-                shot.GetComponent<PlayerProjectile>()._player = this;
-                shot.GetComponent<PlayerProjectile>().init(currentLane,this);
+                shot.GetComponent<PlayerProjectile>().init(currentLane, this);
                 _numShots++;
             }
             currentLane = currentLevel.lanes[_currentPlane].RightLane;
             if (currentLane != null) {
                 shot = (GameObject)Instantiate(playerProjectile);
-                shot.GetComponent<PlayerProjectile>()._player = this;
-                shot.GetComponent<PlayerProjectile>().init(currentLane,this);
+                shot.GetComponent<PlayerProjectile>().init(currentLane, this);
                 _numShots++;
             }
         }
     }
     
+    /*
+     * Lowers shot count
+     */
     public void RemoveShot() {
         _numShots--;
     }
     
+    /*
+     * If player ship dies, creates particle effects and sfx for death
+     * Destroys gameobject and turns off plane highlight
+     */
     void OnTriggerEnter(Collider other) {
         if (_invulnerable) {
             return;
         }
         if (other.gameObject.tag == "Enemy") {
-            if (_retroPixelShader != null) {
-                _retroPixelShader.enabled = false;
-            }
+            CameraController.currentCamera.setRetroShader(false);
             ParticleManager.Instance.initParticleSystem(ParticleManager.Instance.playerDeath, gameObject.transform.position);
             if (!isClone && isCloneActivated) {
                 _clone.CloneBecomeMain();
             }
-            AudioSource.PlayClipAtPoint(_deathSound, transform.position);
+            AudioSource.PlayClipAtPoint(_deathSound, transform.position, GameManager.effectsVolume);
             currentLevel.lanes[_currentPlane].setHighlight(false);
             GameManager.Instance.removeShip(this);
             other.gameObject.GetComponent<Enemy>().explode();
@@ -343,6 +406,7 @@ public class Player : MonoBehaviour {
         }
     }
 
+    //Activates rapid shot 
     public void ActivateRapid() {
         _rapidTime = RAPID_SHOT_TIME;
         isRapidActivated = true;
@@ -351,6 +415,10 @@ public class Player : MonoBehaviour {
         }
     }
 
+    void SetRapidTime(float time){
+        _rapidTime = time;
+    }
+    //Activates multi-shot
     public void ActivateMulti() {
         _multiTime = MULTI_SHOT_TIME;
         isMultiActivated = true;
@@ -359,19 +427,35 @@ public class Player : MonoBehaviour {
         }
     }
 
+    void SetMultiTime(float time)
+    {
+        _multiTime = time;
+    }
+
+    //Calls to spawn clone if no clone is currently activated and when clone power up is actvated 
     public void ActivateClone() {
         if (!isClone && !isCloneActivated) {
             SpawnClone();
         }
     }
 
+    //When clone is activated, instantiate clone gameobject that mirrors player ship
     void SpawnClone() {
         isCloneActivated = true;
         GameObject playerClone = (GameObject)Instantiate(cloneObject);
         _clone = playerClone.GetComponent<Player>();
         _clone.initAsClone(currentLevel, _currentPlane, _positionOnPlane);
+        if (isMultiActivated) {
+            _clone.SetMultiTime(_multiTime);
+            _clone.isMultiActivated = true;
+        }
+        if (isRapidActivated) {
+            _clone.SetRapidTime(_rapidTime);
+            _clone.isRapidActivated = true;
+        }
     }
 
+    //If clone is activated and main player ship dies, clone ship becomes main player ship
     public void CloneBecomeMain() {
         _isMovementMirrored = false;
         isClone = false;
