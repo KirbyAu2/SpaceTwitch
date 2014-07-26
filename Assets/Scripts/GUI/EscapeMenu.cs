@@ -50,8 +50,8 @@ public class EscapeMenu : MonoBehaviour {
     int ManageFocus(int ID, int length)
     {
         GUI.FocusControl(ID.ToString());
-
-        _focusTimer += .01f;
+        if (_focusTimer > _focusTimerMax)
+            _focusTimer += .01f;
         if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < length && _focusTimer > _focusTimerMax)
         {
             _focusTimer = 0;

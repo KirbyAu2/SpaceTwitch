@@ -17,6 +17,8 @@ public class Menu : MonoBehaviour {
     private float _focusTimerMax = .2f;
     private float _focusTimer = 0;
     private int _focusID = -1;
+    private float _sliderTimerMax = .2f;
+    private float _sliderTimer = 0;
     private bool _sliderSelecter = false;
 
     private Transform[] _levelModels;
@@ -41,8 +43,8 @@ public class Menu : MonoBehaviour {
     int ManageFocus(int ID, int length)
     {
         GUI.FocusControl(ID.ToString());
-
-        _focusTimer += .01f;
+        if (_focusTimer > _focusTimerMax)
+            _focusTimer += .01f;
         if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < length && _focusTimer > _focusTimerMax)
         {
             _focusTimer = 0;
@@ -188,18 +190,21 @@ public class Menu : MonoBehaviour {
             {
                 _focusID = ManageFocus(_focusID, 3);
             }
+            if (_sliderTimer < _sliderTimerMax)
+                _sliderTimer += .01f;
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
                 if (_focusID < 0)
                 {
                     return;
                 }
-                else if (_focusID == 0 || _focusID == 1 ||_focusID == 2)
+                else if (_focusID == 0 || _focusID == 1 ||_focusID == 2 && _sliderTimer > _sliderTimerMax)
                 {
                     if (_sliderSelecter)
                         _sliderSelecter = false;
                     else
                         _sliderSelecter = true;
+                    _sliderTimer = 0;
                 }
                 else if (_focusID == 3)
                 {
