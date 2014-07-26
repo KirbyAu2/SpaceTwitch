@@ -77,6 +77,10 @@ public class GUIManager : MonoBehaviour {
             temp.a = i.currentAlpha;
             i.customGuiStyle.normal.textColor = temp;
             GUI.Label(new Rect(i.xpos, i.ypos, 0, 0), i.message, i.customGuiStyle);
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Label(new Rect(i.xpos + ScreenUtil.ScreenWidth, i.ypos, 0, 0), i.message, i.customGuiStyle);
+            }
             i.customGuiStyle.normal.textColor = originalColor;
         }
     }
