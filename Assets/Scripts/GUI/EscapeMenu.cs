@@ -12,15 +12,12 @@ public class EscapeMenu : MonoBehaviour {
 
     private float currentTime;
     private bool _displayOptions = false;
-    private JoystickButtonMenu mainMenu, optionMenu;
-    private int numberOfButtons = 3;
-    private Rect[] rectangleArray = { new Rect(15, 15, 15, 15), new Rect(30, 15, 15, 15), new Rect(45, 15, 15, 15) };
-    private string[] stringArray = { "Resume", "Options", "Main Menu" };
-    private string inputJoyButton = SBRemote.BUTTON_SELECT;
-    private JoystickButtonMenu.JoyAxis joystickInputAxis = JoystickButtonMenu.JoyAxis.Vertical;
+    private bool _focusChanged = false;
+    private float _focusTimer = Time.timeSinceLevelLoad;
+    private int _focusID = 0;
 
     void Start () {
-        mainMenu = new JoystickButtonMenu(numberOfButtons, rectangleArray, stringArray, inputJoyButton,joystickInputAxis);
+        
         style.fontSize = (int)(ScreenUtil.getPixelHeight(style.fontSize));
         currentTime = Time.timeScale;
     }
@@ -45,15 +42,28 @@ public class EscapeMenu : MonoBehaviour {
 
 	
     void Update () {
-#if UNITY_EDITOR
-#else
-        if (GameManager.Instance.enableSeebright)
+
+    }
+
+    int ManageFocus(int ID, int length)
+    {
+        GUI.FocusControl(ID.ToString());
+        if (_focusChanged && Time.timeSinceLevelLoad > _focusTimer + .2f)
         {
-            mainMenu.CheckJoystickAxis();
-            mainMenu.CheckJoystickButton();
-           
+            _focusChanged = false;
+            _focusTimer = Time.timeSinceLevelLoad;
         }
-#endif
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 0 && ID < length && !_focusChanged)
+        {
+            _focusChanged = true;
+            ID++;
+        }
+        else if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < 0 && !_focusChanged)
+        {
+            _focusChanged = true;
+            ID--;
+        }
+        return ID;
     }
 
     /*
@@ -62,31 +72,49 @@ public class EscapeMenu : MonoBehaviour {
      * As well as buttons for Options menu
      */
     void OnGUI() {
-#if UNITY_EDITOR
-#else
-        if (GameManager.Instance.enableSeebright)
-        {
-            mainMenu.DisplayButtons();
-        }
-#endif
+        _focusChanged = true;
         if (!currentlyActive) {
             return;
         }
         if (!_displayOptions) {
+            GUI.SetNextControlName("0");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2,
                                     ScreenUtil.getPixelWidth(400), style.fontSize), "Resume Game", style)) {
                 exit();
             }
+            GUI.SetNextControlName("1");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
                                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), 
                                     style.fontSize), "Main Menu", style)) {
                 Application.LoadLevel(0);
             }
+            GUI.SetNextControlName("2");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
                                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(400), 
                                     style.fontSize), "Options", style)) {
                 _displayOptions = true;
             }
+            _focusID = ManageFocus(_focusID, 2);
+            if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
+            {
+                if (_focusID < 0)
+                {
+                    return;
+                }
+                else if (_focusID == 0)
+                {
+                    exit();
+                }
+                else if (_focusID == 1)
+                {
+                    Application.LoadLevel(0);
+                }
+                else if (_focusID == 2)
+                {
+                    _displayOptions = true;
+                }
+            }
+            
         }
         //In option Menu
         if (_displayOptions) {

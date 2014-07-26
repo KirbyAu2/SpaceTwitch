@@ -19,6 +19,7 @@ public class Menu : MonoBehaviour {
     void Start () {
         style.fontSize = (int)ScreenUtil.getPixelHeight(style.fontSize);
         _levelModels = GetComponentsInChildren<Transform>();
+
     }
 	
     void Update () {
