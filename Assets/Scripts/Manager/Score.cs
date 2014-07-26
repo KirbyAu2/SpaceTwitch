@@ -37,8 +37,11 @@ public class Score : MonoBehaviour {
         //Buffer needed incase Seebright is enabled
         float buffer = GameManager.Instance.enableSeebright ? ScreenUtil.getPixelHeight(50) : 0;
         GUI.Label(new Rect(buffer, buffer, 0, 0), CurrentScore.ToString(), style);
+        GUI.Label(new Rect(buffer + ScreenUtil.ScreenWidth, buffer, 0, 0), CurrentScore.ToString(), style);
         GUI.color = Color.blue;
         GUI.Label(new Rect(buffer, buffer + style.fontSize, ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight), 
+            "Multiplier : " + CurrentMultiplier.ToString(), style);
+        GUI.Label(new Rect(buffer + ScreenUtil.ScreenWidth, buffer + style.fontSize, ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight),
             "Multiplier : " + CurrentMultiplier.ToString(), style);
     }
 }

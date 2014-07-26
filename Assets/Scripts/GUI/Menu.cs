@@ -61,30 +61,85 @@ public class Menu : MonoBehaviour {
      * Buttons in Main Menu for 'Play Game', 'Tutorial', 'Options', 'Credits'
      */
     void OnGUI() {
+        GUIStyle highlightStyle = new GUIStyle(style);
         GUI.DrawTexture(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelHeight(logo.width)) / 2 - ScreenUtil.getPixelHeight(30),
             ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelHeight(logo.width), ScreenUtil.getPixelHeight(logo.height)), logo);
+        if (GameManager.Instance.enableSeebright)
+        {
+            GUI.DrawTexture(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelHeight(logo.width)) / 2 - ScreenUtil.getPixelHeight(30) + ScreenUtil.ScreenWidth,
+                ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelHeight(logo.width), ScreenUtil.getPixelHeight(logo.height)), logo);
+        }
         if(!_displayOptions && !_displayCredits){
+            //Play Game button
             GUI.SetNextControlName("0");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2, 
-                ScreenUtil.getPixelWidth(400), style.fontSize), "Play Game", style)) {
+                ScreenUtil.getPixelWidth(400), style.fontSize), new GUIContent("Play Game","0"), style)) {
                 Application.LoadLevel(1);
             }
+            if (GUI.tooltip == "0")
+            {
+                highlightStyle.normal = style.hover;
+            }
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2,
+                    ScreenUtil.getPixelWidth(400), style.fontSize), "Play Game", highlightStyle);
+            }
+            highlightStyle.normal = style.normal;
+
+            //Tutorial Button
             GUI.SetNextControlName("1");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), style.fontSize), "Tutorial", style)) {
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), style.fontSize), new GUIContent("Tutorial","1"), style)) {
                 Application.LoadLevel(2);
             }
+            if (GUI.tooltip == "1")
+            {
+                highlightStyle.normal = style.hover;
+            }
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), style.fontSize), "Tutorial", highlightStyle);
+            }
+            highlightStyle.normal = style.normal;
+
+            //Credits Button
             GUI.SetNextControlName("2");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelWidth(300), ScreenUtil.getPixelWidth(400), style.fontSize), "Credits", style)) {
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelWidth(300), ScreenUtil.getPixelWidth(400), style.fontSize), new GUIContent("Credits","2"), style)) {
                 _displayCredits = true;
             }
+            if (GUI.tooltip == "2")
+            {
+                highlightStyle.normal = style.hover;
+            }
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelWidth(300), ScreenUtil.getPixelWidth(400), style.fontSize), "Credits", highlightStyle);
+            }
+            highlightStyle.normal = style.normal;
+
+            //Options Button
             GUI.SetNextControlName("3");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(400), style.fontSize), "Options", style))
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(400), style.fontSize), new GUIContent("Options","3"), style))
             {
                 _displayOptions = true;
             }
+            if (GUI.tooltip == "3")
+            {
+                highlightStyle.normal = style.hover;
+            }
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(400), style.fontSize), "Options", highlightStyle);
+            }
+            highlightStyle.normal = style.normal;
+
+            //Joystick Menu Navigation
             _focusID = ManageFocus(_focusID, 3);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
@@ -122,6 +177,11 @@ public class Menu : MonoBehaviour {
             GUI.color = Color.magenta;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 - 
                 ScreenUtil.getPixelHeight(100), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 -
+                    ScreenUtil.getPixelHeight(100), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
+            }
             GUI.color = prev;
             if (GameManager.Instance.enableSeebright == false)
             {
@@ -145,28 +205,62 @@ public class Menu : MonoBehaviour {
                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(230), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                     GameManager.mouseSensitivity, 0.1f, 0.5f);
             }
+            //SeeBright Enabled
             else if (GameManager.Instance.enableSeebright == true)
             {
                 //SFX Volume
                 GUI.SetNextControlName("0");
                 GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2,
-                    ScreenUtil.getPixelWidth(400), style.fontSize), "Effects Volume", style);
+                    ScreenUtil.getPixelWidth(400), style.fontSize), new GUIContent("Effects Volume","0"), style);
                 GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(70), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                     GameManager.effectsVolume, 0f, 1.0f);
+                if (GUI.tooltip == "0")
+                {
+                    highlightStyle.normal = style.hover;
+                }
+                GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2,
+                    ScreenUtil.getPixelWidth(400), style.fontSize), "Effects Volume", highlightStyle);
+                highlightStyle.normal = style.normal;
+                GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(70), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                    GameManager.effectsVolume, 0f, 1.0f);
+                
                 //Music Volume
                 GUI.SetNextControlName("1");
                 GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(120),
-                    ScreenUtil.getPixelWidth(400), style.fontSize), "Music Volume", style);
+                    ScreenUtil.getPixelWidth(400), style.fontSize), new GUIContent("Music Volume","1"), style);
                 GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400))/ 2,
                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(190), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                     GameManager.musicVolume, 0f, 1.0f);
+                if (GUI.tooltip == "1")
+                {
+                    highlightStyle.normal = style.hover;
+                }
+                GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(120),
+                    ScreenUtil.getPixelWidth(400), style.fontSize), "Music Volume", highlightStyle);
+                highlightStyle.normal = style.normal;
+                GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(190), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                    GameManager.musicVolume, 0f, 1.0f);
+                
                 //Sensitivity Control
                 GUI.SetNextControlName("2");
                 GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(240), ScreenUtil.getPixelWidth(400), style.fontSize),
-                    "Sensitivity", style);
+                    new GUIContent("Sensitivity", "2"), style);
                 GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(310), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                    GameManager.mouseSensitivity, 0.1f, 0.5f);
+                if (GUI.tooltip == "2")
+                {
+                    highlightStyle.normal = style.hover;
+                }
+                GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(240), ScreenUtil.getPixelWidth(400), style.fontSize),
+                    "Sensitivity", highlightStyle);
+                highlightStyle.normal = style.normal;
+                GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(310), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                     GameManager.mouseSensitivity, 0.1f, 0.5f);
             }
@@ -175,7 +269,7 @@ public class Menu : MonoBehaviour {
             }
             GUI.SetNextControlName("3");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2, 
-                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", style)) {
+                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(200), style.fontSize), new GUIContent("Back","3"), style)) {
                 _displayOptions = false;
                 // update sensitivity when options are closed
                 if (GameManager.Instance != null) {
@@ -184,6 +278,13 @@ public class Menu : MonoBehaviour {
                     }
                 }
             }
+            if (GUI.tooltip == "3")
+            {
+                highlightStyle.normal = style.hover;
+            }
+            GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
+                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", highlightStyle);
+            highlightStyle.normal = style.normal;
             _focusID = ManageFocus(_focusID, 3);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
@@ -233,44 +334,99 @@ public class Menu : MonoBehaviour {
             GUI.color = Color.magenta;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(100), 
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Credits", style);
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(100), 
+                    3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Credits", style);
+            }
             GUI.color = prev;
             GUI.color = Color.green;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2,
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Anthony Dao", style);
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2,
+                    3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Anthony Dao", style);
+            }
             style.fontSize /= 2;
             GUI.color = Color.white;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(55),
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Programming ( Enemies-Menus-GUI ) / Design", style);
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(55),
+                    3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Programming ( Enemies-Menus-GUI ) / Design", style);
+            }
             style.fontSize *= 2;
             GUI.color = Color.green;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(120),
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Chase Khamashta", style);
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(120),
+                    3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Chase Khamashta", style);
+            }
             style.fontSize /= 2;
             GUI.color = Color.white;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(170),
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Programming ( Player-Controls-Enemies-Powerups ) / Design", style);
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(170),
+                    3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Programming ( Player-Controls-Enemies-Powerups ) / Design", style);
+            }
             style.fontSize *= 2;
             GUI.color = Color.green;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(240),
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Orlando Salvatore", style);
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(240),
+                    3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Orlando Salvatore", style);
+            }
             style.fontSize /= 2;
             GUI.color = Color.white;
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(290),
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), 
                 "Programming", style);
+            if (GameManager.Instance.enableSeebright){
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(290),
+                    3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), 
+                    "Programming", style);
+            }
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(320),
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)),
                 "( Enemies-Level Generation-Transitions-Tutorial-Menus-Scoring )", style);
+            if (GameManager.Instance.enableSeebright){
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(320),
+                    3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)),
+                    "( Enemies-Level Generation-Transitions-Tutorial-Menus-Scoring )", style);
+            }
             GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(350),
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)),
                 "Art / Music / Design", style);
+            if (GameManager.Instance.enableSeebright){
+                GUI.Label(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16 + ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(350),
+                    3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)),
+                    "Art / Music / Design", style);
+            }
             style.fontSize *= 2;
             GUI.SetNextControlName("0");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2, 
-                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", style)) {
+                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), new GUIContent ("Back", "0"), style)) {
                 _displayCredits = false;
             }
-           
+            if (GUI.tooltip == "0")
+            {
+                highlightStyle.normal = style.hover;
+            }
+            if (GameManager.Instance.enableSeebright)
+            {
+                GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
+                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", highlightStyle);
+            }
+            highlightStyle.normal = style.normal;
+            //Joystick Menu Navigation
             _focusID = ManageFocus(_focusID, 0);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {

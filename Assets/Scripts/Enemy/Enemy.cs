@@ -125,6 +125,11 @@ public abstract class Enemy : MonoBehaviour {
                     tempStyle.alignment = TextAnchor.MiddleCenter;
                     GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(200), 
                                                            "Clone!", tempStyle, 2));
+                    if (GameManager.Instance.enableSeebright)
+                    {
+                        GUIManager.Instance.addGUIItem(new GUIItem(3 * ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(200),
+                                           "Clone!", tempStyle, 2));
+                    }
                 }
                 GameManager.Instance.CurrentPlayerShips[0].ActivateClone();
                 break;
@@ -134,6 +139,11 @@ public abstract class Enemy : MonoBehaviour {
                 tempStyle.alignment = TextAnchor.MiddleCenter;
                 GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(100), 
                                                        "Multi-Shot!", tempStyle, 2));
+                if (GameManager.Instance.enableSeebright)
+                {
+                    GUIManager.Instance.addGUIItem(new GUIItem(3 * ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(100),
+                                           "Multi-Shot!", tempStyle, 2));
+                }
                 break;
 
             case PowerUps.Rapid:
@@ -141,6 +151,11 @@ public abstract class Enemy : MonoBehaviour {
                 tempStyle.alignment = TextAnchor.MiddleCenter;
                 GUIManager.Instance.addGUIItem(new GUIItem(ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(300), 
                                                        "Rapid Shot!", tempStyle, 2));
+                if (GameManager.Instance.enableSeebright)
+                {
+                    GUIManager.Instance.addGUIItem(new GUIItem(3 * ScreenUtil.ScreenWidth / 2, ScreenUtil.getPixelHeight(300),
+                                           "Rapid Shot!", tempStyle, 2));
+                }
                 break;
         }
     }
