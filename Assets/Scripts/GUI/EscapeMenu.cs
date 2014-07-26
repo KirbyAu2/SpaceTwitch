@@ -58,7 +58,7 @@ public class EscapeMenu : MonoBehaviour {
             _focusChanged = true;
             ID++;
         }
-        else if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < 0 && !_focusChanged)
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < 0 && !_focusChanged)
         {
             _focusChanged = true;
             ID--;
@@ -114,6 +114,9 @@ public class EscapeMenu : MonoBehaviour {
                 }
             }
             
+        }
+        else {
+            _focusID = -1;
         }
         //In option Menu
         if (_displayOptions) {
