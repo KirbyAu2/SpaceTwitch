@@ -180,7 +180,8 @@ public class Menu : MonoBehaviour {
                         player.UpdateSensitivity();
                     }
                 }
-                            _focusID = ManageFocus(_focusID, 3);
+            }
+            _focusID = ManageFocus(_focusID, 3);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
                 if (_focusID < 0)
@@ -220,13 +221,6 @@ public class Menu : MonoBehaviour {
                     GameManager.mouseSensitivity -= .01f;
                 }
             }
-
-        }
-        else
-        {
-            _focusID = -1;
-        }
-            
         }
         //Credits Screen
         //Displays Credits
