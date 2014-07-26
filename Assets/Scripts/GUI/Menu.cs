@@ -75,14 +75,14 @@ public class Menu : MonoBehaviour {
             }
             GUI.SetNextControlName("2");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(400), style.fontSize), "Options", style))
-            {
-                _displayOptions = true;
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelWidth(300), ScreenUtil.getPixelWidth(400), style.fontSize), "Credits", style)) {
+                _displayCredits = true;
             }
             GUI.SetNextControlName("3");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, 
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelWidth(300), ScreenUtil.getPixelWidth(400), style.fontSize), "Credits", style)) {
-                _displayCredits = true;
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(400), style.fontSize), "Options", style))
+            {
+                _displayOptions = true;
             }
             _focusID = ManageFocus(_focusID, 3);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
@@ -101,11 +101,11 @@ public class Menu : MonoBehaviour {
                 }
                 else if (_focusID == 2)
                 {
-                    _displayOptions = true;
+                    _displayCredits = true;
                 }
                 else if (_focusID == 3)
                 {
-                    _displayCredits = true;
+                    _displayOptions = true;
                 }
             }
 
@@ -222,10 +222,28 @@ public class Menu : MonoBehaviour {
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)),
                 "Art / Music / Design", style);
             style.fontSize *= 2;
+            GUI.SetNextControlName("0");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2, 
                 ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", style)) {
                 _displayCredits = false;
             }
+            _focusID = ManageFocus(_focusID, 0);
+            if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
+            {
+                if (_focusID < 0)
+                {
+                    return;
+                }
+                else if (_focusID == 0)
+                {
+                    _displayCredits = false ;
+                }
+            }
+
+        }
+        else
+        {
+            _focusID = -1;
         }
     }
 }
