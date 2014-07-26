@@ -113,11 +113,8 @@ public class EscapeMenu : MonoBehaviour {
             }
             
         }
-        else {
-            _focusID = -1;
-        }
         //In option Menu
-        if (_displayOptions) {
+        else if (_displayOptions) {
             Color prev = GUI.color;
             GUI.color = Color.magenta;
 
@@ -149,18 +146,21 @@ public class EscapeMenu : MonoBehaviour {
                     ScreenUtil.getPixelHeight(200), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
                 GUI.color = prev;
                 //SFX Volume
+                GUI.SetNextControlName("0");
                 GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(100),
                     ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Effects Volume", style);
                 GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
                     ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(30), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                     GameManager.effectsVolume, 0f, 1.0f);
                 //Music Volume
+                GUI.SetNextControlName("1");
                 GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(20),
                     ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Music Volume", style);
                 GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(90), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                     GameManager.musicVolume, 0f, 1.0f);
                 //Sensitivity Control
+                GUI.SetNextControlName("2");
                 GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(140), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)),
                     "Sensitivity", style);
@@ -172,7 +172,7 @@ public class EscapeMenu : MonoBehaviour {
             if(GameManager.Instance != null) {
                 GameManager.Instance.UpdateMusicVolume();
             }
-
+            GUI.SetNextControlName("3");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2, 
                 ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", style)) {
                 _displayOptions = false;
@@ -182,6 +182,51 @@ public class EscapeMenu : MonoBehaviour {
                     player.UpdateSensitivity();
                 }
             }
+            _focusID = ManageFocus(_focusID, 3);
+            if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
+            {
+                if (_focusID < 0)
+                {
+                    return;
+                }
+                else if (_focusID == 3)
+                {
+                    _displayOptions = false;
+                }
+            }
+            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) > 0) {
+                if (_focusID == 0 && GameManager.effectsVolume < 1)
+                {
+                    GameManager.effectsVolume += .01f;
+                }
+                else if (_focusID == 1 && GameManager.musicVolume < 1)
+                {
+                    GameManager.musicVolume += .01f;
+                }
+                else if (_focusID == 2 && GameManager.mouseSensitivity < .5f)
+                {
+                    GameManager.mouseSensitivity += .01f;
+                }
+            }
+            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) < 0) {
+                if (_focusID == 0 && GameManager.effectsVolume > 0)
+                {
+                    GameManager.effectsVolume -= .01f;
+                }
+                else if (_focusID == 1 && GameManager.musicVolume > 0)
+                {
+                    GameManager.musicVolume -= .01f;
+                }
+                else if (_focusID == 2 && GameManager.mouseSensitivity > .1f)
+                {
+                    GameManager.mouseSensitivity -= .01f;
+                }
+            }
+
+        }
+        else
+        {
+            _focusID = -1;
         }
     }
 }
