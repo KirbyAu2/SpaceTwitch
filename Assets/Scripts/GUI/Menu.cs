@@ -184,7 +184,10 @@ public class Menu : MonoBehaviour {
                     }
                 }
             }
-            _focusID = ManageFocus(_focusID, 3);
+            if (!_sliderSelecter)
+            {
+                _focusID = ManageFocus(_focusID, 3);
+            }
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
                 if (_focusID < 0)
@@ -282,6 +285,7 @@ public class Menu : MonoBehaviour {
                 ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", style)) {
                 _displayCredits = false;
             }
+           
             _focusID = ManageFocus(_focusID, 0);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {

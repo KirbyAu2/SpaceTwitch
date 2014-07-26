@@ -184,8 +184,10 @@ public class EscapeMenu : MonoBehaviour {
                     player.UpdateSensitivity();
                 }
             }
-            _focusID = ManageFocus(_focusID, 3);
-
+            if (!_sliderSelecter)
+            {
+                _focusID = ManageFocus(_focusID, 3);
+            }
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
                 if (_focusID < 0)
