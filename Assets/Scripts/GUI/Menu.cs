@@ -43,12 +43,12 @@ public class Menu : MonoBehaviour {
         GUI.FocusControl(ID.ToString());
 
         _focusTimer += .01f;
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < -2000 && ID < length && _focusTimer > _focusTimerMax)
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < -2048*4 && ID < length && _focusTimer > _focusTimerMax)
         {
             _focusTimer = 0;
             ID++;
         }
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 2000 && ID > 0 && _focusTimer > _focusTimerMax)
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 2048*4 && ID > 0 && _focusTimer > _focusTimerMax)
         {
             _focusTimer = 0;
             ID--;
@@ -197,7 +197,7 @@ public class Menu : MonoBehaviour {
                     _focusID = -1;
                 }
             }
-            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) > 2048) {
+            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) > 2048*4) {
                 if (_focusID == 0 && GameManager.effectsVolume < 1)
                 {
                     GameManager.effectsVolume += .01f;
@@ -211,7 +211,7 @@ public class Menu : MonoBehaviour {
                     GameManager.mouseSensitivity += .01f;
                 }
             }
-            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) < -1024) {
+            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) < -2048*4) {
                 if (_focusID == 0 && GameManager.effectsVolume > 0)
                 {
                     GameManager.effectsVolume -= .01f;
