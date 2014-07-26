@@ -109,6 +109,7 @@ public class EscapeMenu : MonoBehaviour {
                 else if (_focusID == 2)
                 {
                     _displayOptions = true;
+                    _focusID = -1;
                 }
             }
             
@@ -192,6 +193,7 @@ public class EscapeMenu : MonoBehaviour {
                 else if (_focusID == 3)
                 {
                     _displayOptions = false;
+                    _focusID = -1;
                 }
             }
             if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) > 0) {
