@@ -72,7 +72,6 @@ public class EscapeMenu : MonoBehaviour {
      * As well as buttons for Options menu
      */
     void OnGUI() {
-        _focusChanged = true;
         if (!currentlyActive) {
             return;
         }
