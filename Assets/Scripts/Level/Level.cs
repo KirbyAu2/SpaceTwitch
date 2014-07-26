@@ -53,7 +53,9 @@ public class Level : MonoBehaviour {
         if (isTutorial) {
             _tutorial = gameObject.AddComponent<Tutorial>();
         }
-
+        if(!GameManager.Instance) {
+            return;
+        }
         if(GameManager.Instance.enableSeebright) {
             cameraPosition = seebrightPosition;
         }
