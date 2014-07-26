@@ -17,8 +17,6 @@ public class Menu : MonoBehaviour {
     private float _focusTimerMax = .2f;
     private float _focusTimer = 0;
     private int _focusID = -1;
-    private float _sliderTimerMax = .2f;
-    private float _sliderTimer = 0;
     private bool _sliderSelecter = false;
 
     private Transform[] _levelModels;
@@ -43,8 +41,8 @@ public class Menu : MonoBehaviour {
     int ManageFocus(int ID, int length)
     {
         GUI.FocusControl(ID.ToString());
-        if (_focusTimer < _focusTimerMax)
-            _focusTimer += .01f;
+
+        _focusTimer += .01f;
         if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < length && _focusTimer > _focusTimerMax)
         {
             _focusTimer = 0;
@@ -186,25 +184,12 @@ public class Menu : MonoBehaviour {
                     }
                 }
             }
-            if (!_sliderSelecter)
-            {
-                _focusID = ManageFocus(_focusID, 3);
-            }
-            if (_sliderTimer < _sliderTimerMax)
-                _sliderTimer += .01f;
+            _focusID = ManageFocus(_focusID, 3);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
                 if (_focusID < 0)
                 {
                     return;
-                }
-                else if (_focusID == 0 || _focusID == 1 ||_focusID == 2 && _sliderTimer > _sliderTimerMax)
-                {
-                    if (_sliderSelecter)
-                        _sliderSelecter = false;
-                    else
-                        _sliderSelecter = true;
-                    _sliderTimer = 0;
                 }
                 else if (_focusID == 3)
                 {
@@ -212,7 +197,7 @@ public class Menu : MonoBehaviour {
                     _focusID = -1;
                 }
             }
-            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) > 0 && _sliderSelecter) {
+            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) > 1024) {
                 if (_focusID == 0 && GameManager.effectsVolume < 1)
                 {
                     GameManager.effectsVolume += .01f;
@@ -226,7 +211,7 @@ public class Menu : MonoBehaviour {
                     GameManager.mouseSensitivity += .01f;
                 }
             }
-            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) < 0 && _sliderSelecter) {
+            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) < -1024) {
                 if (_focusID == 0 && GameManager.effectsVolume > 0)
                 {
                     GameManager.effectsVolume -= .01f;
