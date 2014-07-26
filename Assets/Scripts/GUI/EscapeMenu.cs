@@ -49,21 +49,20 @@ public class EscapeMenu : MonoBehaviour {
     {
         GUI.FocusControl(ID.ToString());
         /*
-        if (_focusChanged && Time.timeSinceLevelLoad > _focusTimer + .2f)
+        if (_focusChanged )
         {
             _focusChanged = false;
             _focusTimer = Time.timeSinceLevelLoad;
         }
          */
-        _focusChanged = false;
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 0 && ID < length && !_focusChanged)
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID < length && Time.timeSinceLevelLoad > _focusTimer + .2f)
         {
-            _focusChanged = true;
+            _focusTimer = Time.timeSinceLevelLoad;
             ID++;
         }
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < 0 && ID > 0 && !_focusChanged)
+        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 0 && ID > 0 && Time.timeSinceLevelLoad > _focusTimer + .2f)
         {
-            _focusChanged = true;
+            _focusTimer = Time.timeSinceLevelLoad;
             ID--;
         }
         return ID;
@@ -75,7 +74,6 @@ public class EscapeMenu : MonoBehaviour {
      * As well as buttons for Options menu
      */
     void OnGUI() {
-        _focusChanged = true;
         if (!currentlyActive) {
             return;
         }
