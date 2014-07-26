@@ -91,7 +91,7 @@ public class EscapeMenu : MonoBehaviour {
                                     style.fontSize), "Options", style)) {
                 _displayOptions = true;
             }
-            _focusID = ManageFocus(_focusID, 2);
+            _focusID = ManageFocus(_focusID, 3);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
                 if (_focusID < 0)
