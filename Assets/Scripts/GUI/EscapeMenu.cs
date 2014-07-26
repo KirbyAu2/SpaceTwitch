@@ -16,6 +16,7 @@ public class EscapeMenu : MonoBehaviour {
     private float _focusTimerMax = .2f;
     private float _focusTimer = 0;
     private int _focusID = -1;
+    private bool _sliderSelecter = false;
 
     void Start () {
         
@@ -184,11 +185,24 @@ public class EscapeMenu : MonoBehaviour {
                 }
             }
             _focusID = ManageFocus(_focusID, 3);
+
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
                 if (_focusID < 0)
                 {
                     return;
+                }
+                else if (_focusID == 0)
+                {
+                    _sliderSelecter = !_sliderSelecter;
+                }
+                else if (_focusID == 1)
+                {
+                    _sliderSelecter = !_sliderSelecter;
+                }
+                else if (_focusID == 2)
+                {
+                    _sliderSelecter = !_sliderSelecter;
                 }
                 else if (_focusID == 3)
                 {
@@ -196,7 +210,7 @@ public class EscapeMenu : MonoBehaviour {
                     _focusID = -1;
                 }
             }
-            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) > 0) {
+            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) > 0 && _sliderSelecter) {
                 if (_focusID == 0 && GameManager.effectsVolume < 1)
                 {
                     GameManager.effectsVolume += .01f;
@@ -210,7 +224,7 @@ public class EscapeMenu : MonoBehaviour {
                     GameManager.mouseSensitivity += .01f;
                 }
             }
-            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) < 0) {
+            if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) < 0 && _sliderSelecter) {
                 if (_focusID == 0 && GameManager.effectsVolume > 0)
                 {
                     GameManager.effectsVolume -= .01f;
