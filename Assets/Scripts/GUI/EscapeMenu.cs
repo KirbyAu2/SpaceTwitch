@@ -48,11 +48,14 @@ public class EscapeMenu : MonoBehaviour {
     int ManageFocus(int ID, int length)
     {
         GUI.FocusControl(ID.ToString());
+        /*
         if (_focusChanged && Time.timeSinceLevelLoad > _focusTimer + .2f)
         {
             _focusChanged = false;
             _focusTimer = Time.timeSinceLevelLoad;
         }
+         */
+        _focusChanged = false;
         if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 0 && ID < length && !_focusChanged)
         {
             _focusChanged = true;
