@@ -15,7 +15,7 @@ public class EscapeMenu : MonoBehaviour {
     private bool _focusChanged = false;
     private float _focusTimerMax = .2f;
     private float _focusTimer = 0;
-    private int _focusID = 0;
+    private int _focusID = -1;
 
     void Start () {
         
