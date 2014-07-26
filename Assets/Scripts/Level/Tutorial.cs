@@ -5,7 +5,9 @@ using System.Collections.Generic;
  * The Tutorial class manages the tutorial level for the game
  * Displays messages to help player
  */
-public class Tutorial : MonoBehaviour {
+public class Tutorial : MonoBehaviour
+{
+    public GUIStyle style;
     private const float GAME_END_DURATION = 4.0f;
     private const int MOVEMENT_TUT_DURATION = 1;
     private const string TUTORIAL_COMPLETE = "You have successfully completed the tutorial!";
@@ -24,8 +26,16 @@ public class Tutorial : MonoBehaviour {
 
     void Start () {
         //Adds GUI messages to list 
-        _currentMessageItem = new GUIItem((float)(ScreenUtil.ScreenWidth / 2), 
-            (float)(ScreenUtil.ScreenHeight / 2), MOVEMENT, GUIManager.Instance.defaultStyle, MOVEMENT_TUT_DURATION);
+        if (!GameManager.Instance.enableSeebright)
+        {
+            _currentMessageItem = new GUIItem((float)(ScreenUtil.ScreenWidth / 2),
+                (float)(ScreenUtil.ScreenHeight / 2), MOVEMENT, GUIManager.Instance.defaultStyle, MOVEMENT_TUT_DURATION);
+        }
+        else
+        {
+            _currentMessageItem = new GUIItem((float)(ScreenUtil.ScreenWidth / 2),
+                (float)(ScreenUtil.ScreenHeight / 2), MOVEMENT, style, MOVEMENT_TUT_DURATION);
+        }
         messages = new List<string>();
         messages.Add(MOVEMENT);
         messages.Add(PAWN);
