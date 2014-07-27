@@ -122,7 +122,7 @@ public class CameraController : MonoBehaviour {
             initSeebright();
         }
         //if no player ship
-        if (GameManager.Instance.CurrentPlayerShips.Count < 1) {
+        if (GameManager.Instance.CurrentPlayerShips.Count < 1 && _mainCamera != null) {
             _mainCamera.transform.LookAt(new Vector3(1, 0, 0));
         }
         Vector3 pos = gameObject.transform.position;
@@ -140,6 +140,8 @@ public class CameraController : MonoBehaviour {
         midPoint = midPoint / GameManager.Instance.CurrentPlayerShips.Count;
         midPoint += GameManager.Instance.CurrentLevel.gameObject.transform.position;
         //Rotates the transform so the forward vector points at the midpoint of the player ship and the center of the screen
-        _mainCamera.transform.LookAt(Vector3.Lerp(pos, midPoint, EASING_TIME * Time.deltaTime));
+        if (_mainCamera != null) {
+            _mainCamera.transform.LookAt(Vector3.Lerp(pos, midPoint, EASING_TIME * Time.deltaTime));
+        }
     }
 }
