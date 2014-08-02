@@ -27,6 +27,10 @@ public class Level : MonoBehaviour {
     public int confettiCount = 0;
     public bool isTutorial = false;
 
+    private bool _canLevelSwitch = false;
+    private bool _invisibleLevel = false;
+    private float _levelChangeTime = 0;
+    private float _blinkTime = 10;
     private Tutorial _tutorial;
     private Lane _spawnLane;
     private List<string> _potentialEnemies;
@@ -117,8 +121,41 @@ public class Level : MonoBehaviour {
     }
 
     void Update() {
+        levelBlink();
         if(GameManager.Instance.enableSeebright && seebrightPosition != cameraPosition) {
             cameraPosition = seebrightPosition;
+        }
+    }
+
+    /*
+     * The level will turn invisible/visible
+     * Blinks before changes
+     */
+    void levelBlink()
+    {
+        if (Time.time >= _levelChangeTime + 8) //8 seconds before switch
+        {
+            renderer.enabled = Mathf.Sin(Time.time * 50.0f) > 0; //blinks
+            if (Time.time == _levelChangeTime + 8)
+            {
+                _blinkTime = Time.time;
+            }
+            if (Time.time >= _blinkTime + 1) { //blinks for 1 seconds
+                _canLevelSwitch = true;
+                _invisibleLevel = !_invisibleLevel;
+            }
+        }
+        if (_invisibleLevel && _canLevelSwitch)
+        {
+                renderer.enabled = false;
+                _levelChangeTime = Time.time;
+                _canLevelSwitch = false;
+        }
+        else if (!_invisibleLevel && _canLevelSwitch)
+        {
+                renderer.enabled = true;
+                _levelChangeTime = Time.time;
+                _canLevelSwitch = false;
         }
     }
 
