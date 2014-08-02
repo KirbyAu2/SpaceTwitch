@@ -61,6 +61,8 @@ public class Menu : MonoBehaviour {
      * Buttons in Main Menu for 'Play Game', 'Tutorial', 'Options', 'Credits'
      */
     void OnGUI() {
+        GUI.Label(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(120), ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(50),
+                ScreenUtil.getPixelWidth(120), ScreenUtil.getPixelHeight(100)), GameManager.Instance.versionID);
         GUIStyle highlightStyle = new GUIStyle(style);
         GUI.DrawTexture(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelHeight(logo.width)) / 2 - ScreenUtil.getPixelHeight(30),
             ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelHeight(logo.width), ScreenUtil.getPixelHeight(logo.height)), logo);

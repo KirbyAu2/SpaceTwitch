@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour {
     public GameObject playerPrefab;
     public bool enableSeebright = false;
     public bool isMenu = false;
+    public string versionID = "Beta 0.6";
 
     public static float mouseSensitivity = DEFAULT_SENSITIVITY;
     public static float effectsVolume = 1.0f, musicVolume = 1.0f;
@@ -283,6 +284,8 @@ public class GameManager : MonoBehaviour {
      * Draws the lives icon 
      */
     void OnGUI() {
+        GUI.Label(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(120), ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(50),
+                ScreenUtil.getPixelWidth(120), ScreenUtil.getPixelHeight(100)), versionID);
         if(_livesIcon == null) {
             return;
         }
