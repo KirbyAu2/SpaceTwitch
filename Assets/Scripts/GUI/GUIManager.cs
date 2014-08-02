@@ -72,16 +72,37 @@ public class GUIManager : MonoBehaviour {
             }
         }
         foreach (GUIItem i in _items){
+            if (i.customGuiStyle == null) {
+                continue;
+            }
             Color originalColor = i.customGuiStyle.normal.textColor;
             Color temp = i.customGuiStyle.normal.textColor;
             temp.a = i.currentAlpha;
             i.customGuiStyle.normal.textColor = temp;
-            GUI.Label(new Rect(i.xpos, i.ypos, 0, 0), i.message, i.customGuiStyle);
-            if (GameManager.Instance.enableSeebright)
-            {
-                GUI.Label(new Rect(i.xpos + ScreenUtil.ScreenWidth, i.ypos, 0, 0), i.message, i.customGuiStyle);
-            }
+            GUIManager.DrawLabel(new Rect(i.xpos, i.ypos, 0, 0), i.message, i.customGuiStyle);
             i.customGuiStyle.normal.textColor = originalColor;
+        }
+    }
+
+    /**
+     * Wrapper for GUI.DrawTexture
+     * Needed for Seebright
+     */
+    public static void DrawTexture(Rect r, Texture2D t) {
+        GUI.DrawTexture(r, t);
+        if (GameManager.Instance.enableSeebright) {
+            GUI.DrawTexture(new Rect(ScreenUtil.ScreenWidth + r.x, r.y, r.width, r.height), t);
+        }
+    }
+
+    /**
+     * Wrapper for GUI.Label
+     * Needed for Seebright
+     */
+    public static void DrawLabel(Rect r, string s, GUIStyle style) {
+        GUI.Label(r, s, style);
+        if (GameManager.Instance.enableSeebright) {
+            GUI.Label(new Rect(ScreenUtil.ScreenWidth + r.x, r.y, r.width, r.height), s, style);
         }
     }
 
