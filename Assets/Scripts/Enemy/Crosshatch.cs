@@ -88,37 +88,29 @@ public class Crosshatch : Enemy {
         _positionOnPlane += direction * LANE_CROSS_SPEED * Time.deltaTime;
 
         // calculate new position after movement
-        if (_positionOnPlane < 0)
-        {
+        if (_positionOnPlane < 0) {
             _currentPlane--;
             _positionOnPlane++;
         }
-        else if (_positionOnPlane > 1)
-        {
+        else if (_positionOnPlane > 1) {
             _currentPlane++;
             _positionOnPlane--;
         }
 
-        if (_currentPlane < 0)
-        {
-            if (currentLevel.wrapAround)
-            {
+        if (_currentPlane < 0) {
+            if (currentLevel.wrapAround) {
                 _currentPlane += currentLevel.lanes.Count;
             }
-            else
-            {
+            else {
                 _currentPlane = 0;
                 _positionOnPlane = 0;
             }
         }
-        else if (_currentPlane >= currentLevel.lanes.Count)
-        {
-            if (currentLevel.wrapAround)
-            {
+        else if (_currentPlane >= currentLevel.lanes.Count) {
+            if (currentLevel.wrapAround) {
                 _currentPlane -= currentLevel.lanes.Count;
             }
-            else
-            {
+            else {
                 _currentPlane = currentLevel.lanes.Count - 1;
                 _positionOnPlane = 1;
             }
@@ -128,11 +120,24 @@ public class Crosshatch : Enemy {
         float angleUp = Vector3.Angle(Vector3.up, currentLevel.lanes[_currentPlane].Normal) - 90;
         float angleRight = Vector3.Angle(Vector3.forward, currentLevel.lanes[_currentPlane].Normal);
         float angleLeft = Vector3.Angle(Vector3.back, currentLevel.lanes[_currentPlane].Normal);
-        if (angleRight < angleLeft)
-        {
+        if (angleRight < angleLeft) {
             angleUp = -angleUp;
         }
         transform.eulerAngles = new Vector3(angleUp, 180, 0);
+        Vector3 rotationPoint;
+        Vector3 rotationAxis = currentLevel.lanes[_currentPlane].Normal;
+        if (_positionOnPlane < .5f) {
+            rotationPoint = currentLevel.lanes[_currentPlane].LeftEdge.Front;
+            rotationPoint.x = transform.position.x;
+            float lerp = (.5f - _positionOnPlane) * 2;
+            transform.RotateAround(rotationPoint, rotationAxis, -90 * lerp);
+        }
+        else {
+            rotationPoint = currentLevel.lanes[_currentPlane].RightEdge.Front;
+            rotationPoint.x = transform.position.x;
+            float lerp = (_positionOnPlane - .5f) * 2;
+            transform.RotateAround(rotationPoint, rotationAxis, 90 * lerp);
+        }
 
 	}
 }
