@@ -9,8 +9,12 @@ using System.Collections.Generic;
  * Keeps track of player lives until game over
  */
 public class GameManager : MonoBehaviour {
+    public const string versionID = "Beta 0.6";
     public const float DEFAULT_SENSITIVITY = 0.1f;
     public const int MAX_LIVES = 3;
+
+    public static float mouseSensitivity = DEFAULT_SENSITIVITY;
+    public static float effectsVolume = 1.0f, musicVolume = 1.0f;
 
     private static GameManager _instance;
     private AudioSource _music;
@@ -20,9 +24,6 @@ public class GameManager : MonoBehaviour {
     public GameObject playerPrefab;
     public bool enableSeebright = false;
     public bool isMenu = false;
-
-    public static float mouseSensitivity = DEFAULT_SENSITIVITY;
-    public static float effectsVolume = 1.0f, musicVolume = 1.0f;
 
     private SeebrightSDK _seebrightSDK;
     private int _score = 0;
@@ -212,6 +213,12 @@ public class GameManager : MonoBehaviour {
     public int CurrentDifficulty {
         get {
             return _currentLevelIndex + 1;
+        }
+    }
+
+    public int NumberOfLevels {
+        get {
+            return levels.Count;
         }
     }
 
