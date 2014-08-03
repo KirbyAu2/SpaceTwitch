@@ -248,7 +248,7 @@ public class EdgeGeneration : MonoBehaviour {
         Level l = GetComponent<Level>();
         if (l.wrapAround) {
             _laneList[0].LeftLane = prevLane;
-            prevLane.RightLane = _laneList[0].LeftLane;
+            prevLane.RightLane = _laneList[0];
         }
         l.lanes = _laneList;
         l.edges = _newEdges;

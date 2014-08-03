@@ -159,6 +159,7 @@ public class Player : MonoBehaviour {
         }
         Screen.lockCursor = true;
 
+        //Invulnerability
         if (_invulnerable) {
             renderer.enabled = Mathf.Sin(Time.time * 50.0f) > 0;
         }
