@@ -63,7 +63,12 @@ public class Menu : MonoBehaviour {
      */
     void OnGUI() {
         GUIManager.DrawTexture(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelHeight(logo.width)) / 2 - ScreenUtil.getPixelHeight(30),
-            ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelHeight(logo.width), ScreenUtil.getPixelHeight(logo.height)), logo);
+                ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelHeight(logo.width), ScreenUtil.getPixelHeight(logo.height)), logo);
+
+        GUIStyle _tempStyle = new GUIStyle(_highlightStyle);
+        _tempStyle.fontSize /= 2;
+        GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(160), ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(50),
+                ScreenUtil.getPixelWidth(50), ScreenUtil.getPixelHeight(100)), GameManager.versionID, _tempStyle);
 
         if(!_displayOptions && !_displayCredits) {
             drawNormalMenu();

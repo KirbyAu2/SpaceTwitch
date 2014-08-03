@@ -7,6 +7,8 @@ using System.Collections.Generic;
  * Each level has a different count of enemies depending on difficulty
  */
 public class Level : MonoBehaviour {
+    public const float BLINK_TIME = 0.5f;
+    public const float FLIP_RENDERER_TIME = 8.0f;
     public const string ID_PAWN = "pawn";
     public const string ID_CROSSHATCH = "crosshatch";
     public const string ID_SWIRLIE = "swirlie";
@@ -27,6 +29,8 @@ public class Level : MonoBehaviour {
     public int confettiCount = 0;
     public bool isTutorial = false;
 
+    private bool _invisibleLevel = false;
+    private float _levelChangeTime = 0;
     private Tutorial _tutorial;
     private Lane _spawnLane;
     private List<string> _potentialEnemies;
@@ -117,8 +121,27 @@ public class Level : MonoBehaviour {
     }
 
     void Update() {
+        //Only blink if this is past the first round of overall levels
+        if (GameManager.Instance.CurrentDifficulty >= GameManager.Instance.NumberOfLevels) {
+            levelBlink();
+        }
         if(GameManager.Instance.enableSeebright && seebrightPosition != cameraPosition) {
             cameraPosition = seebrightPosition;
+        }
+    }
+
+    /*
+     * The level will turn invisible/visible
+     * Blinks before changes
+     */
+    void levelBlink() {
+        if (Time.time >= _levelChangeTime + FLIP_RENDERER_TIME) {
+            renderer.enabled = Mathf.Sin(Time.time * 75.0f) > 0; //blinks
+            if (Time.time >= _levelChangeTime + FLIP_RENDERER_TIME + BLINK_TIME) {
+                renderer.enabled = _invisibleLevel;
+                _invisibleLevel = !_invisibleLevel;
+                _levelChangeTime = Time.time;
+            }
         }
     }
 
