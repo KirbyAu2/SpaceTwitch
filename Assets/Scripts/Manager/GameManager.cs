@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour {
     public Texture2D _livesIcon;
     public List<GameObject> levels;
     public GameObject playerPrefab;
+    public GameObject joystick;
     public bool enableSeebright = false;
     public bool isMenu = false;
 
@@ -37,6 +38,9 @@ public class GameManager : MonoBehaviour {
     private bool _gameOver = false;
     private float _gameOverStartTimer;
     private bool _needToInitSeebrightCamera = false;
+    private CNJoystick _joystickAPI;
+    private Vector3 _joystickMovementVector;
+    private TriggerButton _triggerButton;
 
     void Start () {
         //Implements Singleton 
@@ -47,8 +51,51 @@ public class GameManager : MonoBehaviour {
         _needToInitSeebrightCamera = enableSeebright;
         _currentPlayerShips = new List<Player>();
         _instance = this;
+#if UNITY_IPHONE
+        if (joystick != null) {
+            joystick.SetActive(true);
+            _joystickAPI = joystick.GetComponentInChildren<CNJoystick>();
+            _joystickAPI.JoystickMovedEvent += _joystickAPI_JoystickMovedEvent;
+            _joystickAPI.FingerLiftedEvent += _joystickAPI_FingerLiftedEvent;
+        }
+        _triggerButton = GetComponent<TriggerButton>();
+        _triggerButton.enabled = true;
+#endif
     }
 
+#if UNITY_IPHONE
+    public bool TriggerPressed {
+        get {
+            return _triggerButton.Pressed;
+        }
+    }
+
+    public float JoystickHorizontal {
+        get {
+            return _joystickMovementVector.x;
+        }
+    }
+
+    public float JoystickVertical {
+        get {
+            return _joystickMovementVector.y;
+        }
+    }
+
+    /**
+     * Clears movement vector when finger is lifted
+     */
+    void _joystickAPI_FingerLiftedEvent() {
+        _joystickMovementVector = Vector3.zero;
+    }
+
+    /**
+     * Gets the joystick movement vector
+     */
+    void _joystickAPI_JoystickMovedEvent(Vector3 relativeVector) {
+        _joystickMovementVector = relativeVector;
+    }
+#endif
 
     /**
      * Handles the initialization of all things Seebright
@@ -70,7 +117,9 @@ public class GameManager : MonoBehaviour {
         _currentLevelIndex--;
         loadNextLevel();
         spawnPlayer(true);
+#if !UNITY_IPHONE
         Screen.lockCursor = true;
+#endif
         GameObject musicObject = GameObject.Find("IngameMusic");
         if (musicObject != null)
             _music = musicObject.audio;
@@ -260,6 +309,11 @@ public class GameManager : MonoBehaviour {
      * Update function that runs every frame; Called within Unity
      */
     void Update () {
+#if UNITY_IPHONE
+        if (Input.GetKeyUp(KeyCode.Mouse0)) {
+            _joystickMovementVector = Vector3.zero;
+        }
+#endif
         if(_needToInitSeebrightCamera && enableSeebright) {
             initSeebright();
         }
