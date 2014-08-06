@@ -52,14 +52,16 @@ public class GameManager : MonoBehaviour {
         _currentPlayerShips = new List<Player>();
         _instance = this;
 #if UNITY_IPHONE
-        if (joystick != null) {
-            joystick.SetActive(true);
-            _joystickAPI = joystick.GetComponentInChildren<CNJoystick>();
-            _joystickAPI.JoystickMovedEvent += _joystickAPI_JoystickMovedEvent;
-            _joystickAPI.FingerLiftedEvent += _joystickAPI_FingerLiftedEvent;
+        if (!enableSeebright) {
+            if (joystick != null) {
+                joystick.SetActive(true);
+                _joystickAPI = joystick.GetComponentInChildren<CNJoystick>();
+                _joystickAPI.JoystickMovedEvent += _joystickAPI_JoystickMovedEvent;
+                _joystickAPI.FingerLiftedEvent += _joystickAPI_FingerLiftedEvent;
+            }
+            _triggerButton = GetComponent<TriggerButton>();
+            _triggerButton.enabled = true;
         }
-        _triggerButton = GetComponent<TriggerButton>();
-        _triggerButton.enabled = true;
 #endif
     }
 

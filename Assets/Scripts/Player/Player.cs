@@ -227,12 +227,12 @@ public class Player : MonoBehaviour {
             return;
         }
 
-#if UNITY_IPHONE
-        float mouseMove = GameManager.Instance.JoystickHorizontal;
-#elif UNITY_EDITOR
-        float mouseMove = Input.GetAxis("Mouse X");
+#if UNITY_IPHONE && !UNITY_EDITOR
+        float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetAxis(SBRemote.JOY_HORIZONTAL) : GameManager.Instance.JoystickHorizontal;  
+#elif UNITY_IPHONE && UNITY_EDITOR
+        float mouseMove = (GameManager.Instance.enableSeebright) ? Input.GetAxis("Mouse X") : GameManager.Instance.JoystickHorizontal;  
 #else
-        float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL)/(2048 * 4) : Input.GetAxis("Mouse X");  
+        float mouseMove = Input.GetAxis("Mouse X");
 #endif
         float shipMove = mouseMove * _mouseSensitivity;
         if (_isMovementMirrored) {
@@ -292,12 +292,12 @@ public class Player : MonoBehaviour {
         if (isMultiActivated) {
             maxMultiShots = MAX_SHOTS * 3 - 2; // -2 for +3 shots from multi shot so it fires at 12 max (<13)
         }
-#if UNITY_IPHONE
-        bool triggerPressed = GameManager.Instance.TriggerPressed;
-#elif UNITY_EDITOR
-        bool triggerPressed = Input.GetMouseButton(0);
+#if UNITY_IPHONE && !UNITY_EDITOR
+        bool triggerPressed = (GameManager.Instance.enableSeebright) ? SBRemote.GetButton(SBRemote.BUTTON_TRIGGER) : GameManager.Instance.TriggerPressed;
+#elif UNITY_IPHONE && UNITY_EDITOR
+        bool triggerPressed = (GameManager.Instance.enableSeebright) ? Input.GetMouseButton(0) : GameManager.Instance.TriggerPressed;
 #else
-        bool triggerPressed = (GameManager.Instance.enableSeebright) ? SBRemote.GetButton(SBRemote.BUTTON_TRIGGER) : Input.GetMouseButton(0);
+        bool triggerPressed = Input.GetMouseButton(0);
 #endif
 
         if (triggerPressed && _reload < 0 && _numShots < maxMultiShots) {
@@ -468,16 +468,17 @@ public class Player : MonoBehaviour {
         }
     }
 
+#if UNITY_IPHONE
     void OnGUI() {
         GUIStyle highlightStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
         highlightStyle.normal.textColor = Color.cyan;
-#if UNITY_IPHONE
-        if (!_escapeMenu.currentlyActive && !isClone) {
-            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(500)) / 2, 0, 
+        if (!_escapeMenu.currentlyActive && !isClone && !GameManager.Instance.enableSeebright) {
+            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(500)) / 2, 0,
                 ScreenUtil.getPixelWidth(500), ScreenUtil.getPixelHeight(100)), "Menu", highlightStyle)) {
                 _escapeMenu.display();
             }
         }
-#endif
     }
+#endif
+
 }
