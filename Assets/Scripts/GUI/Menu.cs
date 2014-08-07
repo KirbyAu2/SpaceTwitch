@@ -70,6 +70,12 @@ public class Menu : MonoBehaviour {
         GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(160), ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(50),
                 ScreenUtil.getPixelWidth(50), ScreenUtil.getPixelHeight(100)), GameManager.versionID, _tempStyle);
 
+        // temporary manual exit program
+        GUIManager.DrawLabel(new Rect(10, 10, 300, 25), "Press Escape to quit", _tempStyle);
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Application.Quit();
+        }
+
         if(!_displayOptions && !_displayCredits) {
             drawNormalMenu();
         }

@@ -60,8 +60,6 @@ public class Player : MonoBehaviour {
 
     //Initializes player ship
     void Start () {
-        currentPlane = 0;
-        positionOnPlane = .5f;
 
         isRapidActivated = isMultiActivated = isCloneActivated = false;
         if (TestLevel != null) {
@@ -219,7 +217,7 @@ public class Player : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.F1)) {
             _invulnerable = !_invulnerable;
             _invulnerabilityCooldown = (_invulnerable) ? float.MaxValue : 0;
-            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width/2,Screen.height/2,"God Mode : " + _invulnerable.ToString(),GUIManager.Instance.defaultStyle,4));
+            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width/2,Screen.height/2, "God Mode : " + _invulnerable.ToString(),GUIManager.Instance.defaultStyle,4));
         }
 #endif
 
@@ -272,7 +270,7 @@ public class Player : MonoBehaviour {
         currentLevel.lanes[currentPlane].setHighlight(true);
 
         // update position
-        transform.position = currentLevel.lanes[currentPlane].Front;
+        transform.position = currentLevel.lanes[currentPlane].Front + new Vector3(renderer.bounds.extents.x, 0, 0);
         float angleUp = Vector3.Angle(Vector3.up, currentLevel.lanes[currentPlane].Normal) - 90;
         float angleRight = Vector3.Angle(Vector3.forward, currentLevel.lanes[currentPlane].Normal);
         float angleLeft = Vector3.Angle(Vector3.back, currentLevel.lanes[currentPlane].Normal);
@@ -280,6 +278,7 @@ public class Player : MonoBehaviour {
             angleUp = -angleUp;
         }
         transform.eulerAngles = new Vector3(angleUp, 180, 0);
+        //transform.forward = currentLevel.lanes[currentPlane].Normal;
 
         // shoot
         if (_numShots < 0) { 

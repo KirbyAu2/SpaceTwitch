@@ -162,6 +162,14 @@ public class Level : MonoBehaviour {
         return lanes[(int)(Random.value * lanes.Count)];
     }
 
+    // returns index of lane, -1 if not in level
+    public int GetIndexOfLane(Lane lane) {
+        for (int i = 0; i < lanes.Count; i++)
+            if (lanes[i] == lane)
+                return i;
+        return -1;
+    }
+
     /*
      * Draws gizmos that are also pickable and always drawn. 
      * Allows us to quickly pick important objects in scene 
