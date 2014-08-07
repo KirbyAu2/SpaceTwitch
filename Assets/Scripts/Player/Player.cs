@@ -23,8 +23,8 @@ public class Player : MonoBehaviour {
     public GameObject TestLevel;
     public Level currentLevel;
 
-    private int _currentPlane = 0;
-    private float _positionOnPlane = 0.5f; // between 0 (beginning) and 1 (end)
+    public int currentPlane { get; private set; }
+    public float positionOnPlane { get; private set; } // between 0 (beginning) and 1 (end)
     
     private bool _alive = false;
     private int _numShots = 0;
@@ -60,6 +60,7 @@ public class Player : MonoBehaviour {
 
     //Initializes player ship
     void Start () {
+
         isRapidActivated = isMultiActivated = isCloneActivated = false;
         if (TestLevel != null) {
             currentLevel = TestLevel.GetComponent<Level>();
@@ -91,7 +92,7 @@ public class Player : MonoBehaviour {
         _invulnerable = false;
         _invulnerabilityCooldown = Time.time - RESPAWN_COOLDOWN;
         _previousLevel = currentLevel.gameObject;
-        currentLevel.lanes[_currentPlane].setHighlight(false);
+        currentLevel.lanes[currentPlane].setHighlight(false);
         _startTransTime = Time.time;
         currentLevel = level;
         _startPos = gameObject.transform.position;
@@ -111,7 +112,7 @@ public class Player : MonoBehaviour {
         }
         currentLevel = level;
         CameraController.currentCamera.gameObject.transform.position = currentLevel.cameraPosition.transform.position;
-        _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
+        currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
         _alive = true;
         _invulnerable = true;
         _invulnerabilityCooldown = Time.time;
@@ -128,15 +129,15 @@ public class Player : MonoBehaviour {
         // initialize clone location
         if (!currentLevel.wrapAround) { // level doesn't wrap
             _isMovementMirrored = true;
-            _currentPlane = level.lanes.Count - 1 - plane;
-            _positionOnPlane = 1 - position;
+            currentPlane = level.lanes.Count - 1 - plane;
+            positionOnPlane = 1 - position;
         }
         else {
-            _currentPlane = plane - (level.lanes.Count / 2);
-            if (_currentPlane < 0) {
-                _currentPlane += level.lanes.Count;
+            currentPlane = plane - (level.lanes.Count / 2);
+            if (currentPlane < 0) {
+                currentPlane += level.lanes.Count;
             }
-            _positionOnPlane = position;
+            positionOnPlane = position;
         }
         _escapeMenu = GameManager.Instance.CurrentPlayerShips[0].GetComponent<EscapeMenu>();
     }
@@ -196,9 +197,9 @@ public class Player : MonoBehaviour {
                 _transitioning = false;
                     Destroy(_previousLevel);
                     if (currentLevel.SpawnLane != null) {
-                        _currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
+                        currentPlane = currentLevel.lanes.IndexOf(currentLevel.SpawnLane);
                     } else {
-                        _currentPlane = 0;
+                        currentPlane = 0;
                     }
             }
             return;
@@ -219,7 +220,7 @@ public class Player : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.F1)) {
             _invulnerable = !_invulnerable;
             _invulnerabilityCooldown = (_invulnerable) ? float.MaxValue : 0;
-            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width/2,Screen.height/2,"God Mode : " + _invulnerable.ToString(),GUIManager.Instance.defaultStyle,4));
+            GUIManager.Instance.addGUIItem(new GUIItem(Screen.width/2,Screen.height/2, "God Mode : " + _invulnerable.ToString(),GUIManager.Instance.defaultStyle,4));
         }
 #endif
 
@@ -236,52 +237,53 @@ public class Player : MonoBehaviour {
 #endif
         float shipMove = mouseMove * _mouseSensitivity;
         if (_isMovementMirrored) {
-            _positionOnPlane -= shipMove;
+            positionOnPlane -= shipMove;
         }
         else {
-            _positionOnPlane += shipMove;
+            positionOnPlane += shipMove;
         }
 
-        currentLevel.lanes[_currentPlane].setHighlight(false);
+        currentLevel.lanes[currentPlane].setHighlight(false);
         // calculate new position after movement
-        if (_positionOnPlane < 0) {
-            _currentPlane--;
-            _positionOnPlane++;
+        if (positionOnPlane < 0) {
+            currentPlane--;
+            positionOnPlane++;
         }
-        else if (_positionOnPlane > 1) {
-            _currentPlane++;
-            _positionOnPlane--;
+        else if (positionOnPlane > 1) {
+            currentPlane++;
+            positionOnPlane--;
         }
 
-        if (_currentPlane < 0) {
+        if (currentPlane < 0) {
             if (currentLevel.wrapAround) {
-                _currentPlane += currentLevel.lanes.Count;
+                currentPlane += currentLevel.lanes.Count;
             }
             else {
-                _currentPlane = 0;
-                _positionOnPlane = 0;
+                currentPlane = 0;
+                positionOnPlane = 0;
             }
         }
-        else if (_currentPlane >= currentLevel.lanes.Count) {
+        else if (currentPlane >= currentLevel.lanes.Count) {
             if (currentLevel.wrapAround) {
-                _currentPlane -= currentLevel.lanes.Count;
+                currentPlane -= currentLevel.lanes.Count;
             }
             else {
-                _currentPlane = currentLevel.lanes.Count - 1;
-                _positionOnPlane = 1;
+                currentPlane = currentLevel.lanes.Count - 1;
+                positionOnPlane = 1;
             }
         }
-        currentLevel.lanes[_currentPlane].setHighlight(true);
+        currentLevel.lanes[currentPlane].setHighlight(true);
 
         // update position
-        transform.position = currentLevel.lanes[_currentPlane].Front;
-        float angleUp = Vector3.Angle(Vector3.up, currentLevel.lanes[_currentPlane].Normal) - 90;
-        float angleRight = Vector3.Angle(Vector3.forward, currentLevel.lanes[_currentPlane].Normal);
-        float angleLeft = Vector3.Angle(Vector3.back, currentLevel.lanes[_currentPlane].Normal);
+        transform.position = currentLevel.lanes[currentPlane].Front + new Vector3(renderer.bounds.extents.x, 0, 0);
+        float angleUp = Vector3.Angle(Vector3.up, currentLevel.lanes[currentPlane].Normal) - 90;
+        float angleRight = Vector3.Angle(Vector3.forward, currentLevel.lanes[currentPlane].Normal);
+        float angleLeft = Vector3.Angle(Vector3.back, currentLevel.lanes[currentPlane].Normal);
         if (angleRight < angleLeft) {
             angleUp = -angleUp;
         }
         transform.eulerAngles = new Vector3(angleUp, 180, 0);
+        //transform.forward = currentLevel.lanes[currentPlane].Normal;
 
         // shoot
         if (_numShots < 0) { 
@@ -344,8 +346,8 @@ public class Player : MonoBehaviour {
     //gets current lane
     public Lane CurrentLane {
         get {
-            if(currentLevel != null && currentLevel.lanes != null && _currentPlane < currentLevel.lanes.Count) {
-                return currentLevel.lanes[_currentPlane];
+            if(currentLevel != null && currentLevel.lanes != null && currentPlane < currentLevel.lanes.Count) {
+                return currentLevel.lanes[currentPlane];
             } else {
                 return null;
             }
@@ -359,19 +361,19 @@ public class Player : MonoBehaviour {
      */
     void Shoot() {
         AudioSource.PlayClipAtPoint(_shootSound, transform.position, GameManager.effectsVolume);
-        Lane currentLane = currentLevel.lanes[_currentPlane];
+        Lane currentLane = currentLevel.lanes[currentPlane];
         GameObject shot = (GameObject)Instantiate(playerProjectile);
         shot.renderer.enabled = false;
         shot.GetComponent<PlayerProjectile>().init(currentLane, this);
         _numShots++;
         if (isMultiActivated) {
-            currentLane = currentLevel.lanes[_currentPlane].LeftLane;
+            currentLane = currentLevel.lanes[currentPlane].LeftLane;
             if (currentLane != null) {
                 shot = (GameObject)Instantiate(playerProjectile);
                 shot.GetComponent<PlayerProjectile>().init(currentLane, this);
                 _numShots++;
             }
-            currentLane = currentLevel.lanes[_currentPlane].RightLane;
+            currentLane = currentLevel.lanes[currentPlane].RightLane;
             if (currentLane != null) {
                 shot = (GameObject)Instantiate(playerProjectile);
                 shot.GetComponent<PlayerProjectile>().init(currentLane, this);
@@ -402,7 +404,7 @@ public class Player : MonoBehaviour {
                 _clone.CloneBecomeMain();
             }
             AudioSource.PlayClipAtPoint(_deathSound, transform.position, GameManager.effectsVolume);
-            currentLevel.lanes[_currentPlane].setHighlight(false);
+            currentLevel.lanes[currentPlane].setHighlight(false);
             GameManager.Instance.removeShip(this);
             other.gameObject.GetComponent<Enemy>().explode();
             Destroy(gameObject);
@@ -448,7 +450,7 @@ public class Player : MonoBehaviour {
         isCloneActivated = true;
         GameObject playerClone = (GameObject)Instantiate(cloneObject);
         _clone = playerClone.GetComponent<Player>();
-        _clone.initAsClone(currentLevel, _currentPlane, _positionOnPlane);
+        _clone.initAsClone(currentLevel, currentPlane, positionOnPlane);
         if (isMultiActivated) {
             _clone.SetMultiTime(_multiTime);
             _clone.isMultiActivated = true;
