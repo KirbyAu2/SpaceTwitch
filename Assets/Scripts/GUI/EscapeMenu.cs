@@ -28,7 +28,9 @@ public class EscapeMenu : MonoBehaviour {
         _displayOptions = false;
         currentTime = Time.timeScale;
         Time.timeScale = 0;
+#if !UNITY_IPHONE
         Screen.lockCursor = false;
+#endif
         currentlyActive = true;
     }
 
@@ -37,7 +39,9 @@ public class EscapeMenu : MonoBehaviour {
         CameraController.currentCamera.setBlurShader(false);
         Time.timeScale = currentTime;
         currentlyActive = false;
+#if !UNITY_IPHONE
         Screen.lockCursor = true;
+#endif
     }
 
 	
@@ -70,6 +74,7 @@ public class EscapeMenu : MonoBehaviour {
      */
     void OnGUI() {
         GUIStyle highlightStyle = new GUIStyle(style);
+
         if (!currentlyActive) {
             return;
         }

@@ -15,6 +15,7 @@ public class Player : MonoBehaviour {
     public const float DELAY_NEXT_SHOT = .17f;
     public const float RAPID_SHOT_TIME = 15.0f;
     public const float MULTI_SHOT_TIME = 15.0f;
+    public const int MAX_SHOTS = 5;
 
     private const float CAMERA_PERCENT_BACK = .7f;
     private float _mouseSensitivity;
@@ -26,7 +27,6 @@ public class Player : MonoBehaviour {
     private float _positionOnPlane = 0.5f; // between 0 (beginning) and 1 (end)
     
     private bool _alive = false;
-    public int maxShots = 5;
     private int _numShots = 0;
     private float _reload = 0;
 
@@ -157,7 +157,10 @@ public class Player : MonoBehaviour {
         if (_escapeMenu.currentlyActive) {
             return;
         }
+
+#if !UNITY_IPHONE
         Screen.lockCursor = true;
+#endif
 
         //Invulnerability
         if (_invulnerable) {
@@ -224,10 +227,12 @@ public class Player : MonoBehaviour {
             return;
         }
 
-#if UNITY_EDITOR
-        float mouseMove = Input.GetAxis("Mouse X");
+#if UNITY_IPHONE && !UNITY_EDITOR
+        float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetAxis(SBRemote.JOY_HORIZONTAL) : GameManager.Instance.JoystickHorizontal;  
+#elif UNITY_IPHONE && UNITY_EDITOR
+        float mouseMove = (GameManager.Instance.enableSeebright) ? Input.GetAxis("Mouse X") : GameManager.Instance.JoystickHorizontal;  
 #else
-        float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL)/(2048 * 4) : Input.GetAxis("Mouse X");  
+        float mouseMove = Input.GetAxis("Mouse X");
 #endif
         float shipMove = mouseMove * _mouseSensitivity;
         if (_isMovementMirrored) {
@@ -283,15 +288,16 @@ public class Player : MonoBehaviour {
             _numShots = 0;
         }
 
-        int maxMultiShots = maxShots;
+        int maxMultiShots = MAX_SHOTS;
         if (isMultiActivated) {
-            maxMultiShots = maxShots * 3 - 2; // -2 for +3 shots from multi shot so it fires at 12 max (<13)
+            maxMultiShots = MAX_SHOTS * 3 - 2; // -2 for +3 shots from multi shot so it fires at 12 max (<13)
         }
-
-#if UNITY_EDITOR
-        bool triggerPressed = Input.GetMouseButton(0);
+#if UNITY_IPHONE && !UNITY_EDITOR
+        bool triggerPressed = (GameManager.Instance.enableSeebright) ? SBRemote.GetButton(SBRemote.BUTTON_TRIGGER) : GameManager.Instance.TriggerPressed;
+#elif UNITY_IPHONE && UNITY_EDITOR
+        bool triggerPressed = (GameManager.Instance.enableSeebright) ? Input.GetMouseButton(0) : GameManager.Instance.TriggerPressed;
 #else
-        bool triggerPressed = (GameManager.Instance.enableSeebright) ? SBRemote.GetButton(SBRemote.BUTTON_TRIGGER) : Input.GetMouseButton(0);
+        bool triggerPressed = Input.GetMouseButton(0);
 #endif
 
         if (triggerPressed && _reload < 0 && _numShots < maxMultiShots) {
@@ -412,9 +418,10 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void SetRapidTime(float time){
+    public void SetRapidTime(float time){
         _rapidTime = time;
     }
+
     //Activates multi-shot
     public void ActivateMulti() {
         _multiTime = MULTI_SHOT_TIME;
@@ -460,5 +467,18 @@ public class Player : MonoBehaviour {
             _escapeMenu = gameObject.GetComponent<EscapeMenu>();
         }
     }
+
+#if UNITY_IPHONE
+    void OnGUI() {
+        GUIStyle highlightStyle = new GUIStyle(GUIManager.Instance.defaultStyle);
+        highlightStyle.normal.textColor = Color.cyan;
+        if (!_escapeMenu.currentlyActive && !isClone && !GameManager.Instance.enableSeebright) {
+            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(500)) / 2, 0,
+                ScreenUtil.getPixelWidth(500), ScreenUtil.getPixelHeight(100)), "Menu", highlightStyle)) {
+                _escapeMenu.display();
+            }
+        }
+    }
+#endif
 
 }

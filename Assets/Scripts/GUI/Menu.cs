@@ -44,12 +44,12 @@ public class Menu : MonoBehaviour {
         GUI.FocusControl(ID.ToString());
 
         _focusTimer += .01f;
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) < -2048*8 && ID < length && _focusTimer > _focusTimerMax)
+        if (SBRemote.GetAxis(SBRemote.JOY_VERTICAL) < -0.5f && ID < length && _focusTimer > _focusTimerMax)
         {
             _focusTimer = 0;
             ID++;
         }
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_VERTICAL) > 2048*8 && ID > 0 && _focusTimer > _focusTimerMax)
+        if (SBRemote.GetAxis(SBRemote.JOY_VERTICAL) > 0.5f && ID > 0 && _focusTimer > _focusTimerMax)
         {
             _focusTimer = 0;
             ID--;
@@ -116,7 +116,7 @@ public class Menu : MonoBehaviour {
                 GameManager.mouseSensitivity, 0.1f, 0.5f);
         }
             //SeeBright Enabled
-        else if (GameManager.Instance.enableSeebright == true) {
+        else if (GameManager.Instance.enableSeebright) {
             //SFX Volume
             GUI.SetNextControlName("0");
             GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2,
@@ -199,7 +199,7 @@ public class Menu : MonoBehaviour {
                 _focusID = -1;
             }
         }
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) > 2048 * 4 * 2) {
+        if (SBRemote.GetAxis(SBRemote.JOY_HORIZONTAL) > 0.5f) {
             if (_focusID == 0 && GameManager.effectsVolume < 1) {
                 GameManager.effectsVolume += .01f;
             } else if (_focusID == 1 && GameManager.musicVolume < 1) {
@@ -208,7 +208,7 @@ public class Menu : MonoBehaviour {
                 GameManager.mouseSensitivity += .005f;
             }
         }
-        if (SBRemote.GetJoystickDelta(SBRemote.JOY_HORIZONTAL) < -2048 * 4 * 2) {
+        if (SBRemote.GetAxis(SBRemote.JOY_HORIZONTAL) < -0.5f) {
             if (_focusID == 0 && GameManager.effectsVolume > 0) {
                 GameManager.effectsVolume -= .01f;
             } else if (_focusID == 1 && GameManager.musicVolume > 0) {
