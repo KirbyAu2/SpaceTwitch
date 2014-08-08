@@ -19,6 +19,7 @@ public class Menu : MonoBehaviour {
     private float _focusTimer = 0;
     private int _focusID = -1;
     private int _newScore = 0;
+    private int _oldScore = 0;
     private bool _sliderSelecter = false;
     private GUIStyle _highlightStyle;
 
@@ -28,10 +29,10 @@ public class Menu : MonoBehaviour {
         style.fontSize = (int)ScreenUtil.getPixelHeight(style.fontSize);
         _levelModels = GetComponentsInChildren<Transform>();
         _highlightStyle = new GUIStyle(style);
+        getTopHighScores();
     }
 	
     void Update () {
-        getTopHighScores();
         Screen.lockCursor = false;
 
         transform.Rotate(new Vector3(0, 0, -.2f));
@@ -307,13 +308,18 @@ public class Menu : MonoBehaviour {
                 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "High Scores", style);
         GUI.color = prev;
         GUI.color = Color.green;
+        GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2,
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "1)   " + PlayerPrefs.GetInt("highscorePos"+1), style);
+        GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(70),
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "2)   " + PlayerPrefs.GetInt("highscorePos" + 2), style);
+        GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(140),
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "3)   " + PlayerPrefs.GetInt("highscorePos" + 3), style);
+        GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(210),
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "4)   " + PlayerPrefs.GetInt("highscorePos" + 4), style);
+        GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(280),
+                3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "5)   " + PlayerPrefs.GetInt("highscorePos" + 5), style);
 
-        for (int i = 1; i <= 5; i++)
-        {
-            GUI.Box(new Rect(100, 75 * i, 150, 50), i + ")    " + PlayerPrefs.GetInt("highscorePos" + i));
-        }
-
-            //Back Button
+        //Back Button
             GUI.color = Color.white;
             GUI.SetNextControlName("0");
         if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
@@ -350,26 +356,19 @@ public class Menu : MonoBehaviour {
     {
         if (GameManager.Instance.isGameOver)
         {
-            int oldScore;
             _newScore = Score.CurrentScore;
             for (int i = 1; i <= 5; i++)
             {
-                if (PlayerPrefs.GetInt("highscorePos" + i) < _newScore)
+                if (PlayerPrefs.GetInt("highscorePos" + i) < _newScore) //if New score is better
                 {
-                    oldScore = PlayerPrefs.GetInt("highscorePos" + i);
-                    PlayerPrefs.SetInt("highscorePos" + i, _newScore);
-                    _newScore = oldScore;
-                    //if (i < 5)
-                    //{
-                    //    int j = i + 1;
-                    //    newScore = PlayerPrefs.GetInt(highscorePos + j);
-                    //    PlayerPrefs.SetInt(highscorePos + j, oldScore);
-                    //}
-                }
-                else
-                {
-                    PlayerPrefs.SetInt(i + "highscorePos", _newScore);
-                    _newScore = 0;
+                    _oldScore = PlayerPrefs.GetInt("highscorePos" + i); //Saves old best score
+                    PlayerPrefs.SetInt("highscorePos" + i, _newScore); //Sets New score as best score
+                    if (i < 5)
+                    {
+                        int j = i + 1; //Move one position down
+                        _newScore = PlayerPrefs.GetInt("highscorePos" + j); //saves next position score as new score 
+                        PlayerPrefs.SetInt("highscorePos" + j,_oldScore); //sets old best score in that position
+                    }
                 }
             }
         }
