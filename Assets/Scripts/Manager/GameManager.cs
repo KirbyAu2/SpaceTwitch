@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour {
     public GameObject joystick;
     public bool enableSeebright = false;
     public bool isMenu = false;
+    public bool isGameOver = false;
 
     private SeebrightSDK _seebrightSDK;
     private int _score = 0;
@@ -35,7 +36,6 @@ public class GameManager : MonoBehaviour {
     private List<Player> _currentPlayerShips;
     private GameObject _currentLevelObject;
     private Level _currentLevel;
-    private bool _gameOver = false;
     private float _gameOverStartTimer;
     private bool _needToInitSeebrightCamera = false;
     private CNJoystick _joystickAPI;
@@ -188,7 +188,7 @@ public class GameManager : MonoBehaviour {
     public void gameOver() {
         Score.submit();
         CameraController.currentCamera.setBlurShader(true);
-        _gameOver = true;
+        isGameOver = true;
         _gameOverStartTimer = Time.time;
         Screen.lockCursor = false;
         GUIManager.Instance.clearGUIItem();
@@ -320,7 +320,7 @@ public class GameManager : MonoBehaviour {
             initSeebright();
         }
         //Goes back to main menu if game over
-        if (_gameOver) {
+        if (isGameOver) {
             if ((Time.time - _gameOverStartTimer) / 3.0f > 1.0f) {
                 Application.LoadLevel(0);
             }

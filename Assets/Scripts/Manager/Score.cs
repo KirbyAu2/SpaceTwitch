@@ -10,8 +10,10 @@ public class Score : MonoBehaviour {
 
     public GUIStyle style;
     public static int CurrentScore = 0;
+    public static int newScore = 0;
     public static int CurrentMultiplier = 0;
     public static int BuildUp = 0;
+    public static string highscorePos;
 
 	void Start () {
         style.fontSize = (int)ScreenUtil.getPixelHeight(style.fontSize);
@@ -23,8 +25,39 @@ public class Score : MonoBehaviour {
             CurrentMultiplier++;
             BuildUp = 0;
         }
+        //getTopHighScores();
 	}
-    
+/*
+    void getTopHighScores()
+    {
+        if (GameManager.Instance.isGameOver)
+        {
+            int oldScore;
+            newScore = CurrentScore;
+            for (int i = 1; i <= 5; i++)
+            {
+                if (PlayerPrefs.GetInt(highscorePos + i) < newScore)
+                {
+                    oldScore = PlayerPrefs.GetInt(highscorePos + i);
+                    PlayerPrefs.SetInt(highscorePos + i, newScore);
+                    newScore = oldScore;
+                    //if (i < 5)
+                    //{
+                    //    int j = i + 1;
+                    //    newScore = PlayerPrefs.GetInt(highscorePos + j);
+                    //    PlayerPrefs.SetInt(highscorePos + j, oldScore);
+                    //}
+                }
+                else
+                {
+                    PlayerPrefs.SetInt(i + highscorePos, newScore);
+                    newScore = 0;
+                }
+            }
+        }
+    }
+*/
+
     //Submits score to Kongregate
     public static void submit() {
         KongregateAPI.Submit("High Score", CurrentScore);
