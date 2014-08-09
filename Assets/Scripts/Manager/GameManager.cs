@@ -9,7 +9,7 @@ using System.Collections.Generic;
  * Keeps track of player lives until game over
  */
 public class GameManager : MonoBehaviour {
-    public const string versionID = "Beta 0.7";
+    public const string versionID = "Beta 0.8";
     public const float DEFAULT_SENSITIVITY = 0.1f;
     public const int MAX_LIVES = 3;
 
@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour {
         _instance = this;
         _needToInitSeebrightCamera = gameObject.GetComponent<SeebrightSDK>().enabled = enableSeebright;
 #if UNITY_IPHONE
-        if (!enableSeebright) {
+        if (!enableSeebright && !isMenu) {
             if (joystick != null) {
                 joystick.SetActive(true);
                 _joystickAPI = joystick.GetComponentInChildren<CNJoystick>();
@@ -60,7 +60,11 @@ public class GameManager : MonoBehaviour {
                 _joystickAPI.FingerLiftedEvent += _joystickAPI_FingerLiftedEvent;
             }
             _triggerButton = GetComponent<TriggerButton>();
-            _triggerButton.enabled = true;
+            if (_triggerButton != null) {
+                _triggerButton.enabled = true;
+            } else {
+                Debug.LogError("No trigger button for iOS build!");
+            }
         }
 #endif
     }

@@ -20,7 +20,6 @@ public class TriggerButton : MonoBehaviour {
         if (Input.GetMouseButton(0)) {
             Vector2 pos = Input.mousePosition;
             pos.y = Screen.height - pos.y;
-            Debug.Log(pos);
             if (hitbox.Contains(pos)) {
                 _pressed = true;
             }

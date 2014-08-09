@@ -93,10 +93,12 @@ public class Menu : MonoBehaviour {
         else if (_displayCredits) {
             drawCredits();
         }
+#if !UNITY_WEBPLAYER
         //In High Score Screen
         else if (_displayHighScore){
             drawHighScore();
         }
+#endif
         else {
             _focusID = -1;
         }
@@ -356,6 +358,9 @@ public class Menu : MonoBehaviour {
 
     void getTopHighScores()
     {
+        if (GameManager.Instance == null) {
+            return;
+        }
         if (GameManager.Instance.isGameOver)
         {
             _newScore = Score.CurrentScore;
@@ -459,24 +464,25 @@ public class Menu : MonoBehaviour {
         _highlightStyle.normal = style.normal;
 
         //Joystick Menu Navigation
-        _focusID = ManageFocus(_focusID, 4);
-        if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT)) {
-            if (_focusID < 0) {
-                return;
-            } else if (_focusID == 0) {
-                Application.LoadLevel(1);
-            } else if (_focusID == 1) {
-                Application.LoadLevel(2);
-            } else if (_focusID == 2) {
-                _displayCredits = true;
-                _focusID = -1;
-            } else if (_focusID == 3) {
-                _displayOptions = true;
-                _focusID = -1;
-            }
-            else if (_focusID == 4){
-                _displayHighScore = true;
-                _focusID = -1;
+        if (GameManager.Instance.enableSeebright) {
+            _focusID = ManageFocus(_focusID, 4);
+            if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT)) {
+                if (_focusID < 0) {
+                    return;
+                } else if (_focusID == 0) {
+                    Application.LoadLevel(1);
+                } else if (_focusID == 1) {
+                    Application.LoadLevel(2);
+                } else if (_focusID == 2) {
+                    _displayCredits = true;
+                    _focusID = -1;
+                } else if (_focusID == 3) {
+                    _displayOptions = true;
+                    _focusID = -1;
+                } else if (_focusID == 4) {
+                    _displayHighScore = true;
+                    _focusID = -1;
+                }
             }
         }
     }

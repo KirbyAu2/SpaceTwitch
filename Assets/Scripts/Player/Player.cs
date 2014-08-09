@@ -231,7 +231,10 @@ public class Player : MonoBehaviour {
 #if UNITY_IPHONE && !UNITY_EDITOR
         float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetAxis(SBRemote.JOY_HORIZONTAL) : GameManager.Instance.JoystickHorizontal;  
 #elif UNITY_IPHONE && UNITY_EDITOR
-        float mouseMove = (GameManager.Instance.enableSeebright) ? Input.GetAxis("Mouse X") : GameManager.Instance.JoystickHorizontal;  
+        float mouseMove = (GameManager.Instance.enableSeebright) ? Input.GetAxis("Mouse X") : GameManager.Instance.JoystickHorizontal;
+        if (mouseMove > 0.75f) {
+            mouseMove *= 1.5f;
+        }
 #else
         float mouseMove = Input.GetAxis("Mouse X");
 #endif
