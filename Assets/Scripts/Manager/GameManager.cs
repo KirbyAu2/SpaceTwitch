@@ -9,7 +9,7 @@ using System.Collections.Generic;
  * Keeps track of player lives until game over
  */
 public class GameManager : MonoBehaviour {
-    public const string versionID = "Beta 0.6";
+    public const string versionID = "Beta 0.7";
     public const float DEFAULT_SENSITIVITY = 0.1f;
     public const int MAX_LIVES = 3;
 
@@ -48,9 +48,9 @@ public class GameManager : MonoBehaviour {
             Debug.LogError("Can't initialize more than one instance of Game Manager!");
             return;
         }
-        _needToInitSeebrightCamera = enableSeebright;
         _currentPlayerShips = new List<Player>();
         _instance = this;
+        _needToInitSeebrightCamera = gameObject.GetComponent<SeebrightSDK>().enabled = enableSeebright;
 #if UNITY_IPHONE
         if (!enableSeebright) {
             if (joystick != null) {
