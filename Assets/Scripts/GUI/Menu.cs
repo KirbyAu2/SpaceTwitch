@@ -445,6 +445,7 @@ public class Menu : MonoBehaviour {
         }
         _highlightStyle.normal = style.normal;
 
+#if !UNITY_WEBPLAYER
         //HighScore Display Button
         GUI.SetNextControlName("4");
         if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
@@ -462,6 +463,7 @@ public class Menu : MonoBehaviour {
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(350), ScreenUtil.getPixelWidth(400), style.fontSize), "High Scores", _highlightStyle);
         }
         _highlightStyle.normal = style.normal;
+#endif
 
         //Joystick Menu Navigation
         if (GameManager.Instance.enableSeebright) {
