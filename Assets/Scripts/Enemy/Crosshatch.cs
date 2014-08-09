@@ -9,7 +9,8 @@ public class Crosshatch : Enemy {
     public Player player { get; private set; }
 
     private int _currentPlane = 1;
-    private int _prevDirection = 1;
+    private int _prevPlane = 1;
+    private int _prevDirection = 1; // 1 or -1
     private float _prevPosition = .5f;
     private float _positionOnPlane = 0.5f; // between 0 (beginning) and 1 (end)
     private float _climbPosition = 0f; // between 0 & 1
@@ -25,6 +26,7 @@ public class Crosshatch : Enemy {
         player = GameManager.Instance.CurrentPlayerShips[0]; // should always be the actual player ship
         transform.position = spawnLane.Back;
         _currentPlane = currentLevel.GetIndexOfLane(spawnLane);
+        _prevPlane = _currentPlane;
     }
 	// Update is called once per frame
 	void Update () {
@@ -36,7 +38,8 @@ public class Crosshatch : Enemy {
         int direction = 0;
 
         // if reached center of lane
-        if (_prevPosition <= .5f && _positionOnPlane > .5f || _prevPosition >= .5f && _positionOnPlane < .5f) {
+        if (_currentPlane == _prevPlane && _currentPlane != player.currentPlane && (_prevPosition <= .5f && _positionOnPlane > .5f || _prevPosition >= .5f && _positionOnPlane < .5f))
+        {
             direction = GetDirectionToPlayer();
         }
         else {
@@ -45,6 +48,7 @@ public class Crosshatch : Enemy {
 
         _prevDirection = direction;
         _prevPosition = _positionOnPlane;
+        _prevPlane = _currentPlane;
         _positionOnPlane += direction * LANE_CROSS_SPEED * Time.deltaTime;
 
         // calculate new position after movement
