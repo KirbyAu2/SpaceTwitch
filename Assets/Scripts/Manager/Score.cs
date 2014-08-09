@@ -24,7 +24,7 @@ public class Score : MonoBehaviour {
             BuildUp = 0;
         }
 	}
-    
+
     //Submits score to Kongregate
     public static void submit() {
         KongregateAPI.Submit("High Score", CurrentScore);
