@@ -9,23 +9,25 @@ using System.Collections.Generic;
  * Keeps track of player lives until game over
  */
 public class GameManager : MonoBehaviour {
-    public const string versionID = "Beta 0.8";
+    public const string versionID = "Release 1.00";
     public const float DEFAULT_SENSITIVITY = 0.1f;
     public const int MAX_LIVES = 3;
 
     public static float mouseSensitivity = DEFAULT_SENSITIVITY;
-    public static float effectsVolume = 1.0f, musicVolume = 1.0f;
+    public static float effectsVolume = 1.0f;
+    public static float musicVolume = 1.0f;
+    public static bool invertedJoystick = false;
+    public static bool invertedControls = false;
 
     private static GameManager _instance;
-    private AudioSource _music;
 
     public Texture2D _livesIcon;
     public List<GameObject> levels;
     public GameObject playerPrefab;
-    public GameObject joystick;
+    public GameObject joystickLeft;
+    public GameObject joystickRight;
     public bool enableSeebright = false;
     public bool isMenu = false;
-    public bool isGameOver = false;
 
     private SeebrightSDK _seebrightSDK;
     private int _score = 0;
@@ -38,9 +40,12 @@ public class GameManager : MonoBehaviour {
     private Level _currentLevel;
     private float _gameOverStartTimer;
     private bool _needToInitSeebrightCamera = false;
-    private CNJoystick _joystickAPI;
+    private CNJoystick _joystickLeftAPI;
+    private CNJoystick _joystickRightAPI;
     private Vector3 _joystickMovementVector;
     private TriggerButton _triggerButton;
+    private bool _gameOver = false;
+    private AudioSource _music;
 
     void Start () {
         //Implements Singleton 
@@ -53,11 +58,19 @@ public class GameManager : MonoBehaviour {
         _needToInitSeebrightCamera = gameObject.GetComponent<SeebrightSDK>().enabled = enableSeebright;
 #if UNITY_IPHONE
         if (!enableSeebright && !isMenu) {
-            if (joystick != null) {
-                joystick.SetActive(true);
-                _joystickAPI = joystick.GetComponentInChildren<CNJoystick>();
-                _joystickAPI.JoystickMovedEvent += _joystickAPI_JoystickMovedEvent;
-                _joystickAPI.FingerLiftedEvent += _joystickAPI_FingerLiftedEvent;
+            if (joystickLeft != null) {
+                joystickLeft.SetActive(true);
+                _joystickLeftAPI = joystickLeft.GetComponentInChildren<CNJoystick>();
+                _joystickLeftAPI.JoystickMovedEvent += _joystickAPI_JoystickMovedEvent;
+                _joystickLeftAPI.FingerLiftedEvent += _joystickAPI_FingerLiftedEvent;
+                joystickLeft.SetActive(invertedControls);
+            }
+            if (joystickRight != null) {
+                joystickRight.SetActive(true);
+                _joystickRightAPI = joystickRight.GetComponentInChildren<CNJoystick>();
+                _joystickRightAPI.JoystickMovedEvent += _joystickAPI_JoystickMovedEvent;
+                _joystickRightAPI.FingerLiftedEvent += _joystickAPI_FingerLiftedEvent;
+                joystickRight.SetActive(!invertedControls);
             }
             _triggerButton = GetComponent<TriggerButton>();
             if (_triggerButton != null) {
@@ -67,6 +80,16 @@ public class GameManager : MonoBehaviour {
             }
         }
 #endif
+    }
+
+    public bool isGameOver {
+        get {
+            return _gameOver;
+        }
+
+        set {
+            _gameOver = value;
+        }
     }
 
 #if UNITY_IPHONE
@@ -127,8 +150,11 @@ public class GameManager : MonoBehaviour {
         Screen.lockCursor = true;
 #endif
         GameObject musicObject = GameObject.Find("IngameMusic");
-        if (musicObject != null)
-            _music = musicObject.audio;
+        if (musicObject != null) {
+            _music = musicObject.GetComponent<AudioSource>();
+            updateMusicVolume();
+            _music.Play();
+        }
     }
 
     /*
@@ -231,7 +257,7 @@ public class GameManager : MonoBehaviour {
             _lives++;
         }
         _currentLevelIndex++;
-        Time.timeScale = 1.0f + 0.1f * _currentLevelIndex;
+        Time.timeScale = 1.0f + 0.02f * _currentLevelIndex;
         //Loads new level
         Vector3 newLevelPosition = 
             new Vector3((_currentLevelIndex+1) * levels[_currentLevelIndex % levels.Count].gameObject.renderer.bounds.size.x * -6.0f,0,0);
@@ -301,12 +327,8 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    /**
-     * Updates the music for the game
-     */
-    public void UpdateMusicVolume()
-    {
-        if (_music != null) { 
+    public void updateMusicVolume() {
+        if (_music != null) {
             _music.volume = musicVolume;
         }
     }

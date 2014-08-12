@@ -43,8 +43,11 @@ public class Menu : MonoBehaviour {
         }
     }
 
-    int ManageFocus(int ID, int length)
+    private int ManageFocus(int ID, int length)
     {
+        if (!GameManager.Instance.enableSeebright) {
+            return 0;
+        }
         GUI.FocusControl(ID.ToString());
 
         _focusTimer += .01f;
@@ -113,29 +116,32 @@ public class Menu : MonoBehaviour {
         GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth / 2 - 3 * ScreenUtil.ScreenWidth / 16, ScreenUtil.ScreenHeight / 2 -
             ScreenUtil.getPixelHeight(100), 3 * ScreenUtil.ScreenWidth / 8, ScreenUtil.getPixelHeight(200)), "Options", style);
         GUI.color = prev;
-        if (GameManager.Instance.enableSeebright == false) {
+        if (!GameManager.Instance.enableSeebright) {
             //SFX Volume
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, ScreenUtil.ScreenHeight / 2,
+            GUI.Label(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2, ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(50),
                 ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Effects Volume", style);
             GameManager.effectsVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth + ScreenUtil.getPixelWidth(200)) / 2,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(50), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.effectsVolume, 0f, 1.0f);
             //Music Volume
-            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, ScreenUtil.ScreenHeight / 2,
+            GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2, ScreenUtil.ScreenHeight / 2 - ScreenUtil.getPixelHeight(50),
                 ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)), "Music Volume", style);
             GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(1000)) / 2,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(50), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.musicVolume, 0f, 1.0f);
+#if !UNITY_IPHONE
             //Sensitivity Control
             GUI.Label(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)),
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(200)),
                 "Sensitivity", style);
             GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(230), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(180), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.mouseSensitivity, 0.1f, 0.5f);
+#endif
         }
+        else 
+        {
             //SeeBright Enabled
-        else if (GameManager.Instance.enableSeebright) {
             //SFX Volume
             GUI.SetNextControlName("0");
             GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2, ScreenUtil.ScreenHeight / 2,
@@ -189,12 +195,50 @@ public class Menu : MonoBehaviour {
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(310), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.mouseSensitivity, 0.1f, 0.5f);
         }
-        if (GameManager.Instance != null) {
-            GameManager.Instance.UpdateMusicVolume();
+
+        if (GameManager.Instance) {
+            GameManager.Instance.updateMusicVolume();
         }
+
+#if UNITY_IPHONE
         GUI.SetNextControlName("3");
         if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
-            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(200), style.fontSize), new GUIContent("Back", "3"), style)) {
+            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(300), ScreenUtil.getPixelWidth(200), 
+            style.fontSize), new GUIContent((GameManager.invertedJoystick) ? "Inverted Joystick: On" : "Inverted Joystick: Off", "3"), style)) {
+                GameManager.invertedJoystick = !GameManager.invertedJoystick;
+        }
+        if (GUI.tooltip == "3") {
+            _highlightStyle.normal = style.hover;
+        }
+        if (GameManager.Instance.enableSeebright) {
+            GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
+                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(300), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
+        }
+        _highlightStyle.normal = style.normal;
+        _focusID = ManageFocus(_focusID, 3);
+
+
+        GUI.SetNextControlName("4");
+        if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
+            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(200),
+            style.fontSize), new GUIContent((GameManager.invertedControls) ? "Inverted Controls: On" : "Inverted Controls: Off", "3"), style)) {
+                GameManager.invertedControls = !GameManager.invertedControls;
+        }
+        if (GUI.tooltip == "4") {
+            _highlightStyle.normal = style.hover;
+        }
+        if (GameManager.Instance.enableSeebright) {
+            GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
+                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
+        }
+        _highlightStyle.normal = style.normal;
+        _focusID = ManageFocus(_focusID, 3);
+#endif
+
+
+        GUI.SetNextControlName("5");
+        if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
+            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), new GUIContent("Back", "3"), style)) {
             _displayOptions = false;
             // update sensitivity when options are closed
             if (GameManager.Instance != null) {
@@ -203,13 +247,19 @@ public class Menu : MonoBehaviour {
                 }
             }
         }
-        if (GUI.tooltip == "3") {
+        if (GUI.tooltip == "5") {
             _highlightStyle.normal = style.hover;
         }
         GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
-            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(150), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
+            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
         _highlightStyle.normal = style.normal;
         _focusID = ManageFocus(_focusID, 3);
+
+
+
+        if (!GameManager.Instance.enableSeebright) {
+            return;
+        }
         if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT)) {
             if (_focusID < 0) {
                 return;

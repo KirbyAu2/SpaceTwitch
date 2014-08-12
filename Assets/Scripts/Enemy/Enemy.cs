@@ -14,7 +14,7 @@ public enum PowerUps
  * Random enemies will be attached with a random powerup that is granted to the player when that enemy dies
  */
 public abstract class Enemy : MonoBehaviour {
-    private const float PERCENTAGE_DROP = 20f; //Twenty percent of enemies drop items
+    private const float PERCENTAGE_DROP = 15f; //Twenty percent of enemies drop items
     protected bool _alive = false;
     protected Lane _currentLane;
     protected int _score = 0;
@@ -165,8 +165,8 @@ public abstract class Enemy : MonoBehaviour {
      */
     void randomPower() 
     {
-        float powerNumber = Random.Range(0f, 3f);
-        if (powerNumber > 2f)
+        float powerNumber = Random.Range(0f, 4f);
+        if (powerNumber > 2.5f)
         {
             _powerUp = PowerUps.Clone;
         }

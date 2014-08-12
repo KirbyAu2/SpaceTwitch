@@ -13,7 +13,8 @@ public class TriggerButton : MonoBehaviour {
     }
 
     void OnGUI() {
-        Rect hitbox = new Rect(ScreenUtil.getPixelWidth(100), ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(250), ScreenUtil.getPixelWidth(150), ScreenUtil.getPixelHeight(150));
+        float startHitX = (GameManager.invertedControls) ? ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(450) : 0;
+        Rect hitbox = new Rect(startHitX, ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(350), ScreenUtil.getPixelWidth(450), ScreenUtil.getPixelHeight(350));
         _pressed = false;
 
 #if UNITY_EDITOR && UNITY_IPHONE
@@ -37,6 +38,8 @@ public class TriggerButton : MonoBehaviour {
         if (buttonImage == null) {
             return;
         }
-        GUI.DrawTexture(hitbox, buttonImage, ScaleMode.ScaleToFit);
+        float startX = (GameManager.invertedControls) ? ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(300) : ScreenUtil.getPixelWidth(150);
+        Rect drawBox = new Rect(startX, ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(250), ScreenUtil.getPixelWidth(150), ScreenUtil.getPixelHeight(150));
+        GUI.DrawTexture(drawBox, buttonImage, ScaleMode.ScaleToFit);
     }
 }

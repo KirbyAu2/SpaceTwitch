@@ -12,10 +12,11 @@ public class Player : MonoBehaviour {
     public const float PLAYER_LEVEL_TRANSITION_TIME = 1.5f;
     public const float CAMERA_LEVEL_TRANSITION_TIME = 1.75f;
     public const float FLASHBANG_TIME = 0.75f;
-    public const float DELAY_NEXT_SHOT = .17f;
+    public const float DELAY_NEXT_SHOT = .22f;
     public const float RAPID_SHOT_TIME = 15.0f;
     public const float MULTI_SHOT_TIME = 15.0f;
-    public const int MAX_SHOTS = 5;
+    public const int MAX_SHOTS = 20;
+    public const float MOVE_DELAY = 0.08f;
 
     private const float CAMERA_PERCENT_BACK = .7f;
     private float _mouseSensitivity;
@@ -57,6 +58,10 @@ public class Player : MonoBehaviour {
     private bool _invulnerable = false;
     private GameObject _previousLevel;
     private float _invulnerabilityCooldown;
+
+
+
+    private float _moveTime = 0;
 
     //Initializes player ship
     void Start () {
@@ -140,6 +145,84 @@ public class Player : MonoBehaviour {
             positionOnPlane = position;
         }
         _escapeMenu = GameManager.Instance.CurrentPlayerShips[0].GetComponent<EscapeMenu>();
+    }
+
+    private void handleMovement() {
+#if UNITY_IPHONE && !UNITY_EDITOR
+        if (_moveTime + MOVE_DELAY > Time.time) {
+            return;
+        }
+        float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetAxis(SBRemote.JOY_HORIZONTAL) : GameManager.Instance.JoystickHorizontal;
+        positionOnPlane = mouseMove * 3;
+        if (GameManager.invertedJoystick) {
+            positionOnPlane *= -1;
+        }
+#elif UNITY_IPHONE && UNITY_EDITOR
+        if (_moveTime + MOVE_DELAY > Time.time) {
+            return;
+        }
+        float mouseMove = (GameManager.Instance.enableSeebright) ? Input.GetAxis("Mouse X") : GameManager.Instance.JoystickHorizontal;
+        if (GameManager.Instance.enableSeebright) {
+            float shipMove = mouseMove * _mouseSensitivity;
+            if (_isMovementMirrored) {
+                positionOnPlane -= shipMove;
+            } else {
+                positionOnPlane += shipMove;
+            }
+        } else {
+            positionOnPlane = mouseMove * 3;
+            if (GameManager.invertedJoystick) {
+                positionOnPlane *= -1;
+            }
+        }
+#else
+        float mouseMove = Input.GetAxis("Mouse X");
+        float shipMove = mouseMove * _mouseSensitivity;
+        if (_isMovementMirrored) {
+            positionOnPlane -= shipMove;
+        }
+        else {
+            positionOnPlane += shipMove;
+        }
+#endif
+
+        currentLevel.lanes[currentPlane].setHighlight(false);
+        // calculate new position after movement
+        if (positionOnPlane < 0) {
+            currentPlane--;
+            positionOnPlane++;
+        } else if (positionOnPlane > 1) {
+            currentPlane++;
+            positionOnPlane--;
+        }
+
+        if (currentPlane < 0) {
+            if (currentLevel.wrapAround) {
+                currentPlane += currentLevel.lanes.Count;
+            } else {
+                currentPlane = 0;
+                positionOnPlane = 0;
+            }
+        } else if (currentPlane >= currentLevel.lanes.Count) {
+            if (currentLevel.wrapAround) {
+                currentPlane -= currentLevel.lanes.Count;
+            } else {
+                currentPlane = currentLevel.lanes.Count - 1;
+                positionOnPlane = 1;
+            }
+        }
+        currentLevel.lanes[currentPlane].setHighlight(true);
+
+        // update position
+        transform.position = currentLevel.lanes[currentPlane].Front + new Vector3(renderer.bounds.extents.x, 0, 0);
+        float angleUp = Vector3.Angle(Vector3.up, currentLevel.lanes[currentPlane].Normal) - 90;
+        float angleRight = Vector3.Angle(Vector3.forward, currentLevel.lanes[currentPlane].Normal);
+        float angleLeft = Vector3.Angle(Vector3.back, currentLevel.lanes[currentPlane].Normal);
+        if (angleRight < angleLeft) {
+            angleUp = -angleUp;
+        }
+        transform.eulerAngles = new Vector3(angleUp, 180, 0);
+        _moveTime = Time.time;
     }
 
     // Update is called once per frame
@@ -228,65 +311,7 @@ public class Player : MonoBehaviour {
             return;
         }
 
-#if UNITY_IPHONE && !UNITY_EDITOR
-        float mouseMove = (GameManager.Instance.enableSeebright) ? SBRemote.GetAxis(SBRemote.JOY_HORIZONTAL) : GameManager.Instance.JoystickHorizontal;  
-#elif UNITY_IPHONE && UNITY_EDITOR
-        float mouseMove = (GameManager.Instance.enableSeebright) ? Input.GetAxis("Mouse X") : GameManager.Instance.JoystickHorizontal;
-        if (mouseMove > 0.75f) {
-            mouseMove *= 1.5f;
-        }
-#else
-        float mouseMove = Input.GetAxis("Mouse X");
-#endif
-        float shipMove = mouseMove * _mouseSensitivity;
-        if (_isMovementMirrored) {
-            positionOnPlane -= shipMove;
-        }
-        else {
-            positionOnPlane += shipMove;
-        }
-
-        currentLevel.lanes[currentPlane].setHighlight(false);
-        // calculate new position after movement
-        if (positionOnPlane < 0) {
-            currentPlane--;
-            positionOnPlane++;
-        }
-        else if (positionOnPlane > 1) {
-            currentPlane++;
-            positionOnPlane--;
-        }
-
-        if (currentPlane < 0) {
-            if (currentLevel.wrapAround) {
-                currentPlane += currentLevel.lanes.Count;
-            }
-            else {
-                currentPlane = 0;
-                positionOnPlane = 0;
-            }
-        }
-        else if (currentPlane >= currentLevel.lanes.Count) {
-            if (currentLevel.wrapAround) {
-                currentPlane -= currentLevel.lanes.Count;
-            }
-            else {
-                currentPlane = currentLevel.lanes.Count - 1;
-                positionOnPlane = 1;
-            }
-        }
-        currentLevel.lanes[currentPlane].setHighlight(true);
-
-        // update position
-        transform.position = currentLevel.lanes[currentPlane].Front + new Vector3(renderer.bounds.extents.x, 0, 0);
-        float angleUp = Vector3.Angle(Vector3.up, currentLevel.lanes[currentPlane].Normal) - 90;
-        float angleRight = Vector3.Angle(Vector3.forward, currentLevel.lanes[currentPlane].Normal);
-        float angleLeft = Vector3.Angle(Vector3.back, currentLevel.lanes[currentPlane].Normal);
-        if (angleRight < angleLeft) {
-            angleUp = -angleUp;
-        }
-        transform.eulerAngles = new Vector3(angleUp, 180, 0);
-        //transform.forward = currentLevel.lanes[currentPlane].Normal;
+        handleMovement();
 
         // shoot
         if (_numShots < 0) { 

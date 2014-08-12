@@ -10,6 +10,7 @@ public class Confetti : Enemy {
     public const int MAX_LANE_MOVE = 5;
     public const float DEFAULT_SPEED_PER_UNIT = 1.0f;
     public const float DURATION_IN_MIDDLE = 1.5f;
+    public const float DURATION_FOR_FAILSAFE = 1.0f;
 
     private bool _isInMiddle = false;
     private bool _atBackOfLane = false;
@@ -21,15 +22,20 @@ public class Confetti : Enemy {
     private Lane _destinatioLane;
     private Vector3 _destination;
     private float _startTime = 0;
+    private Vector3 _failsafePos;
+    private float _failsafeTime = 0;
 
     void Start () {
         _score = 300;
+        _failsafePos = gameObject.transform.position;
+        _failsafeTime = Time.time;
         randomEnemyDrop();
     }
 	/*
      * Moves the Confetti down the lane or from lane to lane 
      */
     void Update () {
+        handleFailsafe();
         if (gameObject.transform.position ==_currentTargetPoint) {
             getNextPoint();
         }
@@ -40,18 +46,29 @@ public class Confetti : Enemy {
         }
     }
 
+    /**
+     * Failsafe for incase the fixes to confetti didn't fix the problem with it getting stuck
+     */
+    private void handleFailsafe() {
+        if (_failsafeTime + DURATION_FOR_FAILSAFE < Time.time) {
+            _failsafeTime = Time.time;
+            if (_failsafePos == gameObject.transform.position) {
+                explode();
+            }
+        }
+    }
+
     /*
      * Looks to see the next it moves to depending on the dierection it is moving
      */
     private void getNextPoint() {
         _startTime = Time.time;
-        _currentStartPoint = gameObject.transform.position;
+        _currentStartPoint = _currentTargetPoint;
 
         if (_goingDownLane) {
             _atBackOfLane = !_atBackOfLane;
             getNewDestination();
             _goingDownLane = false;
-            _isInMiddle = !_isInMiddle;
         }
 
         if (_currentTargetPoint == _destination) {
@@ -96,10 +113,32 @@ public class Confetti : Enemy {
             if (tempLane == _currentLane) {
                 continue;
             }
+
             targetLaneIndex = GameManager.Instance.CurrentLevel.getLaneIndex(tempLane);
-            if (GameManager.Instance.CurrentLevel.wrapAround) {
-                if(Mathf.Abs(targetLaneIndex - GameManager.Instance.CurrentLevel.getLaneIndex(_currentLane)) > MAX_LANE_MOVE) {
-                    targetLaneIndex = GameManager.Instance.CurrentLevel.lanes.Count - targetLaneIndex;
+            int leftPathLength = pathfindLanes(tempLane, true);
+            int rightPathLength = pathfindLanes(tempLane, false);
+
+            if (leftPathLength == -1 && rightPathLength == -1) {
+                //get a new lane is no path
+                continue;
+            } else {
+                if (rightPathLength > MAX_LANE_MOVE && leftPathLength > MAX_LANE_MOVE) {
+                    //get a new lane if both are too far away from current plane
+                    continue;
+                }
+                if (rightPathLength == -1 && leftPathLength != -1) {
+                    if (leftPathLength > MAX_LANE_MOVE) {
+                        continue;
+                    }
+                    _goingRight = false;
+                } else if (rightPathLength != -1 && leftPathLength == -1) {
+                    if (rightPathLength > MAX_LANE_MOVE) {
+                        continue;
+                    }
+                    _goingRight = true;
+                } else {
+                    //if both paths are possible
+                    _goingRight = rightPathLength < leftPathLength;
                 }
             }
 
@@ -126,57 +165,38 @@ public class Confetti : Enemy {
 
         _destinatioLane = tempLane;
         _destination = (_atBackOfLane) ? _destinatioLane.Back : _destinatioLane.Front;
+    }
 
-        //Basic path finding dist check
-        //Check left first
-        int leftCount = 1;
-        if(_currentLane.LeftLane == null) {
-            leftCount = 0;
+    /**
+     * returns number of lanes over from current one the target lane is
+     * 
+     * returns -1 if there is no path
+     */
+    int pathfindLanes(Lane targetLane, bool goLeft) {
+        /*if (GameManager.Instance.CurrentLevel.wrapAround) {
+            if (Mathf.Abs(targetLaneIndex - GameManager.Instance.CurrentLevel.getLaneIndex(_currentLane)) > MAX_LANE_MOVE) {
+                targetLaneIndex = GameManager.Instance.CurrentLevel.lanes.Count - targetLaneIndex;
+            }
+        }*/
+        //sanity check
+        if (targetLane == _currentLane) {
+            return -1;
         }
-        Lane checkLane = _currentLane.LeftLane;
-        while (checkLane != _currentLane && checkLane != null) {
-            backupCount++;
-            checkLane = checkLane.LeftLane;
-            leftCount++;
-            if (checkLane == null) {
-                leftCount = int.MinValue;
-                break;
-            }
-            if (checkLane == tempLane) {
-                break;
-            }
-            if (backupCount > 50) {
-                leftCount = int.MinValue;
-                break;
-            }
-        }
-        backupCount = 0;
-        //Check right first
-        int rightCount = 1;
-        if (_currentLane.RightLane == null) {
-            rightCount = 0;
-        }
-        checkLane = _currentLane.RightLane;
-        while (checkLane != _currentLane && checkLane != null) {
-            backupCount++;
-            checkLane = checkLane.RightLane;
-            rightCount++;
-            if (checkLane == null) {
-                rightCount = int.MinValue;
-                break;
-            }
-            if (checkLane == tempLane) {
-                break;
-            }
-            if (backupCount > 50) {
-                rightCount = int.MinValue;
-                break;
-            }
-        }
-        backupCount = 0;
 
-        _goingRight = rightCount > leftCount;
+        int length = 0;
+        Lane tempLane = _currentLane;
 
+        while (tempLane != targetLane && tempLane != null) {
+            tempLane = (goLeft) ? tempLane.LeftLane : tempLane.RightLane;
+            length++;
+            if (targetLane == tempLane) {
+                break;
+            }
+        }
+        if (tempLane == null) {
+            return -1;
+        }
+        return length;
     }
 
     /*
@@ -185,10 +205,10 @@ public class Confetti : Enemy {
     public override void spawn(Lane spawnLane) {
         _currentLane = spawnLane;
         _alive = true;
+        _isInMiddle = true;
         getNewDestination();
         gameObject.transform.position = _currentLane.Back;
         _atBackOfLane = true;
-        _isInMiddle = true;
         _currentTargetPoint = _currentLane.RightEdge.Back;
         _currentStartPoint = _currentLane.RightEdge.Back;
         _destination = _currentLane.RightEdge.Back;

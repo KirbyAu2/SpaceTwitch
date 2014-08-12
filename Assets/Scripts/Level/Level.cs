@@ -122,7 +122,7 @@ public class Level : MonoBehaviour {
 
     void Update() {
         //Only blink if this is past the first round of overall levels
-        if (GameManager.Instance.CurrentDifficulty >= GameManager.Instance.NumberOfLevels) {
+        if (GameManager.Instance.CurrentDifficulty > GameManager.Instance.NumberOfLevels) {
             levelBlink();
         }
         if(GameManager.Instance.enableSeebright && seebrightPosition != cameraPosition) {

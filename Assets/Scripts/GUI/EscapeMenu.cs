@@ -51,6 +51,9 @@ public class EscapeMenu : MonoBehaviour {
 
     int ManageFocus(int ID, int length)
     {
+        if (!GameManager.Instance.enableSeebright) {
+            return 0;
+        }
         GUI.FocusControl(ID.ToString());
         if (_focusTimer < _focusTimerMax)
             _focusTimer += .01f;
@@ -132,28 +135,21 @@ public class EscapeMenu : MonoBehaviour {
             highlightStyle.normal = style.normal;
 
             //Joystick Menu Navigation
-            _focusID = ManageFocus(_focusID, 2);
-            if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
-            {
-                if (_focusID < 0)
-                {
-                    return;
-                }
-                else if (_focusID == 0)
-                {
-                    exit();
-                }
-                else if (_focusID == 1)
-                {
-                    Application.LoadLevel(0);
-                }
-                else if (_focusID == 2)
-                {
-                    _displayOptions = true;
-                    _focusID = -1;
+            if (GameManager.Instance.enableSeebright) {
+                _focusID = ManageFocus(_focusID, 2);
+                if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT)) {
+                    if (_focusID < 0) {
+                        return;
+                    } else if (_focusID == 0) {
+                        exit();
+                    } else if (_focusID == 1) {
+                        Application.LoadLevel(0);
+                    } else if (_focusID == 2) {
+                        _displayOptions = true;
+                        _focusID = -1;
+                    }
                 }
             }
-            
         }
         //In option Menu
         else if (_displayOptions) {
@@ -243,9 +239,8 @@ public class EscapeMenu : MonoBehaviour {
                     ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(210), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                     GameManager.mouseSensitivity, 0.1f, 0.5f);
             }
-
-            if(GameManager.Instance != null) {
-                GameManager.Instance.UpdateMusicVolume();
+            if (GameManager.Instance) {
+                GameManager.Instance.updateMusicVolume();
             }
             GUI.SetNextControlName("3");
             if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2, 
