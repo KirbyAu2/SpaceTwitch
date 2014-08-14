@@ -342,7 +342,7 @@ public class GameManager : MonoBehaviour {
             _joystickMovementVector = Vector3.zero;
         }
 #endif
-        if(_needToInitSeebrightCamera && enableSeebright) {
+        if (_needToInitSeebrightCamera && enableSeebright) {
             initSeebright();
         }
         //Goes back to main menu if game over

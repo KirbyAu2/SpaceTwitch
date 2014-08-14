@@ -52,7 +52,7 @@ public class Confetti : Enemy {
     private void handleFailsafe() {
         if (_failsafeTime + DURATION_FOR_FAILSAFE < Time.time) {
             _failsafeTime = Time.time;
-            if (_failsafePos == gameObject.transform.position) {
+            if (Vector3.Distance(_failsafePos,gameObject.transform.position) < 0.1f) {
                 explode();
                 return;
             }
@@ -175,11 +175,6 @@ public class Confetti : Enemy {
      * returns -1 if there is no path
      */
     int pathfindLanes(Lane targetLane, bool goLeft) {
-        /*if (GameManager.Instance.CurrentLevel.wrapAround) {
-            if (Mathf.Abs(targetLaneIndex - GameManager.Instance.CurrentLevel.getLaneIndex(_currentLane)) > MAX_LANE_MOVE) {
-                targetLaneIndex = GameManager.Instance.CurrentLevel.lanes.Count - targetLaneIndex;
-            }
-        }*/
         //sanity check
         if (targetLane == _currentLane) {
             return -1;

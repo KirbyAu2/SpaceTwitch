@@ -149,7 +149,7 @@ public class Player : MonoBehaviour {
         _escapeMenu = GameManager.Instance.CurrentPlayerShips[0].GetComponent<EscapeMenu>();
     }
 
-    private void handleMovement() {
+    public void handleMovement() {
 #if UNITY_IPHONE && !UNITY_EDITOR
         if (_moveTime + MOVE_DELAY > Time.time) {
             return;
@@ -327,7 +327,12 @@ public class Player : MonoBehaviour {
             return;
         }
 
-        handleMovement();
+        if (!isClone) {
+            handleMovement();
+            if (_clone) {
+                _clone.handleMovement();
+            }
+        }
 
         // shoot
         if (_numShots < 0) { 
