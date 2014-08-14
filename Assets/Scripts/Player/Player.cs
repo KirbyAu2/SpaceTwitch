@@ -13,8 +13,8 @@ public class Player : MonoBehaviour {
     public const float CAMERA_LEVEL_TRANSITION_TIME = 1.75f;
     public const float FLASHBANG_TIME = 0.75f;
     public const float DELAY_NEXT_SHOT = .22f;
-    public const float RAPID_SHOT_TIME = 15.0f;
-    public const float MULTI_SHOT_TIME = 15.0f;
+    public const float RAPID_SHOT_TIME = 5.0f;
+    public const float MULTI_SHOT_TIME = 7.5f;
     public const int MAX_SHOTS = 20;
     public const float MOVE_DELAY = 0.08f;
 
@@ -333,7 +333,9 @@ public class Player : MonoBehaviour {
         if (triggerPressed && _reload < 0 && _numShots < maxMultiShots) {
             Shoot();
             _reload = DELAY_NEXT_SHOT;
-        
+            if (isRapidActivated) {
+                _reload /= 2.0f;
+            }
         }
         
         // reload

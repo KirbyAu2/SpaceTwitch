@@ -29,7 +29,6 @@ public class Menu : MonoBehaviour {
         style.fontSize = (int)ScreenUtil.getPixelHeight(style.fontSize);
         _levelModels = GetComponentsInChildren<Transform>();
         _highlightStyle = new GUIStyle(style);
-        getTopHighScores();
     }
 	
     void Update () {
@@ -232,7 +231,7 @@ public class Menu : MonoBehaviour {
                 ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
         }
         _highlightStyle.normal = style.normal;
-        _focusID = ManageFocus(_focusID, 3);
+        _focusID = ManageFocus(_focusID, 4);
 #endif
 
 
@@ -253,7 +252,7 @@ public class Menu : MonoBehaviour {
         GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
             ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
         _highlightStyle.normal = style.normal;
-        _focusID = ManageFocus(_focusID, 3);
+        _focusID = ManageFocus(_focusID, 5);
 
 
 
@@ -393,39 +392,16 @@ public class Menu : MonoBehaviour {
         _highlightStyle.normal = style.normal;
         //Joystick Menu Navigation
         _focusID = ManageFocus(_focusID, 0);
-        if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
-        {
-            if (_focusID < 0)
+        if(GameManager.Instance.enableSeebright) {
+            if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
-                return;
-            }
-            else if (_focusID == 0)
-            {
-                _displayHighScore = false;
-            }
-        }
-    }
-
-    void getTopHighScores()
-    {
-        if (GameManager.Instance == null) {
-            return;
-        }
-        if (GameManager.Instance.isGameOver)
-        {
-            _newScore = Score.CurrentScore;
-            for (int i = 1; i <= 5; i++)
-            {
-                if (PlayerPrefs.GetInt("highscorePos" + i) < _newScore) //if New score is better
+                if (_focusID < 0)
                 {
-                    _oldScore = PlayerPrefs.GetInt("highscorePos" + i); //Saves old best score
-                    PlayerPrefs.SetInt("highscorePos" + i, _newScore); //Sets New score as best score
-                    if (i < 5)
-                    {
-                        int j = i + 1; //Move one position down
-                        _newScore = PlayerPrefs.GetInt("highscorePos" + j); //saves next position score as new score 
-                        PlayerPrefs.SetInt("highscorePos" + j,_oldScore); //sets old best score in that position
-                    }
+                    return;
+                }
+                else if (_focusID == 0)
+                {
+                    _displayHighScore = false;
                 }
             }
         }

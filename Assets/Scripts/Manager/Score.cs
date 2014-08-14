@@ -27,7 +27,11 @@ public class Score : MonoBehaviour {
 
     //Submits score to Kongregate
     public static void submit() {
+#if UNITY_WEBPLAYER
         KongregateAPI.Submit("High Score", CurrentScore);
+#else
+        getTopHighScores();
+#endif
     }
 
     /*
@@ -41,4 +45,28 @@ public class Score : MonoBehaviour {
         GUIManager.DrawLabel(new Rect(buffer, buffer + style.fontSize, ScreenUtil.ScreenWidth, ScreenUtil.ScreenHeight), 
             "Multiplier : " + CurrentMultiplier.ToString(), style);
     }
+
+    /**
+     * Sets the top high scores
+     */
+    private static void getTopHighScores() {
+        if (GameManager.Instance == null) {
+            return;
+        }
+
+        int _newScore = Score.CurrentScore;
+        for (int i = 1; i <= 5; i++) {
+            if (PlayerPrefs.GetInt("highscorePos" + i) < _newScore) //if New score is better
+            {
+                int _oldScore = PlayerPrefs.GetInt("highscorePos" + i); //Saves old best score
+                PlayerPrefs.SetInt("highscorePos" + i, _newScore); //Sets New score as best score
+                if (i < 5) {
+                    int j = i + 1; //Move one position down
+                    _newScore = PlayerPrefs.GetInt("highscorePos" + j); //saves next position score as new score 
+                    PlayerPrefs.SetInt("highscorePos" + j, _oldScore); //sets old best score in that position
+                }
+            }
+        }
+    }
+
 }
