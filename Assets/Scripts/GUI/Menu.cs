@@ -44,19 +44,17 @@ public class Menu : MonoBehaviour {
 
     private int ManageFocus(int ID, int length)
     {
-        if (!GameManager.Instance.enableSeebright) {
+        if (!GameManager.Instance.enableSeebright || !SBRemote.remoteStatus) {
             return 0;
         }
         GUI.FocusControl(ID.ToString());
 
         _focusTimer += .01f;
-        if (SBRemote.GetAxis(SBRemote.JOY_VERTICAL) < -0.5f && ID < length && _focusTimer > _focusTimerMax)
-        {
+        if (SBRemote.GetAxis(SBRemote.JOY_VERTICAL) < -0.5f && ID < length && _focusTimer > _focusTimerMax) {
             _focusTimer = 0;
             ID++;
         }
-        if (SBRemote.GetAxis(SBRemote.JOY_VERTICAL) > 0.5f && ID > 0 && _focusTimer > _focusTimerMax)
-        {
+        if (SBRemote.GetAxis(SBRemote.JOY_VERTICAL) > 0.5f && ID > 0 && _focusTimer > _focusTimerMax) {
             _focusTimer = 0;
             ID--;
         }
@@ -73,7 +71,7 @@ public class Menu : MonoBehaviour {
 
         GUIStyle _tempStyle = new GUIStyle(_highlightStyle);
         _tempStyle.fontSize /= 2;
-        GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(160), ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(50),
+        GUIManager.DrawLabel(new Rect(ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(260), ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(50),
                 ScreenUtil.getPixelWidth(50), ScreenUtil.getPixelHeight(100)), GameManager.versionID, _tempStyle);
 
 #if !UNITY_IPHONE && !UNITY_WEBPLAYER
@@ -198,28 +196,19 @@ public class Menu : MonoBehaviour {
         _highlightStyle.normal = style.normal;
         _focusID = ManageFocus(_focusID, 3);
 
+        if (!GameManager.Instance.enableSeebright) {
+            if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
+                    ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(330), ScreenUtil.getPixelWidth(200),
+                    style.fontSize), new GUIContent((GameManager.invertedControls) ? "Inverted Controls: On" : "Inverted Controls: Off"), style)) {
+                GameManager.invertedControls = !GameManager.invertedControls;
+            }
+        }
+#endif
 
         GUI.SetNextControlName("4");
         if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(330), ScreenUtil.getPixelWidth(200),
-                style.fontSize), new GUIContent((GameManager.invertedControls) ? "Inverted Controls: On" : "Inverted Controls: Off", "4"), style)) {
-                    GameManager.invertedControls = !GameManager.invertedControls;
-        }
-        if (GUI.tooltip == "4") {
-            _highlightStyle.normal = style.hover;
-        }
-        if (GameManager.Instance.enableSeebright) {
-            GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(330), ScreenUtil.getPixelWidth(200), style.fontSize),
-                (GameManager.invertedControls) ? "Inverted Controls: On" : "Inverted Controls: Off", _highlightStyle);
-        }
-        _highlightStyle.normal = style.normal;
-        _focusID = ManageFocus(_focusID, 4);
-#endif
-
-        GUI.SetNextControlName("5");
-        if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
-            ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(430), ScreenUtil.getPixelWidth(200), style.fontSize), new GUIContent("Back", "5"), style)) {
+            (GameManager.Instance.enableSeebright) ? ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(330) : ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(430), 
+            ScreenUtil.getPixelWidth(200), style.fontSize), new GUIContent("Back", "4"), style)) {
             _displayOptions = false;
             // update sensitivity when options are closed
             if (GameManager.Instance != null) {
@@ -228,17 +217,17 @@ public class Menu : MonoBehaviour {
                 }
             }
         }
-        if (GUI.tooltip == "5") {
+        if (GUI.tooltip == "4") {
             _highlightStyle.normal = style.hover;
         }
         GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
             ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(430), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
         _highlightStyle.normal = style.normal;
-        _focusID = ManageFocus(_focusID, 5);
+        _focusID = ManageFocus(_focusID, 4);
 
 
 
-        if (!GameManager.Instance.enableSeebright) {
+        if (!GameManager.Instance.enableSeebright || !SBRemote.remoteStatus) {
             return;
         }
         if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT)) {
@@ -324,6 +313,9 @@ public class Menu : MonoBehaviour {
         _highlightStyle.normal = style.normal;
         //Joystick Menu Navigation
         _focusID = ManageFocus(_focusID, 0);
+        if (!SBRemote.remoteStatus || GameManager.Instance.enableSeebright) {
+            return;
+        }
         if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT)) {
             if (_focusID < 0) {
                 return;
@@ -374,7 +366,7 @@ public class Menu : MonoBehaviour {
         _highlightStyle.normal = style.normal;
         //Joystick Menu Navigation
         _focusID = ManageFocus(_focusID, 0);
-        if(GameManager.Instance.enableSeebright) {
+        if(GameManager.Instance.enableSeebright && SBRemote.remoteStatus) {
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT))
             {
                 if (_focusID < 0)
@@ -474,7 +466,7 @@ public class Menu : MonoBehaviour {
 #endif
 
         //Joystick Menu Navigation
-        if (GameManager.Instance.enableSeebright) {
+        if (GameManager.Instance.enableSeebright && SBRemote.remoteStatus) {
             _focusID = ManageFocus(_focusID, 4);
             if (SBRemote.GetButtonDown(SBRemote.BUTTON_SELECT)) {
                 if (_focusID < 0) {

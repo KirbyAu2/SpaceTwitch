@@ -80,6 +80,10 @@ public class Level : MonoBehaviour {
         return lanes.IndexOf(l);
     }
 
+    public Lane getLaneFromIndex(int i) {
+        return lanes[i];
+    }
+
     /*
      * Adds enemies to list of potential enemies 
      * Uses for loop to add all enemies according to count

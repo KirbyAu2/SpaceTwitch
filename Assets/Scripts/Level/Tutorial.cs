@@ -10,8 +10,8 @@ public class Tutorial : MonoBehaviour
     public GUIStyle style;
     private const float GAME_END_DURATION = 4.0f;
     private const int MOVEMENT_TUT_DURATION = 1;
-    private const string TUTORIAL_COMPLETE = "You have successfully completed the tutorial!";
-    private const string MOVEMENT = "Swipe the mouse left or right to move";
+    private const string TUTORIAL_COMPLETE = "You have successfully \ncompleted the tutorial!";
+    private const string MOVEMENT = "Swipe the mouse \nleft or right to move";
     private const string PAWN = "Pawns spawn at the back of lanes";
     private const string SWIRLIE_SPIKES = "Spikes can only be destroyed \nafter the Swirlie has been destroyed!";
     private const string CONFETTI = "Confettis go up and down rows";

@@ -50,10 +50,7 @@ public class Score : MonoBehaviour {
      * Sets the top high scores
      */
     private static void getTopHighScores() {
-        if (GameManager.Instance == null) {
-            return;
-        }
-
+        PlayerPrefs.Save();
         int _newScore = Score.CurrentScore;
         for (int i = 1; i <= 5; i++) {
             if (PlayerPrefs.GetInt("highscorePos" + i) < _newScore) //if New score is better
@@ -67,6 +64,7 @@ public class Score : MonoBehaviour {
                 }
             }
         }
+        PlayerPrefs.Save();
     }
 
 }

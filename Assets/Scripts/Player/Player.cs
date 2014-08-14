@@ -58,7 +58,8 @@ public class Player : MonoBehaviour {
     private bool _invulnerable = false;
     private GameObject _previousLevel;
     private float _invulnerabilityCooldown;
-
+    private bool _goingDownLane = false;
+    private Vector3 _endOfLane;
 
 
     private float _moveTime = 0;
@@ -94,6 +95,7 @@ public class Player : MonoBehaviour {
     //During transition and loading next level
     public void loadNextLevel(Level level) {
         _transitioning = true;
+        _goingDownLane = true;
         _invulnerable = false;
         _invulnerabilityCooldown = Time.time - RESPAWN_COOLDOWN;
         _previousLevel = currentLevel.gameObject;
@@ -217,6 +219,7 @@ public class Player : MonoBehaviour {
                 positionOnPlane = 1;
             }
         }
+        _endOfLane = GameManager.Instance.CurrentLevel.getLaneFromIndex(currentPlane).Back;
         currentLevel.lanes[currentPlane].setHighlight(true);
 
         // update position
@@ -267,7 +270,14 @@ public class Player : MonoBehaviour {
                 Destroy(gameObject);
             }
             setCamera();
-            gameObject.transform.position = Vector3.Lerp(_startPos, currentLevel.SpawnLane.Front, (Time.time - _startTransTime) / PLAYER_LEVEL_TRANSITION_TIME);
+            if (_goingDownLane) {
+                gameObject.transform.position = Vector3.Lerp(_startPos, _endOfLane, (Time.time - _startTransTime) / (PLAYER_LEVEL_TRANSITION_TIME * 0.25f));
+                if (gameObject.transform.position == _endOfLane) {
+                    _goingDownLane = false;
+                }
+            } else {
+                gameObject.transform.position = Vector3.Lerp(_endOfLane, currentLevel.SpawnLane.Front, (Time.time - _startTransTime) / (PLAYER_LEVEL_TRANSITION_TIME * 0.75f));
+            }
             gameObject.transform.Rotate(new Vector3(1, 0, 0), 360.0f * (Time.time - _startTransTime) / PLAYER_LEVEL_TRANSITION_TIME);
             
             //Level Transition
