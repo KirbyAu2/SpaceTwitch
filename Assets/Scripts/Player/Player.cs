@@ -157,8 +157,11 @@ public class Player : MonoBehaviour {
         if (GameManager.invertedJoystick) {
             positionOnPlane *= -1;
         }
+        if(_isMovementMirrored) {
+            positionOnPlane *= -1;
+        }
 #elif UNITY_IPHONE && UNITY_EDITOR
-        if (_moveTime + MOVE_DELAY > Time.time) {
+        if (_moveTime + MOVE_DELAY > Time.time && !GameManager.Instance.enableSeebright) {
             return;
         }
         float mouseMove = (GameManager.Instance.enableSeebright) ? Input.GetAxis("Mouse X") : GameManager.Instance.JoystickHorizontal;
@@ -172,6 +175,9 @@ public class Player : MonoBehaviour {
         } else {
             positionOnPlane = mouseMove * 3;
             if (GameManager.invertedJoystick) {
+                positionOnPlane *= -1;
+            }
+            if(_isMovementMirrored) {
                 positionOnPlane *= -1;
             }
         }

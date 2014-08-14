@@ -54,7 +54,9 @@ public class Confetti : Enemy {
             _failsafeTime = Time.time;
             if (_failsafePos == gameObject.transform.position) {
                 explode();
+                return;
             }
+            _failsafePos = gameObject.transform.position;
         }
     }
 

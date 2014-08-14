@@ -175,25 +175,6 @@ public class Menu : MonoBehaviour {
             GameManager.musicVolume = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
                 ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(190), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
                 GameManager.musicVolume, 0f, 1.0f);
-
-            //Sensitivity Control
-            GUI.SetNextControlName("2");
-            GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(240), ScreenUtil.getPixelWidth(400), style.fontSize),
-                new GUIContent("Sensitivity", "2"), style);
-            GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(310), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
-                GameManager.mouseSensitivity, 0.1f, 0.5f);
-            if (GUI.tooltip == "2") {
-                _highlightStyle.normal = style.hover;
-            }
-            GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(240), ScreenUtil.getPixelWidth(400), style.fontSize),
-                "Sensitivity", _highlightStyle);
-            _highlightStyle.normal = style.normal;
-            GameManager.mouseSensitivity = GUI.HorizontalSlider(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(400)) / 2 + ScreenUtil.ScreenWidth,
-                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(310), ScreenUtil.getPixelWidth(400), ScreenUtil.getPixelHeight(50)),
-                GameManager.mouseSensitivity, 0.1f, 0.5f);
         }
 
         if (GameManager.Instance) {
@@ -203,7 +184,7 @@ public class Menu : MonoBehaviour {
 #if UNITY_IPHONE
         GUI.SetNextControlName("3");
         if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
-            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(300), ScreenUtil.getPixelWidth(200), 
+            ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(230), ScreenUtil.getPixelWidth(200), 
             style.fontSize), new GUIContent((GameManager.invertedJoystick) ? "Inverted Joystick: On" : "Inverted Joystick: Off", "3"), style)) {
                 GameManager.invertedJoystick = !GameManager.invertedJoystick;
         }
@@ -212,7 +193,8 @@ public class Menu : MonoBehaviour {
         }
         if (GameManager.Instance.enableSeebright) {
             GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
-                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(300), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(230), ScreenUtil.getPixelWidth(200), style.fontSize), 
+                (GameManager.invertedJoystick) ? "Inverted Joystick: On" : "Inverted Joystick: Off", _highlightStyle);
         }
         _highlightStyle.normal = style.normal;
         _focusID = ManageFocus(_focusID, 3);
@@ -220,25 +202,25 @@ public class Menu : MonoBehaviour {
 
         GUI.SetNextControlName("4");
         if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
-            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(200),
-            style.fontSize), new GUIContent((GameManager.invertedControls) ? "Inverted Controls: On" : "Inverted Controls: Off", "3"), style)) {
-                GameManager.invertedControls = !GameManager.invertedControls;
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(330), ScreenUtil.getPixelWidth(200),
+                style.fontSize), new GUIContent((GameManager.invertedControls) ? "Inverted Controls: On" : "Inverted Controls: Off", "4"), style)) {
+                    GameManager.invertedControls = !GameManager.invertedControls;
         }
         if (GUI.tooltip == "4") {
             _highlightStyle.normal = style.hover;
         }
         if (GameManager.Instance.enableSeebright) {
             GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
-                ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(200), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
+                ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(330), ScreenUtil.getPixelWidth(200), style.fontSize),
+                (GameManager.invertedControls) ? "Inverted Controls: On" : "Inverted Controls: Off", _highlightStyle);
         }
         _highlightStyle.normal = style.normal;
-        _focusID = ManageFocus(_focusID, 3);
+        _focusID = ManageFocus(_focusID, 4);
 #endif
-
 
         GUI.SetNextControlName("5");
         if (GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2,
-            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), new GUIContent("Back", "3"), style)) {
+            ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(430), ScreenUtil.getPixelWidth(200), style.fontSize), new GUIContent("Back", "5"), style)) {
             _displayOptions = false;
             // update sensitivity when options are closed
             if (GameManager.Instance != null) {
@@ -251,9 +233,9 @@ public class Menu : MonoBehaviour {
             _highlightStyle.normal = style.hover;
         }
         GUI.Button(new Rect((ScreenUtil.ScreenWidth - ScreenUtil.getPixelWidth(200)) / 2 + ScreenUtil.ScreenWidth,
-            ScreenUtil.ScreenHeight - ScreenUtil.getPixelHeight(100), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
+            ScreenUtil.ScreenHeight / 2 + ScreenUtil.getPixelHeight(430), ScreenUtil.getPixelWidth(200), style.fontSize), "Back", _highlightStyle);
         _highlightStyle.normal = style.normal;
-        _focusID = ManageFocus(_focusID, 3);
+        _focusID = ManageFocus(_focusID, 5);
 
 
 
